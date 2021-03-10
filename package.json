@@ -1,0 +1,9 @@
+{
+  "name": "incognia-api-node-wrapper",
+  "version": "1.0.0",
+  "description": "Wrapper of Incognia API in node.",
+  "main": "index.js",
+  "repository": "https://github.com/inloco/incognia-api-node-wrapper",
+  "author": "Incognia Team",
+  "license": "MIT"
+}

@@ -1,9 +1,33 @@
 {
   "name": "incognia-api-node-wrapper",
   "version": "1.0.0",
-  "description": "Wrapper of Incognia API in node.",
-  "main": "index.js",
+  "description": "Node library for the Incognia API",
+  "keywords": [
+    "incognia",
+    "identity",
+    "verification",
+    "api",
+    "fraud"
+  ],
+  "main": "dist/index.js",
   "repository": "https://github.com/inloco/incognia-api-node-wrapper",
-  "author": "Incognia Team",
-  "license": "MIT"
+  "author": "Incognia (https://us.incognia.com)",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c rollup.config.js"
+  },
+  "dependencies": {
+    "axios": "^0.21.1"
+  },
+  "devDependencies": {
+    "prettier": "^2.2.1",
+    "rollup": "^2.41.1"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": false,
+    "jsxBracketSameLine": true,
+    "arrowParens": "avoid",
+    "trailingComma": "none"
+  }
 }

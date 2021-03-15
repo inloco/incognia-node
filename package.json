@@ -1,5 +1,5 @@
 {
-  "name": "incognia-api-node",
+  "name": "@incognia/api",
   "version": "1.0.0",
   "description": "Node library for the Incognia API",
   "keywords": [
@@ -8,6 +8,9 @@
     "verification",
     "api",
     "fraud"
+  ],
+  "files": [
+    "dist"
   ],
   "main": "dist/index.js",
   "repository": "https://github.com/inloco/incognia-api-node-wrapper",

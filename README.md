@@ -64,6 +64,19 @@ try {
 }
 ```
 
+`incogniaAPI.registerLoginAssessment`
+
+```js
+try {
+  const loginAssessment = await incogniaAPI.registerLoginAssessment({
+    installationId: 'installation_id',
+    accountId: 'account_id'
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
 ## Response format
 
 Responses will be a JSON identical to the original api <https://us.incognia.com>

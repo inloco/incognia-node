@@ -4,8 +4,6 @@ The official Node.js library for integrating with the Incognia API.
 
 Documentation can be found at <https://us.incognia.com>
 
-The purpouse of this library is to integrate with partners, like [Auth0](https://auth0.com).
-
 ## Installation
 
 For npm:

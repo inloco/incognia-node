@@ -7,7 +7,7 @@ let incogniaAPI
 
 const accessTokenExample = {
   access_token: 'access_token',
-  expires_in: Math.round(Date.now() / 1000)
+  expires_in: 20 * 60
 }
 
 describe('API', () => {
@@ -98,13 +98,11 @@ describe('API', () => {
       })
 
       it('returns false if the token is expired', async () => {
-        nock(BASE_ENDPOINT_URL)
-          .post('/v1/token')
-          .reply(200, {
-            access_token: 'access_token',
-            expires_in: Math.round(Date.now() / 1000) - 15
-          })
+        nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
+
+        Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
         await incogniaAPI.updateAccessToken()
+        Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 15)).valueOf())
         expect(incogniaAPI.isAccessTokenValid()).toEqual(false)
       })
 

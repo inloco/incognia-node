@@ -98,7 +98,7 @@ export class IncogniaAPI {
     const expirationLimit = createdAt + expiresIn + EXPIRATION_LIMIT_SECONDS
     const nowInSeconds = Math.round(Date.now() / 1000)
 
-    if (expirationLimit <= nowInSeconds * 2) {
+    if (expirationLimit <= nowInSeconds) {
       return false
     }
 

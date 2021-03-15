@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { convertObjectToCamelCase } from './formatting'
 
 const EXPIRATION_LIMIT_SECONDS = 10
 
@@ -33,12 +34,10 @@ export class IncogniaAPI {
       throw new Error('No signupId provided')
     }
 
-    const response = await this.resourceRequest({
+    return this.resourceRequest({
       url: `${ApiEndpoints.SIGNUPS}/${signupId}`,
       method: Method.GET
     })
-
-    return response.data
   }
 
   async registerOnboardingAssessment({ installationId, addressLine }) {
@@ -46,7 +45,7 @@ export class IncogniaAPI {
       throw new Error('No installationId or addressLine provided')
     }
 
-    const response = await this.resourceRequest({
+    return this.resourceRequest({
       url: ApiEndpoints.SIGNUPS,
       method: Method.POST,
       data: {
@@ -54,8 +53,6 @@ export class IncogniaAPI {
         address_line: addressLine
       }
     })
-
-    return response.data
   }
 
   async registerLoginAssessment({ installationId, accountId }) {
@@ -63,7 +60,7 @@ export class IncogniaAPI {
       throw new Error('No installationId or accountId provided')
     }
 
-    const response = await this.resourceRequest({
+    return this.resourceRequest({
       url: ApiEndpoints.TRANSACTIONS,
       method: Method.POST,
       data: {
@@ -72,20 +69,19 @@ export class IncogniaAPI {
         type: 'login'
       }
     })
-
-    return response.data
   }
 
   async resourceRequest(options) {
     await this.updateAccessToken()
     try {
-      return axios({
+      const response = await axios({
         ...options,
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.incogniaToken.accessToken}`
         }
       })
+      return convertObjectToCamelCase(response.data)
     } catch (e) {
       throw new Error('Could not request resource:' + e.message)
     }

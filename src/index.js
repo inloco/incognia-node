@@ -17,7 +17,7 @@ const ApiEndpoints = {
 export class IncogniaAPI {
   constructor({ clientId, clientSecret }) {
     if (!clientId || !clientSecret) {
-      throw new Error('No clientId and clientSecret provided')
+      throw new Error('No clientId or clientSecret provided')
     }
 
     this.clientId = clientId
@@ -42,7 +42,7 @@ export class IncogniaAPI {
 
   async registerOnboardingAssessment({ installationId, addressLine }) {
     if (!installationId || !addressLine) {
-      throw new Error('No installationId and addressLine provided')
+      throw new Error('No installationId or addressLine provided')
     }
 
     const response = await this.resourceRequest({
@@ -74,7 +74,7 @@ export class IncogniaAPI {
 
   //Token Management
   async updateAccessToken() {
-    if (this.isAccessTokenValid()) return this.incogniaToken.accessToken
+    if (this.isAccessTokenValid()) return
 
     try {
       const { data } = await this.requestToken()

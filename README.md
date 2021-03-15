@@ -28,7 +28,7 @@ Require the package:
 const { IncogniaAPI } = require('@incognia/api')
 ```
 
-Intantiate with your clientId and clientSecret:
+Instantiate with your clientId and clientSecret:
 
 ```js
 const incogniaAPI = new IncogniaAPI({

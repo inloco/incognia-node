@@ -118,14 +118,14 @@ describe('API', () => {
     it('throws an error', () => {
       expect(() => new IncogniaAPI()).toThrow()
       expect(() => new IncogniaAPI({ clientId: 'clientId' })).toThrow(
-        'No clientId and clientSecret provided'
+        'No clientId or clientSecret provided'
       )
       expect(() => new IncogniaAPI({ clientSecret: 'clientSecret' })).toThrow(
-        'No clientId and clientSecret provided'
+        'No clientId or clientSecret provided'
       )
       expect(
         () => new IncogniaAPI({ clientId: '', clientSecret: 'clientSecret' })
-      ).toThrow('No clientId and clientSecret provided')
+      ).toThrow('No clientId or clientSecret provided')
     })
   })
 })

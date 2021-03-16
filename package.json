@@ -1,6 +1,6 @@
 {
   "name": "@incognia/api",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.2",
   "description": "Node library for the Incognia API",
   "keywords": [
     "incognia",
@@ -19,7 +19,9 @@
   "scripts": {
     "build": "rollup -c rollup.config.js",
     "test": "jest",
-    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
+    "prepublishOnly": "yarn build",
+    "release": "yarn publish --access public"
   },
   "dependencies": {
     "axios": "^0.21.1"

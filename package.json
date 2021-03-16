@@ -1,5 +1,5 @@
 {
-  "name": "incognia-api-node-wrapper",
+  "name": "@incognia/api",
   "version": "1.0.0",
   "description": "Node library for the Incognia API",
   "keywords": [
@@ -9,19 +9,27 @@
     "api",
     "fraud"
   ],
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.js",
   "repository": "https://github.com/inloco/incognia-api-node-wrapper",
   "author": "Incognia (https://us.incognia.com)",
   "license": "MIT",
   "scripts": {
-    "build": "rollup -c rollup.config.js"
+    "build": "rollup -c rollup.config.js",
+    "test": "jest",
+    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand"
   },
   "dependencies": {
     "axios": "^0.21.1"
   },
   "devDependencies": {
+    "jest": "^26.6.3",
+    "nock": "^13.0.11",
     "prettier": "^2.2.1",
-    "rollup": "^2.41.1"
+    "rollup": "^2.41.1",
+    "rollup-jest": "^1.1.1"
   },
   "prettier": {
     "singleQuote": true,
@@ -29,5 +37,12 @@
     "jsxBracketSameLine": true,
     "arrowParens": "avoid",
     "trailingComma": "none"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "preset": "rollup-jest",
+    "moduleNameMapper": {
+      "incognia-api-node": "<rootDir>/src/index"
+    }
   }
 }

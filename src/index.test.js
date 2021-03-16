@@ -32,6 +32,13 @@ describe('API', () => {
         request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
         risk_assessment: 'low_risk'
       }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        requestId: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
+        riskAssessment: 'low_risk'
+      }
+
       nock(BASE_ENDPOINT_URL)
         .persist()
         .get(`/v2/onboarding/signups/${apiResponse.id}`)
@@ -40,7 +47,8 @@ describe('API', () => {
       const onboardingAssessment = await incogniaAPI.getOnboardingAssessment(
         apiResponse.id
       )
-      expect(onboardingAssessment).toEqual(apiResponse)
+
+      expect(onboardingAssessment).toEqual(expectedResponse)
     })
 
     it('registers onboarding assessment', async () => {
@@ -49,6 +57,13 @@ describe('API', () => {
         request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
         risk_assessment: 'low_risk'
       }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        requestId: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
+        riskAssessment: 'low_risk'
+      }
+
       nock(BASE_ENDPOINT_URL)
         .persist()
         .post(`/v2/onboarding/signups`)
@@ -60,7 +75,7 @@ describe('API', () => {
           addressLine: 'address_line'
         }
       )
-      expect(onboardingAssessment).toEqual(apiResponse)
+      expect(onboardingAssessment).toEqual(expectedResponse)
     })
 
     it('registers login assessment', async () => {
@@ -68,6 +83,12 @@ describe('API', () => {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         risk_assessment: 'low_risk'
       }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
       nock(BASE_ENDPOINT_URL)
         .persist()
         .post(`/v2/authentication/transactions`)
@@ -77,7 +98,7 @@ describe('API', () => {
         installationId: 'installation_id',
         accountId: 'account_id'
       })
-      expect(loginAssessment).toEqual(apiResponse)
+      expect(loginAssessment).toEqual(expectedResponse)
     })
   })
 

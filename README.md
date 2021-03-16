@@ -77,13 +77,16 @@ try {
 
 ## Response format
 
-Responses will be a JSON identical to the original api <https://us.incognia.com>
+Responses have JSONs identical to the original api <https://us.incognia.com>, **however** property names will be in camelCase rather than snake_case, including property names in nested objects.
 
 ```json
 {
   "id": "5e76a7ca-577c-4f47-a752-9e1e0cee9e49",
-  "risk_assessment": "low_risk"
-  //...
+  "riskAssessment": "low_risk",
+  "evidence": {
+    "deviceModel": "Moto Z2 Play"
+    //...
+  }
 }
 ```
 

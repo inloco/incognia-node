@@ -1,7 +1,8 @@
 import nock from 'nock'
 import { IncogniaAPI } from 'incognia-api-node'
 
-const BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
+const GLOBAL_BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
+const BRAZIL_BASE_ENDPOINT_URL = 'https://incognia.inloco.com.br/api'
 
 let incogniaAPI
 
@@ -19,9 +20,48 @@ describe('API', () => {
     })
   })
 
+  describe('Regions', () => {
+    it('has the global region as default', () => {
+      expect(
+        incogniaAPI.apiEndpoints.TOKEN.startsWith(GLOBAL_BASE_ENDPOINT_URL)
+      ).toEqual(true)
+    })
+
+    it('set brazil base endpoint if br region is passed', () => {
+      const incogniaAPI = new IncogniaAPI({
+        clientId: 'clientId',
+        clientSecret: 'clientSecret',
+        region: 'br'
+      })
+      expect(
+        incogniaAPI.apiEndpoints.TOKEN.startsWith(BRAZIL_BASE_ENDPOINT_URL)
+      ).toEqual(true)
+    })
+
+    it('throws if the region is invalid', () => {
+      expect(
+        () =>
+          new IncogniaAPI({
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            region: 'abc'
+          })
+      ).toThrow('Invalid region. Avaliable')
+
+      expect(
+        () =>
+          new IncogniaAPI({
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            region: ['abc']
+          })
+      ).toThrow('Invalid region. Avaliable')
+    })
+  })
+
   describe('Resources', () => {
     beforeEach(() => {
-      nock(BASE_ENDPOINT_URL)
+      nock(GLOBAL_BASE_ENDPOINT_URL)
         .persist()
         .post('/v1/token')
         .reply(200, accessTokenExample)
@@ -39,7 +79,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(BASE_ENDPOINT_URL)
+      nock(GLOBAL_BASE_ENDPOINT_URL)
         .persist()
         .get(`/v2/onboarding/signups/${apiResponse.id}`)
         .reply(200, apiResponse)
@@ -64,7 +104,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(BASE_ENDPOINT_URL)
+      nock(GLOBAL_BASE_ENDPOINT_URL)
         .persist()
         .post(`/v2/onboarding/signups`)
         .reply(200, apiResponse)
@@ -89,7 +129,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(BASE_ENDPOINT_URL)
+      nock(GLOBAL_BASE_ENDPOINT_URL)
         .persist()
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
@@ -106,14 +146,14 @@ describe('API', () => {
     describe('when calling the api ', () => {
       it('calls access token endpoint only at the first time', async () => {
         const signupId = 123
-        const accessTokenEndpointFirstCall = nock(BASE_ENDPOINT_URL)
+        const accessTokenEndpointFirstCall = nock(GLOBAL_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
-        const signupEndpointGet = nock(BASE_ENDPOINT_URL)
+        const signupEndpointGet = nock(GLOBAL_BASE_ENDPOINT_URL)
           .persist()
           .get(`/v2/onboarding/signups/${signupId}`)
           .reply(200)
-        const accessTokenEndpointSecondCall = nock(BASE_ENDPOINT_URL)
+        const accessTokenEndpointSecondCall = nock(GLOBAL_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
 
@@ -130,13 +170,17 @@ describe('API', () => {
 
     describe('accessToken validation', () => {
       it('returns true if the token is valid', async () => {
-        nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
+        nock(GLOBAL_BASE_ENDPOINT_URL)
+          .post('/v1/token')
+          .reply(200, accessTokenExample)
         await incogniaAPI.updateAccessToken()
         expect(incogniaAPI.isAccessTokenValid()).toEqual(true)
       })
 
       it('returns false if the token is expired', async () => {
-        nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
+        nock(GLOBAL_BASE_ENDPOINT_URL)
+          .post('/v1/token')
+          .reply(200, accessTokenExample)
 
         Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
         await incogniaAPI.updateAccessToken()

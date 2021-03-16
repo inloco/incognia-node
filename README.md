@@ -35,6 +35,18 @@ const incogniaAPI = new IncogniaAPI({
 })
 ```
 
+## Regions
+
+You can setup regions. The default region is `global`, but you can instantiate with `br` region:
+
+```js
+const incogniaAPI = new IncogniaAPI({
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
+  region: 'br'
+})
+```
+
 ## Api methods
 
 `incogniaAPI.getOnboardingAssessment`
@@ -85,7 +97,6 @@ Responses have JSONs identical to the original api <https://us.incognia.com>, **
   "riskAssessment": "low_risk",
   "evidence": {
     "deviceModel": "Moto Z2 Play"
-    //...
   }
 }
 ```

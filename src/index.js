@@ -8,22 +8,40 @@ const Method = {
   GET: 'get'
 }
 
-const BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
-
-const ApiEndpoints = {
-  TOKEN: `${BASE_ENDPOINT_URL}/v1/token`,
-  SIGNUPS: `${BASE_ENDPOINT_URL}/v2/onboarding/signups`,
-  TRANSACTIONS: `${BASE_ENDPOINT_URL}/v2/authentication/transactions`
+const Region = {
+  GLOBAL: 'global',
+  BRAZIL: 'br'
 }
 
+const BaseEndpoint = {
+  [Region.GLOBAL]: 'https://api.us.incognia.com/api',
+  [Region.BRAZIL]: 'https://incognia.inloco.com.br/api'
+}
+
+const getApiEndpoints = baseEndpointUrl => ({
+  TOKEN: `${baseEndpointUrl}/v1/token`,
+  SIGNUPS: `${baseEndpointUrl}/v2/onboarding/signups`,
+  TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`
+})
+
 export class IncogniaAPI {
-  constructor({ clientId, clientSecret }) {
+  constructor({ clientId, clientSecret, region = Region.GLOBAL }) {
     if (!clientId || !clientSecret) {
       throw new Error('No clientId or clientSecret provided')
     }
 
+    const avaliableRegions = Object.values(Region)
+
+    if (!avaliableRegions.includes(region)) {
+      throw new Error(
+        `Invalid region. Avaliable: ${avaliableRegions.join(', ')}.`
+      )
+      return
+    }
+
     this.clientId = clientId
     this.clientSecret = clientSecret
+    this.apiEndpoints = getApiEndpoints(BaseEndpoint[region])
   }
 
   /*
@@ -35,7 +53,7 @@ export class IncogniaAPI {
     }
 
     return this.resourceRequest({
-      url: `${ApiEndpoints.SIGNUPS}/${signupId}`,
+      url: `${this.apiEndpoints.SIGNUPS}/${signupId}`,
       method: Method.GET
     })
   }
@@ -46,7 +64,7 @@ export class IncogniaAPI {
     }
 
     return this.resourceRequest({
-      url: ApiEndpoints.SIGNUPS,
+      url: this.apiEndpoints.SIGNUPS,
       method: Method.POST,
       data: {
         installation_id: installationId,
@@ -61,7 +79,7 @@ export class IncogniaAPI {
     }
 
     return this.resourceRequest({
-      url: ApiEndpoints.TRANSACTIONS,
+      url: this.apiEndpoints.TRANSACTIONS,
       method: Method.POST,
       data: {
         installation_id: installationId,
@@ -123,7 +141,7 @@ export class IncogniaAPI {
   async requestToken() {
     return axios({
       method: Method.POST,
-      url: ApiEndpoints.TOKEN,
+      url: this.apiEndpoints.TOKEN,
       auth: {
         username: this.clientId,
         password: this.clientSecret

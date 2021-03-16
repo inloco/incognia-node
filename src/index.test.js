@@ -62,6 +62,23 @@ describe('API', () => {
       )
       expect(onboardingAssessment).toEqual(apiResponse)
     })
+
+    it('registers login assessment', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+      nock(BASE_ENDPOINT_URL)
+        .persist()
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const loginAssessment = await incogniaAPI.registerLoginAssessment({
+        installationId: 'installation_id',
+        accountId: 'account_id'
+      })
+      expect(loginAssessment).toEqual(apiResponse)
+    })
   })
 
   describe('Access token managament', () => {

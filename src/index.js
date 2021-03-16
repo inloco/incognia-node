@@ -11,7 +11,8 @@ const BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
 
 const ApiEndpoints = {
   TOKEN: `${BASE_ENDPOINT_URL}/v1/token`,
-  SIGNUPS: `${BASE_ENDPOINT_URL}/v2/onboarding/signups`
+  SIGNUPS: `${BASE_ENDPOINT_URL}/v2/onboarding/signups`,
+  TRANSACTIONS: `${BASE_ENDPOINT_URL}/v2/authentication/transactions`
 }
 
 export class IncogniaAPI {
@@ -51,6 +52,24 @@ export class IncogniaAPI {
       data: {
         installation_id: installationId,
         address_line: addressLine
+      }
+    })
+
+    return response.data
+  }
+
+  async registerLoginAssessment({ installationId, accountId }) {
+    if (!installationId || !accountId) {
+      throw new Error('No installationId or accountId provided')
+    }
+
+    const response = await this.resourceRequest({
+      url: ApiEndpoints.TRANSACTIONS,
+      method: Method.POST,
+      data: {
+        installation_id: installationId,
+        account_id: accountId,
+        type: 'login'
       }
     })
 

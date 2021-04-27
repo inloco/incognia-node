@@ -38,6 +38,17 @@ describe('API', () => {
       ).toEqual(true)
     })
 
+    it('set global base endpoint if region is falsy', () => {
+      const incogniaAPI = new IncogniaAPI({
+        clientId: 'clientId',
+        clientSecret: 'clientSecret',
+        region: null
+      })
+      expect(
+        incogniaAPI.apiEndpoints.TOKEN.startsWith(GLOBAL_BASE_ENDPOINT_URL)
+      ).toEqual(true)
+    })
+
     it('throws if the region is invalid', () => {
       expect(
         () =>

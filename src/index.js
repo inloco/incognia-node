@@ -25,14 +25,15 @@ const getApiEndpoints = baseEndpointUrl => ({
 })
 
 export class IncogniaAPI {
-  constructor({ clientId, clientSecret, region = Region.GLOBAL }) {
+  constructor({ clientId, clientSecret, region }) {
     if (!clientId || !clientSecret) {
       throw new Error('No clientId or clientSecret provided')
     }
 
     const avaliableRegions = Object.values(Region)
 
-    if (!avaliableRegions.includes(region)) {
+    const regionOrDefault = region || Region.GLOBAL
+    if (!avaliableRegions.includes(regionOrDefault)) {
       throw new Error(
         `Invalid region. Avaliable: ${avaliableRegions.join(', ')}.`
       )
@@ -41,7 +42,7 @@ export class IncogniaAPI {
 
     this.clientId = clientId
     this.clientSecret = clientSecret
-    this.apiEndpoints = getApiEndpoints(BaseEndpoint[region])
+    this.apiEndpoints = getApiEndpoints(BaseEndpoint[regionOrDefault])
   }
 
   /*

@@ -9,13 +9,13 @@ const Method = {
 }
 
 const Region = {
-  GLOBAL: 'global',
-  BRAZIL: 'br'
+  US: 'us',
+  BR: 'br'
 }
 
 const BaseEndpoint = {
-  [Region.GLOBAL]: 'https://api.us.incognia.com/api',
-  [Region.BRAZIL]: 'https://incognia.inloco.com.br/api'
+  [Region.US]: 'https://api.us.incognia.com/api',
+  [Region.BR]: 'https://incognia.inloco.com.br/api'
 }
 
 const getApiEndpoints = baseEndpointUrl => ({
@@ -32,7 +32,7 @@ export class IncogniaAPI {
 
     const avaliableRegions = Object.values(Region)
 
-    const regionOrDefault = region || Region.GLOBAL
+    const regionOrDefault = region || Region.US
     if (!avaliableRegions.includes(regionOrDefault)) {
       throw new Error(
         `Invalid region. Avaliable: ${avaliableRegions.join(', ')}.`

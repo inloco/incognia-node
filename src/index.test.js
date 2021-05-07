@@ -1,8 +1,8 @@
 import nock from 'nock'
 import { IncogniaAPI } from 'incognia-api-node'
 
-const GLOBAL_BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
-const BRAZIL_BASE_ENDPOINT_URL = 'https://incognia.inloco.com.br/api'
+const US_BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
+const BR_BASE_ENDPOINT_URL = 'https://incognia.inloco.com.br/api'
 
 let incogniaAPI
 
@@ -21,31 +21,31 @@ describe('API', () => {
   })
 
   describe('Regions', () => {
-    it('has the global region as default', () => {
+    it('has the US region as default', () => {
       expect(
-        incogniaAPI.apiEndpoints.TOKEN.startsWith(GLOBAL_BASE_ENDPOINT_URL)
+        incogniaAPI.apiEndpoints.TOKEN.startsWith(US_BASE_ENDPOINT_URL)
       ).toEqual(true)
     })
 
-    it('set brazil base endpoint if br region is passed', () => {
+    it('set BR base endpoint if br region is passed', () => {
       const incogniaAPI = new IncogniaAPI({
         clientId: 'clientId',
         clientSecret: 'clientSecret',
         region: 'br'
       })
       expect(
-        incogniaAPI.apiEndpoints.TOKEN.startsWith(BRAZIL_BASE_ENDPOINT_URL)
+        incogniaAPI.apiEndpoints.TOKEN.startsWith(BR_BASE_ENDPOINT_URL)
       ).toEqual(true)
     })
 
-    it('set global base endpoint if region is falsy', () => {
+    it('set US base endpoint if region is falsy', () => {
       const incogniaAPI = new IncogniaAPI({
         clientId: 'clientId',
         clientSecret: 'clientSecret',
         region: null
       })
       expect(
-        incogniaAPI.apiEndpoints.TOKEN.startsWith(GLOBAL_BASE_ENDPOINT_URL)
+        incogniaAPI.apiEndpoints.TOKEN.startsWith(US_BASE_ENDPOINT_URL)
       ).toEqual(true)
     })
 
@@ -72,7 +72,7 @@ describe('API', () => {
 
   describe('Resources', () => {
     beforeEach(() => {
-      nock(GLOBAL_BASE_ENDPOINT_URL)
+      nock(US_BASE_ENDPOINT_URL)
         .persist()
         .post('/v1/token')
         .reply(200, accessTokenExample)
@@ -90,7 +90,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(GLOBAL_BASE_ENDPOINT_URL)
+      nock(US_BASE_ENDPOINT_URL)
         .persist()
         .get(`/v2/onboarding/signups/${apiResponse.id}`)
         .reply(200, apiResponse)
@@ -115,7 +115,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(GLOBAL_BASE_ENDPOINT_URL)
+      nock(US_BASE_ENDPOINT_URL)
         .persist()
         .post(`/v2/onboarding/signups`)
         .reply(200, apiResponse)
@@ -140,7 +140,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(GLOBAL_BASE_ENDPOINT_URL)
+      nock(US_BASE_ENDPOINT_URL)
         .persist()
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
@@ -157,14 +157,14 @@ describe('API', () => {
     describe('when calling the api ', () => {
       it('calls access token endpoint only at the first time', async () => {
         const signupId = 123
-        const accessTokenEndpointFirstCall = nock(GLOBAL_BASE_ENDPOINT_URL)
+        const accessTokenEndpointFirstCall = nock(US_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
-        const signupEndpointGet = nock(GLOBAL_BASE_ENDPOINT_URL)
+        const signupEndpointGet = nock(US_BASE_ENDPOINT_URL)
           .persist()
           .get(`/v2/onboarding/signups/${signupId}`)
           .reply(200)
-        const accessTokenEndpointSecondCall = nock(GLOBAL_BASE_ENDPOINT_URL)
+        const accessTokenEndpointSecondCall = nock(US_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
 
@@ -181,7 +181,7 @@ describe('API', () => {
 
     describe('accessToken validation', () => {
       it('returns true if the token is valid', async () => {
-        nock(GLOBAL_BASE_ENDPOINT_URL)
+        nock(US_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
         await incogniaAPI.updateAccessToken()
@@ -189,7 +189,7 @@ describe('API', () => {
       })
 
       it('returns false if the token is expired', async () => {
-        nock(GLOBAL_BASE_ENDPOINT_URL)
+        nock(US_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
 

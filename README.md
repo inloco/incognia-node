@@ -37,7 +37,7 @@ const incogniaAPI = new IncogniaAPI({
 
 ## Regions
 
-You can setup regions. The default region is `global`, but you can instantiate with `br` region:
+You can setup regions. The default region is `us`, but you can instantiate with `br` region:
 
 ```js
 const incogniaAPI = new IncogniaAPI({

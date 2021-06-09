@@ -143,6 +143,9 @@ export class IncogniaAPI {
     return axios({
       method: Method.POST,
       url: this.apiEndpoints.TOKEN,
+      data: {
+        grant_type: 'client_credentials'
+      },
       auth: {
         username: this.clientId,
         password: this.clientSecret

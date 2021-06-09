@@ -11,13 +11,15 @@ const accessTokenExample = {
   expires_in: 20 * 60
 }
 
+const credentials = {
+  clientId: 'clientId',
+  clientSecret: 'clientSecret'
+}
+
 describe('API', () => {
   beforeEach(() => {
     nock.cleanAll()
-    incogniaAPI = new IncogniaAPI({
-      clientId: 'clientId',
-      clientSecret: 'clientSecret'
-    })
+    incogniaAPI = new IncogniaAPI(credentials)
   })
 
   describe('Regions', () => {
@@ -155,6 +157,23 @@ describe('API', () => {
 
   describe('Access token managament', () => {
     describe('when calling the api ', () => {
+      it('calls access token endpoint with creds', async () => {
+        const accessTokenEndpointCall = nock(US_BASE_ENDPOINT_URL, {
+            reqheaders: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          })
+          .post('/v1/token', { grant_type: 'client_credentials' })
+          .basicAuth({
+            user: credentials.clientId,
+            pass: credentials.clientSecret
+          })
+          .reply(200, accessTokenExample)
+
+        await incogniaAPI.requestToken()
+        expect(accessTokenEndpointCall.isDone()).toBeTruthy()
+      })
+
       it('calls access token endpoint only at the first time', async () => {
         const signupId = 123
         const accessTokenEndpointFirstCall = nock(US_BASE_ENDPOINT_URL)

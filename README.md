@@ -49,11 +49,11 @@ const incogniaAPI = new IncogniaAPI({
 
 ## Api methods
 
-`incogniaAPI.getOnboardingAssessment`
+`incogniaAPI.getSignupAssessment`
 
 ```js
 try {
-  const onboardingAssessment = await incogniaAPI.getOnboardingAssessment(
+  const signupAssessment = await incogniaAPI.getSignupAssessment(
     signupId
   )
 } catch (error) {
@@ -61,11 +61,11 @@ try {
 }
 ```
 
-`incogniaAPI.registerOnboardingAssessment`
+`incogniaAPI.registerSignup`
 
 ```js
 try {
-  const onboardingAssessment = await incogniaAPI.registerOnboardingAssessment({
+  const signup = await incogniaAPI.registerSignup({
     installationId: 'installation_id',
     addressLine: 'address_line'
   })
@@ -74,11 +74,11 @@ try {
 }
 ```
 
-`incogniaAPI.registerLoginAssessment`
+`incogniaAPI.registerLogin`
 
 ```js
 try {
-  const loginAssessment = await incogniaAPI.registerLoginAssessment({
+  const login = await incogniaAPI.registerLogin({
     installationId: 'installation_id',
     accountId: 'account_id'
   })

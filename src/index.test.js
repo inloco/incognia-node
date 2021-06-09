@@ -77,7 +77,7 @@ describe('API', () => {
         .post('/v1/token')
         .reply(200, accessTokenExample)
     })
-    it('gets onboarding assessment', async () => {
+    it('gets signup assessment', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
@@ -95,14 +95,14 @@ describe('API', () => {
         .get(`/v2/onboarding/signups/${apiResponse.id}`)
         .reply(200, apiResponse)
 
-      const onboardingAssessment = await incogniaAPI.getOnboardingAssessment(
+      const signupAssessment = await incogniaAPI.getSignupAssessment(
         apiResponse.id
       )
 
-      expect(onboardingAssessment).toEqual(expectedResponse)
+      expect(signupAssessment).toEqual(expectedResponse)
     })
 
-    it('registers onboarding assessment', async () => {
+    it('registers signup', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
@@ -120,16 +120,16 @@ describe('API', () => {
         .post(`/v2/onboarding/signups`)
         .reply(200, apiResponse)
 
-      const onboardingAssessment = await incogniaAPI.registerOnboardingAssessment(
+      const signup = await incogniaAPI.registerSignup(
         {
           installationId: 'installation_id',
           addressLine: 'address_line'
         }
       )
-      expect(onboardingAssessment).toEqual(expectedResponse)
+      expect(signup).toEqual(expectedResponse)
     })
 
-    it('registers login assessment', async () => {
+    it('registers login', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         risk_assessment: 'low_risk'
@@ -145,11 +145,11 @@ describe('API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
-      const loginAssessment = await incogniaAPI.registerLoginAssessment({
+      const login = await incogniaAPI.registerLogin({
         installationId: 'installation_id',
         accountId: 'account_id'
       })
-      expect(loginAssessment).toEqual(expectedResponse)
+      expect(login).toEqual(expectedResponse)
     })
   })
 
@@ -169,12 +169,12 @@ describe('API', () => {
           .reply(200, accessTokenExample)
 
         //call resource for the first time
-        await incogniaAPI.getOnboardingAssessment(signupId)
+        await incogniaAPI.getSignupAssessment(signupId)
         expect(accessTokenEndpointFirstCall.isDone()).toBeTruthy()
         expect(signupEndpointGet.isDone()).toBeTruthy()
 
         //call resource for the second time
-        await incogniaAPI.getOnboardingAssessment(signupId)
+        await incogniaAPI.getSignupAssessment(signupId)
         expect(accessTokenEndpointSecondCall.isDone()).toBeFalsy()
       })
     })

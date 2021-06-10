@@ -8,7 +8,8 @@ let incogniaAPI
 
 const accessTokenExample = {
   access_token: 'access_token',
-  expires_in: 20 * 60
+  expires_in: 20 * 60,
+  token_type: 'Bearer'
 }
 
 const credentials = {
@@ -79,6 +80,28 @@ describe('API', () => {
         .post('/v1/token')
         .reply(200, accessTokenExample)
     })
+
+    it('informs Authorization header when requesting resource', async () => {
+      const expectedAuthorizationHeader = `${accessTokenExample.token_type} ${accessTokenExample.access_token}`
+
+      const resourceRequest = nock(US_BASE_ENDPOINT_URL, {
+          reqheaders: {
+            'Content-Type': 'application/json',
+            Authorization: expectedAuthorizationHeader
+          }
+        })
+        .persist()
+        .get(`/someUrl`)
+        .reply(200, {})
+
+      await incogniaAPI.resourceRequest({
+        url: `${US_BASE_ENDPOINT_URL}/someUrl`,
+        method: 'get',
+      })
+
+      expect(resourceRequest.isDone()).toBeTruthy()
+    })
+
     it('gets onboarding assessment', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',

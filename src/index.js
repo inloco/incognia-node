@@ -95,7 +95,7 @@ export class IncogniaAPI {
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.incogniaToken.accessToken}`
+          Authorization: `${this.incogniaToken.tokenType} ${this.incogniaToken.accessToken}`
         }
       })
       return convertObjectToCamelCase(response.data)
@@ -114,7 +114,8 @@ export class IncogniaAPI {
       this.incogniaToken = {
         createdAt: Math.round(Date.now() / 1000),
         expiresIn: parseInt(data.expires_in),
-        accessToken: data.access_token
+        accessToken: data.access_token,
+        tokenType: data.token_type
       }
     } catch (e) {
       throw new Error('Could not request the AccessToken: ' + e.message)

@@ -214,7 +214,14 @@ describe('API', () => {
 
         Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
         await incogniaAPI.updateAccessToken()
-        Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 15)).valueOf())
+        Date.now = jest.fn(
+          () => {
+            var date = new Date(Date.UTC(2021, 3, 14))
+            date.setUTCSeconds(accessTokenExample.expires_in)
+
+            return date.valueOf()
+          }
+        )
         expect(incogniaAPI.isAccessTokenValid()).toEqual(false)
       })
 

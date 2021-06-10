@@ -1,8 +1,6 @@
 import axios from 'axios'
 import { convertObjectToCamelCase } from './formatting'
 
-const EXPIRATION_LIMIT_SECONDS = 10
-
 const Method = {
   POST: 'post',
   GET: 'get'
@@ -129,7 +127,7 @@ export class IncogniaAPI {
     const createdAt = this.incogniaToken.createdAt
     const expiresIn = this.incogniaToken.expiresIn
 
-    const expirationLimit = createdAt + expiresIn + EXPIRATION_LIMIT_SECONDS
+    const expirationLimit = createdAt + expiresIn
     const nowInSeconds = Math.round(Date.now() / 1000)
 
     if (expirationLimit <= nowInSeconds) {

@@ -140,7 +140,6 @@ describe('API', () => {
       }
 
       nock(US_BASE_ENDPOINT_URL)
-        .persist()
         .get(`/v2/onboarding/signups/${apiResponse.id}`)
         .reply(200, apiResponse)
 
@@ -165,7 +164,6 @@ describe('API', () => {
       }
 
       nock(US_BASE_ENDPOINT_URL)
-        .persist()
         .post(`/v2/onboarding/signups`)
         .reply(200, apiResponse)
 
@@ -190,7 +188,6 @@ describe('API', () => {
       }
 
       nock(US_BASE_ENDPOINT_URL)
-        .persist()
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 

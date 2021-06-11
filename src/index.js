@@ -1,6 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 import { convertObjectToCamelCase } from './formatting'
+import { throwCustomRequestError, IncogniaAPIError, IncogniaError } from './errors'
 
 const Method = {
   POST: 'post',
@@ -23,17 +24,18 @@ const getApiEndpoints = baseEndpointUrl => ({
   TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`
 })
 
+export { IncogniaAPIError, IncogniaError } from './errors'
 export class IncogniaAPI {
   constructor({ clientId, clientSecret, region }) {
     if (!clientId || !clientSecret) {
-      throw new Error('No clientId or clientSecret provided')
+      throw new IncogniaError('No clientId or clientSecret provided')
     }
 
     const avaliableRegions = Object.values(Region)
 
     const regionOrDefault = region || Region.US
     if (!avaliableRegions.includes(regionOrDefault)) {
-      throw new Error(
+      throw new IncogniaError(
         `Invalid region. Avaliable: ${avaliableRegions.join(', ')}.`
       )
       return
@@ -49,7 +51,7 @@ export class IncogniaAPI {
    */
   async getOnboardingAssessment(signupId) {
     if (!signupId) {
-      throw new Error('No signupId provided')
+      throw new IncogniaError('No signupId provided')
     }
 
     return this.resourceRequest({
@@ -60,7 +62,7 @@ export class IncogniaAPI {
 
   async registerOnboardingAssessment({ installationId, addressLine }) {
     if (!installationId || !addressLine) {
-      throw new Error('No installationId or addressLine provided')
+      throw new IncogniaError('No installationId or addressLine provided')
     }
 
     return this.resourceRequest({
@@ -75,7 +77,7 @@ export class IncogniaAPI {
 
   async registerLoginAssessment({ installationId, accountId }) {
     if (!installationId || !accountId) {
-      throw new Error('No installationId or accountId provided')
+      throw new IncogniaError('No installationId or accountId provided')
     }
 
     return this.resourceRequest({
@@ -101,7 +103,7 @@ export class IncogniaAPI {
       })
       return convertObjectToCamelCase(response.data)
     } catch (e) {
-      throw new Error('Could not request resource:' + e.message)
+      throwCustomRequestError(e)
     }
   }
 
@@ -109,17 +111,13 @@ export class IncogniaAPI {
   async updateAccessToken() {
     if (this.isAccessTokenValid()) return
 
-    try {
-      const { data } = await this.requestToken()
+    const { data } = await this.requestToken()
 
-      this.incogniaToken = {
-        createdAt: Math.round(Date.now() / 1000),
-        expiresIn: parseInt(data.expires_in),
-        accessToken: data.access_token,
-        tokenType: data.token_type
-      }
-    } catch (e) {
-      throw new Error('Could not request the AccessToken: ' + e.message)
+    this.incogniaToken = {
+      createdAt: Math.round(Date.now() / 1000),
+      expiresIn: parseInt(data.expires_in),
+      accessToken: data.access_token,
+      tokenType: data.token_type
     }
   }
 
@@ -140,17 +138,21 @@ export class IncogniaAPI {
   }
 
   async requestToken() {
-    return axios({
-      method: Method.POST,
-      url: this.apiEndpoints.TOKEN,
-      data: qs.stringify({ grant_type: 'client_credentials' }),
-      auth: {
-        username: this.clientId,
-        password: this.clientSecret
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
+    try {
+      return await axios({
+        method: Method.POST,
+        url: this.apiEndpoints.TOKEN,
+        data: qs.stringify({ grant_type: 'client_credentials' }),
+        auth: {
+          username: this.clientId,
+          password: this.clientSecret
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+    } catch (e) {
+      throwCustomRequestError(e)
+    }
   }
 }

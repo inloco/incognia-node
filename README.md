@@ -101,6 +101,30 @@ Responses have JSONs identical to the original api <https://us.incognia.com>, **
 }
 ```
 
+## Exception handling
+
+Every method call can throw `IncogniaAPIError` and `IncogniaError`.
+
+`IncogniaAPIError` is thrown when the API returned an unexpected http status code. You can retrieve it by calling the `statusCode` property, along with the `payload` property, which returns the API response payload that might include additional details.
+
+`IncogniaError` represents unknown errors, like serialization/deserialization errors.
+
+```js
+const { IncogniaAPI, IncogniaAPIError } = require('@incognia/api')
+
+try {
+  const loginAssessment = await incogniaAPI.registerLoginAssessment({
+    installationId: 'installation_id',
+    accountId: 'account_id'
+  })
+} catch (error) {
+  if (error instanceof IncogniaAPIError) {
+    console.log(error.statusCode)
+    console.log(error.payload)
+  }
+}
+```
+
 ## More documentation
 
 More documentation and code examples can be found at <https://us.incognia.com>

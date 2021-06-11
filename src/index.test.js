@@ -8,16 +8,19 @@ let incogniaAPI
 
 const accessTokenExample = {
   access_token: 'access_token',
-  expires_in: 20 * 60
+  expires_in: 20 * 60,
+  token_type: 'Bearer'
+}
+
+const credentials = {
+  clientId: 'clientId',
+  clientSecret: 'clientSecret'
 }
 
 describe('API', () => {
   beforeEach(() => {
     nock.cleanAll()
-    incogniaAPI = new IncogniaAPI({
-      clientId: 'clientId',
-      clientSecret: 'clientSecret'
-    })
+    incogniaAPI = new IncogniaAPI(credentials)
   })
 
   describe('Regions', () => {
@@ -77,6 +80,28 @@ describe('API', () => {
         .post('/v1/token')
         .reply(200, accessTokenExample)
     })
+
+    it('informs Authorization header when requesting resource', async () => {
+      const expectedAuthorizationHeader = `${accessTokenExample.token_type} ${accessTokenExample.access_token}`
+
+      const resourceRequest = nock(US_BASE_ENDPOINT_URL, {
+          reqheaders: {
+            'Content-Type': 'application/json',
+            Authorization: expectedAuthorizationHeader
+          }
+        })
+        .persist()
+        .get(`/someUrl`)
+        .reply(200, {})
+
+      await incogniaAPI.resourceRequest({
+        url: `${US_BASE_ENDPOINT_URL}/someUrl`,
+        method: 'get',
+      })
+
+      expect(resourceRequest.isDone()).toBeTruthy()
+    })
+
     it('gets onboarding assessment', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
@@ -155,6 +180,23 @@ describe('API', () => {
 
   describe('Access token managament', () => {
     describe('when calling the api ', () => {
+      it('calls access token endpoint with creds', async () => {
+        const accessTokenEndpointCall = nock(US_BASE_ENDPOINT_URL, {
+            reqheaders: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          })
+          .post('/v1/token', { grant_type: 'client_credentials' })
+          .basicAuth({
+            user: credentials.clientId,
+            pass: credentials.clientSecret
+          })
+          .reply(200, accessTokenExample)
+
+        await incogniaAPI.requestToken()
+        expect(accessTokenEndpointCall.isDone()).toBeTruthy()
+      })
+
       it('calls access token endpoint only at the first time', async () => {
         const signupId = 123
         const accessTokenEndpointFirstCall = nock(US_BASE_ENDPOINT_URL)
@@ -195,7 +237,14 @@ describe('API', () => {
 
         Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
         await incogniaAPI.updateAccessToken()
-        Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 15)).valueOf())
+        Date.now = jest.fn(
+          () => {
+            var date = new Date(Date.UTC(2021, 3, 14))
+            date.setUTCSeconds(accessTokenExample.expires_in)
+
+            return date.valueOf()
+          }
+        )
         expect(incogniaAPI.isAccessTokenValid()).toEqual(false)
       })
 

@@ -1,7 +1,6 @@
 import axios from 'axios'
+import qs from 'qs'
 import { convertObjectToCamelCase } from './formatting'
-
-const EXPIRATION_LIMIT_SECONDS = 10
 
 const Method = {
   POST: 'post',
@@ -97,7 +96,7 @@ export class IncogniaAPI {
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.incogniaToken.accessToken}`
+          Authorization: `${this.incogniaToken.tokenType} ${this.incogniaToken.accessToken}`
         }
       })
       return convertObjectToCamelCase(response.data)
@@ -116,7 +115,8 @@ export class IncogniaAPI {
       this.incogniaToken = {
         createdAt: Math.round(Date.now() / 1000),
         expiresIn: parseInt(data.expires_in),
-        accessToken: data.access_token
+        accessToken: data.access_token,
+        tokenType: data.token_type
       }
     } catch (e) {
       throw new Error('Could not request the AccessToken: ' + e.message)
@@ -129,7 +129,7 @@ export class IncogniaAPI {
     const createdAt = this.incogniaToken.createdAt
     const expiresIn = this.incogniaToken.expiresIn
 
-    const expirationLimit = createdAt + expiresIn + EXPIRATION_LIMIT_SECONDS
+    const expirationLimit = createdAt + expiresIn
     const nowInSeconds = Math.round(Date.now() / 1000)
 
     if (expirationLimit <= nowInSeconds) {
@@ -143,6 +143,7 @@ export class IncogniaAPI {
     return axios({
       method: Method.POST,
       url: this.apiEndpoints.TOKEN,
+      data: qs.stringify({ grant_type: 'client_credentials' }),
       auth: {
         username: this.clientId,
         password: this.clientSecret

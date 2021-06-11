@@ -1,4 +1,5 @@
 import axios from 'axios'
+import qs from 'qs'
 import { convertObjectToCamelCase } from './formatting'
 import { throwCustomRequestError, IncogniaAPIError, IncogniaError } from './errors'
 
@@ -141,15 +142,13 @@ export class IncogniaAPI {
       return await axios({
         method: Method.POST,
         url: this.apiEndpoints.TOKEN,
-        data: {
-          grant_type: 'client_credentials'
-        },
+        data: qs.stringify({ grant_type: 'client_credentials' }),
         auth: {
           username: this.clientId,
           password: this.clientSecret
         },
         headers: {
-          'content-type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded'
         }
       })
     } catch (e) {

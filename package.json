@@ -1,6 +1,6 @@
 {
   "name": "@incognia/api",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Node library for the Incognia API",
   "keywords": [
     "incognia",
@@ -13,7 +13,7 @@
     "dist"
   ],
   "main": "dist/index.js",
-  "repository": "https://github.com/inloco/incognia-api-node-wrapper",
+  "repository": "https://github.com/inloco/incognia-node",
   "author": "Incognia (https://us.incognia.com)",
   "license": "MIT",
   "scripts": {

@@ -1,4 +1,4 @@
-import { IncogniaAPIError, IncogniaError, handleRequestError } from './errors'
+import { IncogniaAPIError, IncogniaError, throwCustomRequestError } from './errors'
 
 describe('IncogniaAPIError', () => {
   const error = new IncogniaAPIError('error message')
@@ -35,7 +35,7 @@ describe('IncogniaError', () => {
   })
 })
 
-describe('handleRequestError', () => {
+describe('throwCustomRequestError', () => {
   describe('when the error contains a response', () => {
     const error = {
       message: 'error message',
@@ -47,7 +47,7 @@ describe('handleRequestError', () => {
 
     it('returns IncogniaAPIError', () => {
       function dispatchRequest() {
-        handleRequestError(error)
+        throwCustomRequestError(error)
       }
 
       expect(dispatchRequest).toThrowError(
@@ -71,7 +71,7 @@ describe('handleRequestError', () => {
 
     it('returns IncogniaAPIError', () => {
       function dispatchRequest() {
-        handleRequestError(error)
+        throwCustomRequestError(error)
       }
 
       expect(dispatchRequest).toThrowError(
@@ -89,7 +89,7 @@ describe('handleRequestError', () => {
 
     it('returns IncogniaAPIError', () => {
       function dispatchRequest() {
-        handleRequestError(error)
+        throwCustomRequestError(error)
       }
 
       expect(dispatchRequest).toThrowError(

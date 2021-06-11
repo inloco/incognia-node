@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { convertObjectToCamelCase } from './formatting'
-import { handleRequestError, IncogniaAPIError, IncogniaError } from './errors'
+import { throwCustomRequestError, IncogniaAPIError, IncogniaError } from './errors'
 
 const Method = {
   POST: 'post',
@@ -102,7 +102,7 @@ export class IncogniaAPI {
       })
       return convertObjectToCamelCase(response.data)
     } catch (e) {
-      handleRequestError(e)
+      throwCustomRequestError(e)
     }
   }
 
@@ -149,11 +149,11 @@ export class IncogniaAPI {
           password: this.clientSecret
         },
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'content-type': 'application/x-www-form-urlencoded'
         }
       })
     } catch (e) {
-      handleRequestError(e)
+      throwCustomRequestError(e)
     }
   }
 }

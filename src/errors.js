@@ -14,24 +14,22 @@ export class IncogniaError extends Error {
   }
 }
 
-export function handleRequestError(e) {
-  var error
-
+export function throwCustomRequestError(e) {
   if (e.response) {
-    error = new IncogniaAPIError(
+    throw new IncogniaAPIError(
       e.message,
       {
         statusCode: e.response.status,
         payload: e.response.data
       }
     )
-  } else if (e.request) {
-    error = new IncogniaAPIError(
-      `The request was made but no response was received (${e.message})`
-    )
-  } else {
-    error = new IncogniaError(e.message)
   }
 
-  throw error
+  if (e.request) {
+    throw new IncogniaAPIError(
+      `The request was made but no response was received (${e.message})`
+    )
+  }
+
+  throw new IncogniaError(e.message)
 }

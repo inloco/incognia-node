@@ -24,6 +24,7 @@ const getApiEndpoints = baseEndpointUrl => ({
   TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`
 })
 
+export { Region }
 export { IncogniaAPIError, IncogniaError } from './errors'
 export class IncogniaAPI {
   constructor({ clientId, clientSecret, region }) {

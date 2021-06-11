@@ -40,10 +40,12 @@ const incogniaAPI = new IncogniaAPI({
 You can setup regions. The default region is `us`, but you can instantiate with `br` region:
 
 ```js
+const { IncogniaAPI, Region } = require('@incognia/api')
+
 const incogniaAPI = new IncogniaAPI({
   clientId: 'clientId',
   clientSecret: 'clientSecret',
-  region: 'br'
+  region: Region.BR
 })
 ```
 

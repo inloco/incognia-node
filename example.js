@@ -1,9 +1,11 @@
-const { IncogniaAPI, IncogniaAPIError } = require('./dist')
+const { IncogniaAPI, IncogniaAPIError, Region } = require('./dist')
 
 async function dispatchSampleRequests() {
   const incogniaAPI = new IncogniaAPI({
     clientId: 'your-client-id-here',
-    clientSecret: 'your-client-secret-here'
+    clientSecret: 'your-client-secret-here',
+    // If you want to specify a different Region
+    // region: Region.BR
   })
 
   try {

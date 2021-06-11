@@ -1,5 +1,7 @@
 import nock from 'nock'
-import { IncogniaAPI, IncogniaAPIError, IncogniaError } from 'incognia-api-node'
+import {
+  IncogniaAPI, Region, IncogniaAPIError, IncogniaError
+} from 'incognia-api-node'
 
 const US_BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
 const BR_BASE_ENDPOINT_URL = 'https://incognia.inloco.com.br/api'
@@ -34,7 +36,7 @@ describe('API', () => {
       const incogniaAPI = new IncogniaAPI({
         clientId: 'clientId',
         clientSecret: 'clientSecret',
-        region: 'br'
+        region: Region.BR
       })
       expect(
         incogniaAPI.apiEndpoints.TOKEN.startsWith(BR_BASE_ENDPOINT_URL)

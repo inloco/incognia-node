@@ -40,10 +40,12 @@ const incogniaAPI = new IncogniaAPI({
 You can setup regions. The default region is `us`, but you can instantiate with `br` region:
 
 ```js
+const { IncogniaAPI, Region } = require('@incognia/api')
+
 const incogniaAPI = new IncogniaAPI({
   clientId: 'clientId',
   clientSecret: 'clientSecret',
-  region: 'br'
+  region: Region.BR
 })
 ```
 
@@ -97,6 +99,30 @@ Responses have JSONs identical to the original api <https://us.incognia.com>, **
   "riskAssessment": "low_risk",
   "evidence": {
     "deviceModel": "Moto Z2 Play"
+  }
+}
+```
+
+## Exception handling
+
+Every method call can throw `IncogniaAPIError` and `IncogniaError`.
+
+`IncogniaAPIError` is thrown when the API returned an unexpected http status code. You can retrieve it by calling the `statusCode` property, along with the `payload` property, which returns the API response payload that might include additional details.
+
+`IncogniaError` represents unknown errors, like serialization/deserialization errors.
+
+```js
+const { IncogniaAPI, IncogniaAPIError } = require('@incognia/api')
+
+try {
+  const loginAssessment = await incogniaAPI.registerLoginAssessment({
+    installationId: 'installation_id',
+    accountId: 'account_id'
+  })
+} catch (error) {
+  if (error instanceof IncogniaAPIError) {
+    console.log(error.statusCode)
+    console.log(error.payload)
   }
 }
 ```

@@ -12,5 +12,5 @@ export default {
       sourcemap: true
     }
   ],
-  external: ['axios']
+  external: ['axios', 'qs']
 }

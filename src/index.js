@@ -1,7 +1,7 @@
 import axios from 'axios'
+import qs from 'qs'
 import { convertObjectToCamelCase } from './formatting'
-
-const EXPIRATION_LIMIT_SECONDS = 10
+import { throwCustomRequestError, IncogniaAPIError, IncogniaError } from './errors'
 
 const Method = {
   POST: 'post',
@@ -24,17 +24,19 @@ const getApiEndpoints = baseEndpointUrl => ({
   TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`
 })
 
+export { Region }
+export { IncogniaAPIError, IncogniaError } from './errors'
 export class IncogniaAPI {
   constructor({ clientId, clientSecret, region }) {
     if (!clientId || !clientSecret) {
-      throw new Error('No clientId or clientSecret provided')
+      throw new IncogniaError('No clientId or clientSecret provided')
     }
 
     const avaliableRegions = Object.values(Region)
 
     const regionOrDefault = region || Region.US
     if (!avaliableRegions.includes(regionOrDefault)) {
-      throw new Error(
+      throw new IncogniaError(
         `Invalid region. Avaliable: ${avaliableRegions.join(', ')}.`
       )
       return
@@ -50,7 +52,7 @@ export class IncogniaAPI {
    */
   async getSignupAssessment(signupId) {
     if (!signupId) {
-      throw new Error('No signupId provided')
+      throw new IncogniaError('No signupId provided')
     }
 
     return this.resourceRequest({
@@ -61,7 +63,7 @@ export class IncogniaAPI {
 
   async registerSignup({ installationId, addressLine }) {
     if (!installationId || !addressLine) {
-      throw new Error('No installationId or addressLine provided')
+      throw new IncogniaError('No installationId or addressLine provided')
     }
 
     return this.resourceRequest({
@@ -76,7 +78,7 @@ export class IncogniaAPI {
 
   async registerLogin({ installationId, accountId }) {
     if (!installationId || !accountId) {
-      throw new Error('No installationId or accountId provided')
+      throw new IncogniaError('No installationId or accountId provided')
     }
 
     return this.resourceRequest({
@@ -97,12 +99,12 @@ export class IncogniaAPI {
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.incogniaToken.accessToken}`
+          Authorization: `${this.incogniaToken.tokenType} ${this.incogniaToken.accessToken}`
         }
       })
       return convertObjectToCamelCase(response.data)
     } catch (e) {
-      throw new Error('Could not request resource:' + e.message)
+      throwCustomRequestError(e)
     }
   }
 
@@ -110,16 +112,13 @@ export class IncogniaAPI {
   async updateAccessToken() {
     if (this.isAccessTokenValid()) return
 
-    try {
-      const { data } = await this.requestToken()
+    const { data } = await this.requestToken()
 
-      this.incogniaToken = {
-        createdAt: Math.round(Date.now() / 1000),
-        expiresIn: parseInt(data.expires_in),
-        accessToken: data.access_token
-      }
-    } catch (e) {
-      throw new Error('Could not request the AccessToken: ' + e.message)
+    this.incogniaToken = {
+      createdAt: Math.round(Date.now() / 1000),
+      expiresIn: parseInt(data.expires_in),
+      accessToken: data.access_token,
+      tokenType: data.token_type
     }
   }
 
@@ -129,7 +128,7 @@ export class IncogniaAPI {
     const createdAt = this.incogniaToken.createdAt
     const expiresIn = this.incogniaToken.expiresIn
 
-    const expirationLimit = createdAt + expiresIn + EXPIRATION_LIMIT_SECONDS
+    const expirationLimit = createdAt + expiresIn
     const nowInSeconds = Math.round(Date.now() / 1000)
 
     if (expirationLimit <= nowInSeconds) {
@@ -140,16 +139,21 @@ export class IncogniaAPI {
   }
 
   async requestToken() {
-    return axios({
-      method: Method.POST,
-      url: this.apiEndpoints.TOKEN,
-      auth: {
-        username: this.clientId,
-        password: this.clientSecret
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
-    })
+    try {
+      return await axios({
+        method: Method.POST,
+        url: this.apiEndpoints.TOKEN,
+        data: qs.stringify({ grant_type: 'client_credentials' }),
+        auth: {
+          username: this.clientId,
+          password: this.clientSecret
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        }
+      })
+    } catch (e) {
+      throwCustomRequestError(e)
+    }
   }
 }

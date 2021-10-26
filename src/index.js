@@ -1,7 +1,13 @@
 import axios from 'axios'
 import qs from 'qs'
+import snakecaseKeys from 'snakecase-keys'
+
 import { convertObjectToCamelCase } from './formatting'
-import { throwCustomRequestError, IncogniaAPIError, IncogniaError } from './errors'
+import {
+  throwCustomRequestError,
+  IncogniaAPIError,
+  IncogniaError
+} from './errors'
 
 const Method = {
   POST: 'post',
@@ -61,17 +67,18 @@ export class IncogniaAPI {
     })
   }
 
-  async registerSignup({ installationId, addressLine }) {
-    if (!installationId || !addressLine) {
-      throw new IncogniaError('No installationId or addressLine provided')
+  async registerSignup({ installationId, ...otherProps }) {
+    if (!installationId) {
+      throw new IncogniaError('No installationId provided')
     }
 
+    const otherPropsSnakeCase = snakecaseKeys(otherProps)
     return this.resourceRequest({
       url: this.apiEndpoints.SIGNUPS,
       method: Method.POST,
       data: {
         installation_id: installationId,
-        address_line: addressLine
+        ...otherPropsSnakeCase
       }
     })
   }

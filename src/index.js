@@ -50,7 +50,7 @@ export class IncogniaAPI {
   /*
    ** Resources
    */
-  async getOnboardingAssessment(signupId) {
+  async getSignupAssessment(signupId) {
     if (!signupId) {
       throw new IncogniaError('No signupId provided')
     }
@@ -61,7 +61,7 @@ export class IncogniaAPI {
     })
   }
 
-  async registerOnboardingAssessment({ installationId, addressLine }) {
+  async registerSignup({ installationId, addressLine }) {
     if (!installationId || !addressLine) {
       throw new IncogniaError('No installationId or addressLine provided')
     }
@@ -76,7 +76,7 @@ export class IncogniaAPI {
     })
   }
 
-  async registerLoginAssessment({ installationId, accountId }) {
+  async registerLogin({ installationId, accountId }) {
     if (!installationId || !accountId) {
       throw new IncogniaError('No installationId or accountId provided')
     }

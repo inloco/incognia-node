@@ -92,7 +92,9 @@ try {
 try {
   const login = await incogniaAPI.registerLogin({
     installationId: 'installation_id',
-    accountId: 'account_id'
+    accountId: 'account_id',
+    appId: 'app_id',
+    externalId: 'external_id'
   })
 } catch (error) {
   console.log(error.message)

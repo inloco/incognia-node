@@ -204,7 +204,9 @@ describe('API', () => {
 
       const login = await incogniaAPI.registerLogin({
         installationId: 'installation_id',
-        accountId: 'account_id'
+        accountId: 'account_id',
+        appId: 'app_id',
+        externalId: 'external_id'
       })
       expect(login).toEqual(expectedResponse)
     })

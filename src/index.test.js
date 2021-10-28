@@ -205,10 +205,54 @@ describe('API', () => {
       const login = await incogniaAPI.registerLogin({
         installationId: 'installation_id',
         accountId: 'account_id',
+        addresses: [
+          {
+            structuredAddress: {
+              locale: 'en-US',
+              countryName: 'United States of America',
+              countryCode: 'US',
+              state: 'NY',
+              city: 'New York City',
+              borough: 'Manhattan',
+              neighborhood: 'Midtown',
+              street: 'W 34th St.',
+              number: '20',
+              complements: 'Floor 2',
+              postalCode: '10001'
+            },
+            addressCoordinates: {
+              lat: 40.74836007062138,
+              lng: -73.98509720487937
+            },
+            type: 'shipping'
+          }
+        ]
+      })
+      expect(login).toEqual(expectedResponse)
+    })
+
+    it('registers payment', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(US_BASE_ENDPOINT_URL)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const payment = await incogniaAPI.registerPayment({
+        installationId: 'installation_id',
+        accountId: 'account_id',
         appId: 'app_id',
         externalId: 'external_id'
       })
-      expect(login).toEqual(expectedResponse)
+      expect(payment).toEqual(expectedResponse)
     })
   })
 

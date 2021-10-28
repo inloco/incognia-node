@@ -101,6 +101,41 @@ try {
 }
 ```
 
+`incogniaAPI.registerPayment`
+
+```js
+try {
+  const payment = await incogniaAPI.registerPayment({
+    installationId: 'installation_id',
+    accountId: 'account_id',
+    addresses: [
+      {
+        structuredAddress: {
+          locale: 'en-US',
+          countryName: 'United States of America',
+          countryCode: 'US',
+          state: 'NY',
+          city: 'New York City',
+          borough: 'Manhattan',
+          neighborhood: 'Midtown',
+          street: 'W 34th St.',
+          number: '20',
+          complements: 'Floor 2',
+          postalCode: '10001'
+        },
+        addressCoordinates: {
+          lat: 40.74836007062138,
+          lng: -73.98509720487937
+        },
+        type: 'shipping'
+      }
+    ]
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
 ## Response format
 
 Responses have JSONs identical to the original api <https://us.incognia.com>, **however** property names will be in camelCase rather than snake_case, including property names in nested objects.

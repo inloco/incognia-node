@@ -83,18 +83,20 @@ export class IncogniaAPI {
     })
   }
 
-  async registerLogin({ installationId, accountId }) {
+  async registerLogin({ installationId, accountId, ...otherProps }) {
     if (!installationId || !accountId) {
       throw new IncogniaError('No installationId or accountId provided')
     }
 
+    const otherPropsSnakeCase = snakecaseKeys(otherProps)
     return this.resourceRequest({
       url: this.apiEndpoints.TRANSACTIONS,
       method: Method.POST,
       data: {
         installation_id: installationId,
         account_id: accountId,
-        type: 'login'
+        type: 'login',
+        ...otherPropsSnakeCase
       }
     })
   }

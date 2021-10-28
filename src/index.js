@@ -67,19 +67,17 @@ export class IncogniaAPI {
     })
   }
 
-  async registerSignup({ installationId, ...otherProps }) {
+  async registerSignup(props) {
+    const { installationId } = props || {}
     if (!installationId) {
       throw new IncogniaError('No installationId provided')
     }
 
-    const otherPropsSnakeCase = snakecaseKeys(otherProps)
+    const data = snakecaseKeys(props)
     return this.resourceRequest({
       url: this.apiEndpoints.SIGNUPS,
       method: Method.POST,
-      data: {
-        installation_id: installationId,
-        ...otherPropsSnakeCase
-      }
+      data
     })
   }
 

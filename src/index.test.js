@@ -170,7 +170,19 @@ describe('API', () => {
 
       const signup = await incogniaAPI.registerSignup({
         installationId: 'installation_id',
-        addressLine: 'address_line'
+        structuredAddress: {
+          locale: 'en-US',
+          countryName: 'United States of America',
+          countryCode: 'US',
+          state: 'NY',
+          city: 'New York City',
+          borough: 'Manhattan',
+          neighborhood: 'Midtown',
+          street: 'W 34th St.',
+          number: '20',
+          complements: 'Floor 2',
+          postalCode: '10001'
+        }
       })
       expect(signup).toEqual(expectedResponse)
     })

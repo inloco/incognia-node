@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "qs": "^6.10.1"
+    "qs": "^6.10.1",
+    "snakecase-keys": "^4.0.2"
   },
   "devDependencies": {
     "jest": "^26.6.3",

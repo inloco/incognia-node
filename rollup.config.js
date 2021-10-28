@@ -12,5 +12,5 @@ export default {
       sourcemap: true
     }
   ],
-  external: ['axios', 'qs']
+  external: ['axios', 'qs', 'snakecase-keys']
 }

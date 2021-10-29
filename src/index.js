@@ -27,7 +27,8 @@ const BaseEndpoint = {
 const getApiEndpoints = baseEndpointUrl => ({
   TOKEN: `${baseEndpointUrl}/v1/token`,
   SIGNUPS: `${baseEndpointUrl}/v2/onboarding/signups`,
-  TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`
+  TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`,
+  FEEDBACKS: `${baseEndpointUrl}/v2/feedbacks`
 })
 
 export { Region }
@@ -87,6 +88,23 @@ export class IncogniaAPI {
 
   async registerPayment(props) {
     return this.#registerTransaction({ ...props, type: 'payment' })
+  }
+
+  async registerFeedback(bodyParams, queryParams) {
+    const { event, timestamp } = bodyParams || {}
+    if (!event || !timestamp) {
+      throw new IncogniaError('No event or timestamp provided')
+    }
+
+    const params = queryParams && snakecaseKeys(queryParams)
+
+    const data = snakecaseKeys(bodyParams)
+    return this.resourceRequest({
+      url: this.apiEndpoints.FEEDBACKS,
+      method: Method.POST,
+      params,
+      data
+    })
   }
 
   async #registerTransaction(props) {

@@ -271,16 +271,37 @@ describe('API', () => {
       })
 
       it('registers feedback when all required params are filled', async () => {
-        const dispatchRequest = async () => {
-          await incogniaAPI.registerFeedback({
+        incogniaAPI.resourceRequest = jest.fn()
+
+        await incogniaAPI.registerFeedback(
+          {
             installationId: 'installation_id',
             accountId: 'account_id',
             event: 'event',
             timestamp: 123
-          })
+          },
+          {
+            dryRun: true
+          }
+        )
+
+        const expectedData = {
+          installation_id: 'installation_id',
+          account_id: 'account_id',
+          event: 'event',
+          timestamp: 123
         }
 
-        expect(dispatchRequest).not.toThrowError(IncogniaError)
+        const expectedParams = {
+          dry_run: true
+        }
+
+        expect(incogniaAPI.resourceRequest).toBeCalledWith({
+          url: incogniaAPI.apiEndpoints.FEEDBACKS,
+          method: 'post',
+          params: expectedParams,
+          data: expectedData
+        })
       })
     })
   })

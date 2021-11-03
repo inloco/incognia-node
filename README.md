@@ -144,7 +144,7 @@ try {
     installationId: 'installation_id',
     accountId: 'account_id',
     event: 'payment_accepted',
-    timestamp: 1610570403068
+    timestamp: 1610570403068 // milliseconds
   })
 } catch (error) {
   console.log(error.message)

@@ -136,6 +136,21 @@ try {
 }
 ```
 
+`incogniaAPI.registerFeedback`
+
+```js
+try {
+  incogniaAPI.registerFeedback({
+    installationId: 'installation_id',
+    accountId: 'account_id',
+    event: 'payment_accepted',
+    timestamp: 1610570403068 // milliseconds
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
 ## Response format
 
 Responses have JSONs identical to the original api <https://us.incognia.com>, **however** property names will be in camelCase rather than snake_case, including property names in nested objects.

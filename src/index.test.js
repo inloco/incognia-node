@@ -254,11 +254,62 @@ describe('API', () => {
       })
       expect(payment).toEqual(expectedResponse)
     })
+
+    describe('Registers feedback', () => {
+      beforeAll(() => {
+        nock(US_BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
+      })
+      it('throws an error when registering feedback without required params', async () => {
+        const dispatchRequest = async () => {
+          await incogniaAPI.registerFeedback({
+            installationId: 'installation_id',
+            accountId: 'account_id'
+          })
+        }
+
+        await expect(dispatchRequest).rejects.toThrowError(IncogniaError)
+      })
+
+      it('registers feedback when all required params are filled', async () => {
+        incogniaAPI.resourceRequest = jest.fn()
+
+        await incogniaAPI.registerFeedback(
+          {
+            installationId: 'installation_id',
+            accountId: 'account_id',
+            event: 'event',
+            timestamp: 123
+          },
+          {
+            dryRun: true
+          }
+        )
+
+        const expectedData = {
+          installation_id: 'installation_id',
+          account_id: 'account_id',
+          event: 'event',
+          timestamp: 123
+        }
+
+        const expectedParams = {
+          dry_run: true
+        }
+
+        expect(incogniaAPI.resourceRequest).toBeCalledWith({
+          url: incogniaAPI.apiEndpoints.FEEDBACKS,
+          method: 'post',
+          params: expectedParams,
+          data: expectedData
+        })
+      })
+    })
   })
 
   describe('Access token managament', () => {
     describe('when requesting a token ', () => {
       it('calls access token endpoint with creds', async () => {
+        nock(US_BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
         const accessTokenEndpointCall = nock(US_BASE_ENDPOINT_URL, {
           reqheaders: {
             'Content-Type': 'application/x-www-form-urlencoded'

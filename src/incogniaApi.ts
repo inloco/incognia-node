@@ -1,40 +1,69 @@
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios'
 import qs from 'qs'
-import snakecaseKeys from 'snakecase-keys'
 
-import { convertObjectToCamelCase } from './formatting'
+import {
+  convertObjectToCamelCase,
+  convertObjectToSnakeCase
+} from './formatting'
 import {
   throwCustomRequestError,
-  IncogniaAPIError,
-  IncogniaError
+  IncogniaError,
+  CustomRequestError
 } from './errors'
 
-const Method = {
-  POST: 'post',
-  GET: 'get'
-}
+import {
+  TransactionType,
+  RegisterPaymentProps,
+  RegisterLoginProps,
+  RegisterFeedbackParamsProps,
+  RegisterFeedbackBodyProps,
+  TransactionResponse,
+  SignupResponse,
+  Method,
+  Region,
+  RegisterSignupProps,
+  RegisterTransactionProps
+} from './types'
 
-const Region = {
-  US: 'us',
-  BR: 'br'
-}
-
-const BaseEndpoint = {
+export const BaseEndpoint = {
   [Region.US]: 'https://api.us.incognia.com/api',
   [Region.BR]: 'https://incognia.inloco.com.br/api'
 }
 
-const getApiEndpoints = baseEndpointUrl => ({
+type IncogniaApiConstructor = {
+  clientId: string
+  clientSecret: string
+  region?: Region
+}
+
+type ApiEndpoints = {
+  TOKEN: string
+  SIGNUPS: string
+  TRANSACTIONS: string
+  FEEDBACKS: string
+}
+
+type IncogniaToken = {
+  createdAt: number
+  expiresIn: number
+  accessToken: string
+  tokenType: string
+}
+
+const getApiEndpoints = (baseEndpointUrl: string): ApiEndpoints => ({
   TOKEN: `${baseEndpointUrl}/v1/token`,
   SIGNUPS: `${baseEndpointUrl}/v2/onboarding/signups`,
   TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`,
   FEEDBACKS: `${baseEndpointUrl}/v2/feedbacks`
 })
 
-export { Region }
-export { IncogniaAPIError, IncogniaError } from './errors'
-export class IncogniaAPI {
-  constructor({ clientId, clientSecret, region }) {
+export class IncogniaApi {
+  readonly clientId: string
+  readonly clientSecret: string
+  readonly apiEndpoints: ApiEndpoints
+  incogniaToken: IncogniaToken | null
+
+  constructor({ clientId, clientSecret, region }: IncogniaApiConstructor) {
     if (!clientId || !clientSecret) {
       throw new IncogniaError('No clientId or clientSecret provided')
     }
@@ -46,94 +75,102 @@ export class IncogniaAPI {
       throw new IncogniaError(
         `Invalid region. Avaliable: ${avaliableRegions.join(', ')}.`
       )
-      return
     }
 
     this.clientId = clientId
     this.clientSecret = clientSecret
     this.apiEndpoints = getApiEndpoints(BaseEndpoint[regionOrDefault])
+    this.incogniaToken = null
   }
 
   /*
    ** Resources
    */
-  async getSignupAssessment(signupId) {
+  async getSignupAssessment(signupId: string): Promise<SignupResponse> {
     if (!signupId) {
       throw new IncogniaError('No signupId provided')
     }
 
     return this.resourceRequest({
       url: `${this.apiEndpoints.SIGNUPS}/${signupId}`,
-      method: Method.GET
+      method: Method.Get
     })
   }
 
-  async registerSignup(props) {
+  async registerSignup(props: RegisterSignupProps): Promise<SignupResponse> {
     const { installationId } = props || {}
     if (!installationId) {
       throw new IncogniaError('No installationId provided')
     }
 
-    const data = snakecaseKeys(props)
+    const data = convertObjectToSnakeCase(props)
     return this.resourceRequest({
       url: this.apiEndpoints.SIGNUPS,
-      method: Method.POST,
+      method: Method.Post,
       data
     })
   }
 
-  async registerLogin(props) {
-    return this.#registerTransaction({ ...props, type: 'login' })
+  async registerLogin(props: RegisterLoginProps): Promise<TransactionResponse> {
+    return this.#registerTransaction({ ...props, type: TransactionType.Login })
   }
 
-  async registerPayment(props) {
-    return this.#registerTransaction({ ...props, type: 'payment' })
+  async registerPayment(
+    props: RegisterPaymentProps
+  ): Promise<TransactionResponse> {
+    return this.#registerTransaction({
+      ...props,
+      type: TransactionType.Payment
+    })
   }
 
-  async registerFeedback(bodyParams, queryParams) {
+  async registerFeedback(
+    bodyParams: RegisterFeedbackBodyProps,
+    queryParams?: RegisterFeedbackParamsProps
+  ): Promise<void> {
     const { event, timestamp } = bodyParams || {}
     if (!event || !timestamp) {
       throw new IncogniaError('No event or timestamp provided')
     }
 
-    const params = queryParams && snakecaseKeys(queryParams)
+    const params = queryParams && convertObjectToSnakeCase(queryParams)
 
-    const data = snakecaseKeys(bodyParams)
+    const data = convertObjectToSnakeCase(bodyParams)
     return this.resourceRequest({
       url: this.apiEndpoints.FEEDBACKS,
-      method: Method.POST,
+      method: Method.Post,
       params,
       data
     })
   }
 
-  async #registerTransaction(props) {
+  async #registerTransaction(props: RegisterTransactionProps) {
     const { installationId, accountId } = props || {}
     if (!installationId || !accountId) {
       throw new IncogniaError('No installationId or accountId provided')
     }
 
-    const data = snakecaseKeys(props)
+    const data = convertObjectToSnakeCase(props)
     return this.resourceRequest({
       url: this.apiEndpoints.TRANSACTIONS,
-      method: Method.POST,
+      method: Method.Post,
       data
     })
   }
 
-  async resourceRequest(options) {
+  async resourceRequest(options: AxiosRequestConfig) {
     await this.updateAccessToken()
     try {
       const response = await axios({
         ...options,
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `${this.incogniaToken.tokenType} ${this.incogniaToken.accessToken}`
+          Authorization: `${this.incogniaToken?.tokenType} ${this.incogniaToken?.accessToken}`
         }
       })
       return convertObjectToCamelCase(response.data)
-    } catch (e) {
-      throwCustomRequestError(e)
+    } catch (e: unknown) {
+      throwCustomRequestError(e as CustomRequestError)
     }
   }
 
@@ -141,7 +178,8 @@ export class IncogniaAPI {
   async updateAccessToken() {
     if (this.isAccessTokenValid()) return
 
-    const { data } = await this.requestToken()
+    const axiosResponse = await this.requestToken()
+    const data = axiosResponse?.data
 
     this.incogniaToken = {
       createdAt: Math.round(Date.now() / 1000),
@@ -170,7 +208,7 @@ export class IncogniaAPI {
   async requestToken() {
     try {
       return await axios({
-        method: Method.POST,
+        method: Method.Post,
         url: this.apiEndpoints.TOKEN,
         data: qs.stringify({ grant_type: 'client_credentials' }),
         auth: {
@@ -181,8 +219,8 @@ export class IncogniaAPI {
           'Content-Type': 'application/x-www-form-urlencoded'
         }
       })
-    } catch (e) {
-      throwCustomRequestError(e)
+    } catch (e: unknown) {
+      throwCustomRequestError(e as CustomRequestError)
     }
   }
 }

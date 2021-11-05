@@ -1,15 +1,16 @@
 import nock from 'nock'
 import {
-  IncogniaAPI,
-  Region,
-  IncogniaAPIError,
-  IncogniaError
-} from 'incognia-api-node'
+  FeedbackEvent,
+  IncogniaApi,
+  IncogniaApiError,
+  IncogniaError,
+  Region
+} from '../src/'
 
 const US_BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
 const BR_BASE_ENDPOINT_URL = 'https://incognia.inloco.com.br/api'
 
-let incogniaAPI
+let incogniaApi: IncogniaApi
 
 const accessTokenExample = {
   access_token: 'access_token',
@@ -25,58 +26,25 @@ const credentials = {
 describe('API', () => {
   beforeEach(() => {
     nock.cleanAll()
-    incogniaAPI = new IncogniaAPI(credentials)
+    incogniaApi = new IncogniaApi(credentials)
   })
 
   describe('Regions', () => {
     it('has the US region as default', () => {
       expect(
-        incogniaAPI.apiEndpoints.TOKEN.startsWith(US_BASE_ENDPOINT_URL)
+        incogniaApi.apiEndpoints.TOKEN.startsWith(US_BASE_ENDPOINT_URL)
       ).toEqual(true)
     })
 
     it('set BR base endpoint if br region is passed', () => {
-      const incogniaAPI = new IncogniaAPI({
+      const incogniaApi = new IncogniaApi({
         clientId: 'clientId',
         clientSecret: 'clientSecret',
         region: Region.BR
       })
       expect(
-        incogniaAPI.apiEndpoints.TOKEN.startsWith(BR_BASE_ENDPOINT_URL)
+        incogniaApi.apiEndpoints.TOKEN.startsWith(BR_BASE_ENDPOINT_URL)
       ).toEqual(true)
-    })
-
-    it('set US base endpoint if region is falsy', () => {
-      const incogniaAPI = new IncogniaAPI({
-        clientId: 'clientId',
-        clientSecret: 'clientSecret',
-        region: null
-      })
-      expect(
-        incogniaAPI.apiEndpoints.TOKEN.startsWith(US_BASE_ENDPOINT_URL)
-      ).toEqual(true)
-    })
-
-    it('throws if the region is invalid', () => {
-      var initIncognia = () => {
-        new IncogniaAPI({
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-          region: 'abc'
-        })
-      }
-      expect(initIncognia).toThrow('Invalid region. Avaliable')
-      expect(initIncognia).toThrowError(IncogniaError)
-
-      initIncognia = () => {
-        new IncogniaAPI({
-          clientId: 'clientId',
-          clientSecret: 'clientSecret',
-          region: ['abc']
-        })
-      }
-      expect(initIncognia).toThrow('Invalid region. Avaliable')
-      expect(initIncognia).toThrowError(IncogniaError)
     })
   })
 
@@ -100,7 +68,7 @@ describe('API', () => {
           .get(`/someUrl`)
           .reply(200, {})
 
-        await incogniaAPI.resourceRequest({
+        await incogniaApi.resourceRequest({
           url: `${US_BASE_ENDPOINT_URL}/someUrl`,
           method: 'get'
         })
@@ -116,13 +84,13 @@ describe('API', () => {
           })
 
           var dispatchRequest = async () => {
-            await incogniaAPI.resourceRequest({
+            await incogniaApi.resourceRequest({
               url: `${US_BASE_ENDPOINT_URL}/someUrl`,
               method: 'get'
             })
           }
 
-          await expect(dispatchRequest).rejects.toThrowError(IncogniaAPIError)
+          await expect(dispatchRequest).rejects.toThrowError(IncogniaApiError)
         })
       })
     })
@@ -144,7 +112,7 @@ describe('API', () => {
         .get(`/v2/onboarding/signups/${apiResponse.id}`)
         .reply(200, apiResponse)
 
-      const signupAssessment = await incogniaAPI.getSignupAssessment(
+      const signupAssessment = await incogniaApi.getSignupAssessment(
         apiResponse.id
       )
 
@@ -168,7 +136,7 @@ describe('API', () => {
         .post(`/v2/onboarding/signups`)
         .reply(200, apiResponse)
 
-      const signup = await incogniaAPI.registerSignup({
+      const signup = await incogniaApi.registerSignup({
         installationId: 'installation_id',
         structuredAddress: {
           locale: 'en-US',
@@ -202,31 +170,9 @@ describe('API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
-      const login = await incogniaAPI.registerLogin({
+      const login = await incogniaApi.registerLogin({
         installationId: 'installation_id',
-        accountId: 'account_id',
-        addresses: [
-          {
-            structuredAddress: {
-              locale: 'en-US',
-              countryName: 'United States of America',
-              countryCode: 'US',
-              state: 'NY',
-              city: 'New York City',
-              borough: 'Manhattan',
-              neighborhood: 'Midtown',
-              street: 'W 34th St.',
-              number: '20',
-              complements: 'Floor 2',
-              postalCode: '10001'
-            },
-            addressCoordinates: {
-              lat: 40.74836007062138,
-              lng: -73.98509720487937
-            },
-            type: 'shipping'
-          }
-        ]
+        accountId: 'account_id'
       })
       expect(login).toEqual(expectedResponse)
     })
@@ -246,7 +192,7 @@ describe('API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
-      const payment = await incogniaAPI.registerPayment({
+      const payment = await incogniaApi.registerPayment({
         installationId: 'installation_id',
         accountId: 'account_id',
         appId: 'app_id',
@@ -259,25 +205,15 @@ describe('API', () => {
       beforeAll(() => {
         nock(US_BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
       })
-      it('throws an error when registering feedback without required params', async () => {
-        const dispatchRequest = async () => {
-          await incogniaAPI.registerFeedback({
-            installationId: 'installation_id',
-            accountId: 'account_id'
-          })
-        }
-
-        await expect(dispatchRequest).rejects.toThrowError(IncogniaError)
-      })
 
       it('registers feedback when all required params are filled', async () => {
-        incogniaAPI.resourceRequest = jest.fn()
+        incogniaApi.resourceRequest = jest.fn()
 
-        await incogniaAPI.registerFeedback(
+        await incogniaApi.registerFeedback(
           {
             installationId: 'installation_id',
             accountId: 'account_id',
-            event: 'event',
+            event: FeedbackEvent.AccountTakeover,
             timestamp: 123
           },
           {
@@ -296,8 +232,8 @@ describe('API', () => {
           dry_run: true
         }
 
-        expect(incogniaAPI.resourceRequest).toBeCalledWith({
-          url: incogniaAPI.apiEndpoints.FEEDBACKS,
+        expect(incogniaApi.resourceRequest).toBeCalledWith({
+          url: incogniaApi.apiEndpoints.FEEDBACKS,
           method: 'post',
           params: expectedParams,
           data: expectedData
@@ -322,7 +258,7 @@ describe('API', () => {
           })
           .reply(200, accessTokenExample)
 
-        await incogniaAPI.requestToken()
+        await incogniaApi.requestToken()
         expect(accessTokenEndpointCall.isDone()).toBeTruthy()
       })
 
@@ -334,17 +270,17 @@ describe('API', () => {
           })
 
           var dispatchRequest = async () => {
-            await incogniaAPI.requestToken()
+            await incogniaApi.requestToken()
           }
 
-          await expect(dispatchRequest).rejects.toThrowError(IncogniaAPIError)
+          await expect(dispatchRequest).rejects.toThrowError(IncogniaApiError)
         })
       })
     })
 
     describe('when calling the api ', () => {
       it('calls access token endpoint only at the first time', async () => {
-        const signupId = 123
+        const signupId = '123'
         const accessTokenEndpointFirstCall = nock(US_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
@@ -357,12 +293,12 @@ describe('API', () => {
           .reply(200, accessTokenExample)
 
         //call resource for the first time
-        await incogniaAPI.getSignupAssessment(signupId)
+        await incogniaApi.getSignupAssessment(signupId)
         expect(accessTokenEndpointFirstCall.isDone()).toBeTruthy()
         expect(signupEndpointGet.isDone()).toBeTruthy()
 
         //call resource for the second time
-        await incogniaAPI.getSignupAssessment(signupId)
+        await incogniaApi.getSignupAssessment(signupId)
         expect(accessTokenEndpointSecondCall.isDone()).toBeFalsy()
       })
     })
@@ -372,8 +308,8 @@ describe('API', () => {
         nock(US_BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
-        await incogniaAPI.updateAccessToken()
-        expect(incogniaAPI.isAccessTokenValid()).toEqual(true)
+        await incogniaApi.updateAccessToken()
+        expect(incogniaApi.isAccessTokenValid()).toEqual(true)
       })
 
       it('returns false if the token is expired', async () => {
@@ -382,43 +318,26 @@ describe('API', () => {
           .reply(200, accessTokenExample)
 
         Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
-        await incogniaAPI.updateAccessToken()
+        await incogniaApi.updateAccessToken()
         Date.now = jest.fn(() => {
           var date = new Date(Date.UTC(2021, 3, 14))
           date.setUTCSeconds(accessTokenExample.expires_in)
 
           return date.valueOf()
         })
-        expect(incogniaAPI.isAccessTokenValid()).toEqual(false)
+        expect(incogniaApi.isAccessTokenValid()).toEqual(false)
       })
 
       it('returns false if there is no token', async () => {
-        expect(incogniaAPI.isAccessTokenValid()).toEqual(false)
+        expect(incogniaApi.isAccessTokenValid()).toEqual(false)
       })
     })
   })
 
   describe('when no clientId or clientSecret is provided', () => {
     it('throws an error', () => {
-      var initIncognia = () => {
-        new IncogniaAPI()
-      }
-      expect(initIncognia).toThrow()
-
-      initIncognia = () => {
-        new IncogniaAPI({ clientId: 'clientId' })
-      }
-      expect(initIncognia).toThrow('No clientId or clientSecret provided')
-      expect(initIncognia).toThrowError(IncogniaError)
-
-      initIncognia = () => {
-        new IncogniaAPI({ clientSecret: 'clientSecret' })
-      }
-      expect(initIncognia).toThrow('No clientId or clientSecret provided')
-      expect(initIncognia).toThrowError(IncogniaError)
-
-      initIncognia = () => {
-        new IncogniaAPI({ clientId: '', clientSecret: 'clientSecret' })
+      const initIncognia = () => {
+        new IncogniaApi({ clientId: '', clientSecret: 'clientSecret' })
       }
       expect(initIncognia).toThrow('No clientId or clientSecret provided')
       expect(initIncognia).toThrowError(IncogniaError)

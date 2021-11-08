@@ -6,13 +6,13 @@ Documentation can be found at <https://us.incognia.com>
 
 ## Installation
 
-For npm:
+npm:
 
 ```sh
 npm install @incognia/api
 ```
 
-For Yarn:
+yarn:
 
 ```sh
 yarn add @incognia/api
@@ -37,7 +37,7 @@ const incogniaApi = new IncogniaApi({
 
 ## Regions
 
-You can setup regions. The default region is `us`, but you can instantiate with `br` region:
+You can setup regions. The default is `us`, but you can initialize with `br`:
 
 ```js
 const { IncogniaApi, Region } = require('@incognia/api')
@@ -51,17 +51,9 @@ const incogniaApi = new IncogniaApi({
 
 ## API methods
 
-`incogniaApi.getSignupAssessment`
+### Registering Signup
 
-```js
-try {
-  const signupAssessment = await incogniaApi.getSignupAssessment(signupId)
-} catch (error) {
-  console.log(error.message)
-}
-```
-
-`incogniaApi.registerSignup`
+This method registers a new signup for the given installation and address, returning a signup assessment, containing the risk assessment and supporting evidence:
 
 ```js
 try {
@@ -86,7 +78,21 @@ try {
 }
 ```
 
-`incogniaApi.registerLogin`
+### Getting a Signup
+
+This method allows you to query the latest assessment for a given signup event, returning a signup assessment, containing the risk assessment and supporting evidence:
+
+```js
+try {
+  const signupAssessment = await incogniaApi.getSignupAssessment(signupId)
+} catch (error) {
+  console.log(error.message)
+}
+```
+
+### Registering Login
+
+This method registers a new login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
@@ -101,7 +107,9 @@ try {
 }
 ```
 
-`incogniaApi.registerPayment`
+### Registering Payment
+
+This method registers a new payment for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
@@ -136,7 +144,9 @@ try {
 }
 ```
 
-`incogniaApi.registerFeedback`
+### Sending Feedback
+
+This method registers a feedback event for the given identifiers related to a signup, login or payment.
 
 ```js
 try {
@@ -150,6 +160,12 @@ try {
   console.log(error.message)
 }
 ```
+
+## Typescript enabled
+
+Thanks to Typescript, all methods attributes and data response are typed, meaning any typescript-enabled editor can take advantage of intellisense and auto-complete:
+
+![Visual Studio Code Intellisense](vsc-intellisense.gif)
 
 ## Response format
 

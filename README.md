@@ -1,4 +1,4 @@
-# Incognia Node.js Library
+# Incognia Node Library
 
 The official Node.js library for integrating with the Incognia API.
 
@@ -23,13 +23,13 @@ yarn add @incognia/api
 Require the package:
 
 ```js
-const { IncogniaAPI } = require('@incognia/api')
+const { IncogniaApi } = require('@incognia/api')
 ```
 
 Instantiate with your clientId and clientSecret:
 
 ```js
-const incogniaAPI = new IncogniaAPI({
+const incogniaApi = new IncogniaApi({
   clientId: 'clientId',
   clientSecret: 'clientSecret'
 })
@@ -40,32 +40,32 @@ const incogniaAPI = new IncogniaAPI({
 You can setup regions. The default region is `us`, but you can instantiate with `br` region:
 
 ```js
-const { IncogniaAPI, Region } = require('@incognia/api')
+const { IncogniaApi, Region } = require('@incognia/api')
 
-const incogniaAPI = new IncogniaAPI({
+const incogniaApi = new IncogniaApi({
   clientId: 'clientId',
   clientSecret: 'clientSecret',
   region: Region.BR
 })
 ```
 
-## Api methods
+## API methods
 
-`incogniaAPI.getSignupAssessment`
+`incogniaApi.getSignupAssessment`
 
 ```js
 try {
-  const signupAssessment = await incogniaAPI.getSignupAssessment(signupId)
+  const signupAssessment = await incogniaApi.getSignupAssessment(signupId)
 } catch (error) {
   console.log(error.message)
 }
 ```
 
-`incogniaAPI.registerSignup`
+`incogniaApi.registerSignup`
 
 ```js
 try {
-  const signup = await incogniaAPI.registerSignup({
+  const signup = await incogniaApi.registerSignup({
     installationId: 'installation_id',
     structuredAddress: {
       locale: 'en-US',
@@ -86,11 +86,11 @@ try {
 }
 ```
 
-`incogniaAPI.registerLogin`
+`incogniaApi.registerLogin`
 
 ```js
 try {
-  const login = await incogniaAPI.registerLogin({
+  const login = await incogniaApi.registerLogin({
     installationId: 'installation_id',
     accountId: 'account_id',
     appId: 'app_id',
@@ -101,11 +101,11 @@ try {
 }
 ```
 
-`incogniaAPI.registerPayment`
+`incogniaApi.registerPayment`
 
 ```js
 try {
-  const payment = await incogniaAPI.registerPayment({
+  const payment = await incogniaApi.registerPayment({
     installationId: 'installation_id',
     accountId: 'account_id',
     addresses: [
@@ -136,11 +136,11 @@ try {
 }
 ```
 
-`incogniaAPI.registerFeedback`
+`incogniaApi.registerFeedback`
 
 ```js
 try {
-  incogniaAPI.registerFeedback({
+  incogniaApi.registerFeedback({
     installationId: 'installation_id',
     accountId: 'account_id',
     event: 'payment_accepted',
@@ -167,22 +167,22 @@ Responses have JSONs identical to the original api <https://us.incognia.com>, **
 
 ## Exception handling
 
-Every method call can throw `IncogniaAPIError` and `IncogniaError`.
+Every method call can throw `IncogniaApiError` and `IncogniaError`.
 
-`IncogniaAPIError` is thrown when the API returned an unexpected http status code. You can retrieve it by calling the `statusCode` property, along with the `payload` property, which returns the API response payload that might include additional details.
+`IncogniaApiError` is thrown when the API returned an unexpected http status code. You can retrieve it by calling the `statusCode` property, along with the `payload` property, which returns the API response payload that might include additional details.
 
 `IncogniaError` represents unknown errors, like serialization/deserialization errors.
 
 ```js
-const { IncogniaAPI, IncogniaAPIError } = require('@incognia/api')
+const { IncogniaApi, IncogniaApiError } = require('@incognia/api')
 
 try {
-  const loginAssessment = await incogniaAPI.registerLoginAssessment({
+  const loginAssessment = await incogniaApi.registerLoginAssessment({
     installationId: 'installation_id',
     accountId: 'account_id'
   })
 } catch (error) {
-  if (error instanceof IncogniaAPIError) {
+  if (error instanceof IncogniaApiError) {
     console.log(error.statusCode)
     console.log(error.payload)
   }

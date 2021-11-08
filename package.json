@@ -19,9 +19,7 @@
     "build": "dts build",
     "test": "dts test",
     "lint": "dts lint",
-    "prepare": "dts build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "prepare": "dts build"
   },
   "peerDependencies": {},
   "husky": {
@@ -36,24 +34,12 @@
     "arrowParens": "avoid",
     "trailingComma": "none"
   },
-  "size-limit": [
-    {
-      "path": "dist/api.cjs.production.min.js",
-      "limit": "20 KB"
-    },
-    {
-      "path": "dist/api.esm.js",
-      "limit": "20 KB"
-    }
-  ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^6.0.4",
     "@tsconfig/recommended": "^1.0.1",
     "@types/qs": "^6.9.7",
     "dts-cli": "^0.19.4",
     "husky": "^7.0.4",
     "nock": "^13.1.4",
-    "size-limit": "^6.0.4",
     "tslib": "^2.3.1",
     "typescript": "^4.4.4"
   },

@@ -7,8 +7,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node: ['10.x', '12.x', '14.x']
-        os: [ubuntu-latest, windows-latest, macOS-latest]
+        node: ['12.x', '14.x']
+        os: [ubuntu-latest, macOS-latest]
 
     steps:
       - name: Checkout repo
@@ -23,14 +23,20 @@ jobs:
         id: npm
         run: |
           npm config set prefix ${HOME}/.npm-global
-          echo "::add-path::$(npm bin -g)"
+          echo "$(npm bin -g)" >> $GITHUB_PATH
           echo "::set-output name=cache-dir::$(npm config get cache)"
+
       - name: Set up yarn
         id: yarn
         run: |
           npm install -g yarn
-          echo "::add-path::$(yarn global bin)"
+          echo "$(yarn global bin)" >> $GITHUB_PATH
           echo "::set-output name=cache-dir::$(yarn cache dir)"
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          yarn install
 
       - name: Lint
         run: yarn lint

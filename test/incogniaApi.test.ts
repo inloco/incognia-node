@@ -224,7 +224,7 @@ describe('API', () => {
         const expectedData = {
           installation_id: 'installation_id',
           account_id: 'account_id',
-          event: 'event',
+          event: FeedbackEvent.AccountTakeover,
           timestamp: 123
         }
 

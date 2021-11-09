@@ -193,7 +193,7 @@ Every method call can throw `IncogniaApiError` and `IncogniaError`.
 const { IncogniaApi, IncogniaApiError } = require('@incognia/api')
 
 try {
-  const loginAssessment = await incogniaApi.registerLoginAssessment({
+  const loginAssessment = await incogniaApi.registerLogin({
     installationId: 'installation_id',
     accountId: 'account_id'
   })

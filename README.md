@@ -51,7 +51,7 @@ const incogniaApi = new IncogniaApi({
 
 ## API methods
 
-### Registering Signup
+### Registering a Signup
 
 This method registers a new signup for the given installation and address, returning a signup assessment, containing the risk assessment and supporting evidence:
 
@@ -80,7 +80,7 @@ try {
 
 ### Getting a Signup
 
-This method allows you to query the latest assessment for a given signup event, returning a signup assessment, containing the risk assessment and supporting evidence:
+This method allows you to retrieve the latest assessment for a given signup event, returning a signup assessment, containing the risk assessment and supporting evidence:
 
 ```js
 try {
@@ -90,7 +90,7 @@ try {
 }
 ```
 
-### Registering Login
+### Registering a Login
 
 This method registers a new login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
@@ -107,7 +107,7 @@ try {
 }
 ```
 
-### Registering Payment
+### Registering a Payment
 
 This method registers a new payment for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 

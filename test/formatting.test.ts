@@ -1,16 +1,19 @@
 import {
   convertObjectToCamelCase,
   convertObjectToSnakeCase
-} from './formatting'
+} from '../src/formatting'
 
 describe('convertObjectToSnakeCase', () => {
   it('converts keys to snake_case, even if nested', () => {
     expect(
       convertObjectToSnakeCase({
         keyName: { nestedKey: 2 },
-        a: [{ nestedInArray: 1 }]
+        a: [{ nestedInArray: 'black_rice' }]
       })
-    ).toEqual({ key_name: { nested_key: 2 }, a: [{ nested_in_array: 1 }] })
+    ).toEqual({
+      key_name: { nested_key: 2 },
+      a: [{ nested_in_array: 'black_rice' }]
+    })
   })
 })
 

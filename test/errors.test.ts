@@ -1,23 +1,24 @@
-import { IncogniaAPIError, IncogniaError, throwCustomRequestError } from './errors'
+import {
+  IncogniaApiError,
+  IncogniaError,
+  throwCustomRequestError
+} from '../src/errors'
 
-describe('IncogniaAPIError', () => {
-  const error = new IncogniaAPIError('error message')
+describe('IncogniaApiError', () => {
+  const error = new IncogniaApiError('error message')
 
   it('returns custom properties', () => {
-    expect(error.name).toEqual('IncogniaAPIError')
+    expect(error.name).toEqual('IncogniaApiError')
     expect(error.message).toEqual('error message')
     expect(error.statusCode).toBeUndefined()
     expect(error.payload).toBeUndefined()
   })
 
   describe('when statusCode and payload are informed', () => {
-    const errorWithData = new IncogniaAPIError(
-      'error message',
-      {
-        statusCode: 400,
-        payload: 'error occured'
-      }
-    )
+    const errorWithData = new IncogniaApiError('error message', {
+      statusCode: 400,
+      payload: 'error occured'
+    })
 
     it('returns them', () => {
       expect(errorWithData.statusCode).toEqual(400)
@@ -45,37 +46,33 @@ describe('throwCustomRequestError', () => {
       }
     }
 
-    it('returns IncogniaAPIError', () => {
+    it('returns IncogniaApiError', () => {
       function dispatchRequest() {
         throwCustomRequestError(error)
       }
 
       expect(dispatchRequest).toThrowError(
-        new IncogniaAPIError(
-          error.message,
-          {
-            statusCode: error.response.status,
-            payload: error.response.data
-          }
-        )
+        new IncogniaApiError(error.message, {
+          statusCode: error.response.status,
+          payload: error.response.data
+        })
       )
     })
   })
 
   describe('when the error contains a request', () => {
-
     const error = {
       message: 'error message',
       request: {}
     }
 
-    it('returns IncogniaAPIError', () => {
+    it('returns IncogniaApiError', () => {
       function dispatchRequest() {
         throwCustomRequestError(error)
       }
 
       expect(dispatchRequest).toThrowError(
-        new IncogniaAPIError(
+        new IncogniaApiError(
           `The request was made but no response was received (${error.message})`
         )
       )
@@ -87,14 +84,12 @@ describe('throwCustomRequestError', () => {
       message: 'error message'
     }
 
-    it('returns IncogniaAPIError', () => {
+    it('returns IncogniaApiError', () => {
       function dispatchRequest() {
         throwCustomRequestError(error)
       }
 
-      expect(dispatchRequest).toThrowError(
-        new IncogniaError(error.message)
-      )
+      expect(dispatchRequest).toThrowError(new IncogniaError(error.message))
     })
   })
 })

@@ -1,6 +1,5 @@
-export { IncogniaApi } from './incogniaApi'
+export { IncogniaApi, apiEndpoints } from './incogniaApi'
 export {
-  Region,
   FeedbackEvent,
   PaymentMethodType,
   TransactionAddressType

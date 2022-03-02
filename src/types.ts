@@ -3,11 +3,6 @@ export enum Method {
   Get = 'get'
 }
 
-export enum Region {
-  US = 'us',
-  BR = 'br'
-}
-
 export enum TransactionAddressType {
   Shipping = 'shipping',
   Billing = 'billing',

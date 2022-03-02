@@ -20,27 +20,13 @@ import {
   TransactionResponse,
   SignupResponse,
   Method,
-  Region,
   RegisterSignupProps,
   RegisterTransactionProps
 } from './types'
 
-export const BaseEndpoint = {
-  [Region.US]: 'https://api.us.incognia.com/api',
-  [Region.BR]: 'https://incognia.inloco.com.br/api'
-}
-
 type IncogniaApiConstructor = {
   clientId: string
   clientSecret: string
-  region?: Region
-}
-
-type ApiEndpoints = {
-  TOKEN: string
-  SIGNUPS: string
-  TRANSACTIONS: string
-  FEEDBACKS: string
 }
 
 type IncogniaToken = {
@@ -50,36 +36,34 @@ type IncogniaToken = {
   tokenType: string
 }
 
-const getApiEndpoints = (baseEndpointUrl: string): ApiEndpoints => ({
-  TOKEN: `${baseEndpointUrl}/v1/token`,
-  SIGNUPS: `${baseEndpointUrl}/v2/onboarding/signups`,
-  TRANSACTIONS: `${baseEndpointUrl}/v2/authentication/transactions`,
-  FEEDBACKS: `${baseEndpointUrl}/v2/feedbacks`
-})
+type ApiEndpoints = {
+  TOKEN: string
+  SIGNUPS: string
+  TRANSACTIONS: string
+  FEEDBACKS: string
+}
+
+const BASE_ENDPOINT = 'https://api.incognia.com'
+
+export const apiEndpoints: ApiEndpoints = {
+  TOKEN: `${BASE_ENDPOINT}/v1/token`,
+  SIGNUPS: `${BASE_ENDPOINT}/v2/onboarding/signups`,
+  TRANSACTIONS: `${BASE_ENDPOINT}/v2/authentication/transactions`,
+  FEEDBACKS: `${BASE_ENDPOINT}/v2/feedbacks`
+}
 
 export class IncogniaApi {
   readonly clientId: string
   readonly clientSecret: string
-  readonly apiEndpoints: ApiEndpoints
   incogniaToken: IncogniaToken | null
 
-  constructor({ clientId, clientSecret, region }: IncogniaApiConstructor) {
+  constructor({ clientId, clientSecret }: IncogniaApiConstructor) {
     if (!clientId || !clientSecret) {
       throw new IncogniaError('No clientId or clientSecret provided')
     }
 
-    const avaliableRegions = Object.values(Region)
-
-    const regionOrDefault = region || Region.US
-    if (!avaliableRegions.includes(regionOrDefault)) {
-      throw new IncogniaError(
-        `Invalid region. Avaliable: ${avaliableRegions.join(', ')}.`
-      )
-    }
-
     this.clientId = clientId
     this.clientSecret = clientSecret
-    this.apiEndpoints = getApiEndpoints(BaseEndpoint[regionOrDefault])
     this.incogniaToken = null
   }
 
@@ -92,7 +76,7 @@ export class IncogniaApi {
     }
 
     return this.resourceRequest({
-      url: `${this.apiEndpoints.SIGNUPS}/${signupId}`,
+      url: `${apiEndpoints.SIGNUPS}/${signupId}`,
       method: Method.Get
     })
   }
@@ -105,7 +89,7 @@ export class IncogniaApi {
 
     const data = convertObjectToSnakeCase(props)
     return this.resourceRequest({
-      url: this.apiEndpoints.SIGNUPS,
+      url: apiEndpoints.SIGNUPS,
       method: Method.Post,
       data
     })
@@ -137,7 +121,7 @@ export class IncogniaApi {
 
     const data = convertObjectToSnakeCase(bodyParams)
     return this.resourceRequest({
-      url: this.apiEndpoints.FEEDBACKS,
+      url: apiEndpoints.FEEDBACKS,
       method: Method.Post,
       params,
       data
@@ -152,7 +136,7 @@ export class IncogniaApi {
 
     const data = convertObjectToSnakeCase(props)
     return this.resourceRequest({
-      url: this.apiEndpoints.TRANSACTIONS,
+      url: apiEndpoints.TRANSACTIONS,
       method: Method.Post,
       data
     })
@@ -209,7 +193,7 @@ export class IncogniaApi {
     try {
       return await axios({
         method: Method.Post,
-        url: this.apiEndpoints.TOKEN,
+        url: apiEndpoints.TOKEN,
         data: qs.stringify({ grant_type: 'client_credentials' }),
         auth: {
           username: this.clientId,

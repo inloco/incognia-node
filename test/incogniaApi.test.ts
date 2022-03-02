@@ -30,7 +30,7 @@ describe('API', () => {
 
   describe('Resources', () => {
     beforeEach(() => {
-      nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
+      nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
     })
 
     describe('when requesting a resource', () => {
@@ -229,7 +229,7 @@ describe('API', () => {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
         })
-          .post('/v1/token', { grant_type: 'client_credentials' })
+          .post('/v2/token', { grant_type: 'client_credentials' })
           .basicAuth({
             user: credentials.clientId,
             pass: credentials.clientSecret
@@ -242,7 +242,7 @@ describe('API', () => {
 
       describe('and the request fails', () => {
         it('throws Incognia errors', async () => {
-          nock(BASE_ENDPOINT_URL).post('/v1/token').replyWithError({
+          nock(BASE_ENDPOINT_URL).post('/v2/token').replyWithError({
             message: 'something awful happened',
             code: 'AWFUL_ERROR'
           })
@@ -260,14 +260,14 @@ describe('API', () => {
       it('calls access token endpoint only at the first time', async () => {
         const signupId = '123'
         const accessTokenEndpointFirstCall = nock(BASE_ENDPOINT_URL)
-          .post('/v1/token')
+          .post('/v2/token')
           .reply(200, accessTokenExample)
         const signupEndpointGet = nock(BASE_ENDPOINT_URL)
           .persist()
           .get(`/v2/onboarding/signups/${signupId}`)
           .reply(200)
         const accessTokenEndpointSecondCall = nock(BASE_ENDPOINT_URL)
-          .post('/v1/token')
+          .post('/v2/token')
           .reply(200, accessTokenExample)
 
         //call resource for the first time
@@ -283,13 +283,13 @@ describe('API', () => {
 
     describe('accessToken validation', () => {
       it('returns true if the token is valid', async () => {
-        nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
+        nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
         await incogniaApi.updateAccessToken()
         expect(incogniaApi.isAccessTokenValid()).toEqual(true)
       })
 
       it('returns false if the token is expired', async () => {
-        nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
+        nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
 
         Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
         await incogniaApi.updateAccessToken()

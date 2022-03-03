@@ -149,10 +149,10 @@ enum DeviceBehaviorReputation {
 }
 
 type DeviceIntegrity = {
-  emulator: boolean
-  from_official_store: boolean
-  gps_spoofing: boolean
-  probable_root: boolean
+  emulator?: boolean
+  from_official_store?: boolean
+  gps_spoofing?: boolean
+  probable_root?: boolean
 }
 
 type LocationServices = {
@@ -184,7 +184,7 @@ type SignupEvidenceSummary = {
   addressMatch: AddressMatch
   deviceFraudReputation: DeviceFraudReputation
   deviceBehaviorReputation: DeviceBehaviorReputation
-  deviceIntegrity: DeviceIntegrity
+  deviceIntegrity?: DeviceIntegrity
   deviceModel: string
   geocodeQuality: GeocodeQuality
   locationEventsNearAddress: number
@@ -196,7 +196,7 @@ type TransactionEvidenceSummary = {
   accountIntegrity: AccountIntegrity
   addresses: Array<AddressEvidence>
   deviceBehaviorReputation: DeviceBehaviorReputation
-  deviceIntegrity: DeviceIntegrity
+  deviceIntegrity?: DeviceIntegrity
   deviceModel: string
   distanceToTrustedLocation: number
   knownAccount: boolean

@@ -35,20 +35,6 @@ const incogniaApi = new IncogniaApi({
 })
 ```
 
-## Regions
-
-You can setup regions. The default is `us`, but you can initialize with `br`:
-
-```js
-const { IncogniaApi, Region } = require('@incognia/api')
-
-const incogniaApi = new IncogniaApi({
-  clientId: 'clientId',
-  clientSecret: 'clientSecret',
-  region: Region.BR
-})
-```
-
 ## API methods
 
 ### Registering a Signup

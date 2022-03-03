@@ -4,11 +4,10 @@ import {
   IncogniaApi,
   IncogniaApiError,
   IncogniaError,
-  Region
+  apiEndpoints
 } from '../src/'
 
-const US_BASE_ENDPOINT_URL = 'https://api.us.incognia.com/api'
-const BR_BASE_ENDPOINT_URL = 'https://incognia.inloco.com.br/api'
+const BASE_ENDPOINT_URL = 'https://api.incognia.com'
 
 let incogniaApi: IncogniaApi
 
@@ -29,37 +28,16 @@ describe('API', () => {
     incogniaApi = new IncogniaApi(credentials)
   })
 
-  describe('Regions', () => {
-    it('has the US region as default', () => {
-      expect(
-        incogniaApi.apiEndpoints.TOKEN.startsWith(US_BASE_ENDPOINT_URL)
-      ).toEqual(true)
-    })
-
-    it('set BR base endpoint if br region is passed', () => {
-      const incogniaApi = new IncogniaApi({
-        clientId: 'clientId',
-        clientSecret: 'clientSecret',
-        region: Region.BR
-      })
-      expect(
-        incogniaApi.apiEndpoints.TOKEN.startsWith(BR_BASE_ENDPOINT_URL)
-      ).toEqual(true)
-    })
-  })
-
   describe('Resources', () => {
     beforeEach(() => {
-      nock(US_BASE_ENDPOINT_URL)
-        .post('/v1/token')
-        .reply(200, accessTokenExample)
+      nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
     })
 
     describe('when requesting a resource', () => {
       it('informs Authorization header when requesting resource', async () => {
         const expectedAuthorizationHeader = `${accessTokenExample.token_type} ${accessTokenExample.access_token}`
 
-        const resourceRequest = nock(US_BASE_ENDPOINT_URL, {
+        const resourceRequest = nock(BASE_ENDPOINT_URL, {
           reqheaders: {
             'Content-Type': 'application/json',
             Authorization: expectedAuthorizationHeader
@@ -69,7 +47,7 @@ describe('API', () => {
           .reply(200, {})
 
         await incogniaApi.resourceRequest({
-          url: `${US_BASE_ENDPOINT_URL}/someUrl`,
+          url: `${BASE_ENDPOINT_URL}/someUrl`,
           method: 'get'
         })
 
@@ -78,14 +56,14 @@ describe('API', () => {
 
       describe('and the request fails', () => {
         it('throws Incognia errors', async () => {
-          nock(US_BASE_ENDPOINT_URL).get('/someUrl').replyWithError({
+          nock(BASE_ENDPOINT_URL).get('/someUrl').replyWithError({
             message: 'something awful happened',
             code: 'AWFUL_ERROR'
           })
 
           var dispatchRequest = async () => {
             await incogniaApi.resourceRequest({
-              url: `${US_BASE_ENDPOINT_URL}/someUrl`,
+              url: `${BASE_ENDPOINT_URL}/someUrl`,
               method: 'get'
             })
           }
@@ -108,7 +86,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(US_BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT_URL)
         .get(`/v2/onboarding/signups/${apiResponse.id}`)
         .reply(200, apiResponse)
 
@@ -132,7 +110,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(US_BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT_URL)
         .post(`/v2/onboarding/signups`)
         .reply(200, apiResponse)
 
@@ -166,7 +144,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(US_BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT_URL)
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
@@ -188,7 +166,7 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(US_BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT_URL)
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
@@ -203,7 +181,7 @@ describe('API', () => {
 
     describe('Registers feedback', () => {
       beforeAll(() => {
-        nock(US_BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
+        nock(BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
       })
 
       it('registers feedback when all required params are filled', async () => {
@@ -233,7 +211,7 @@ describe('API', () => {
         }
 
         expect(incogniaApi.resourceRequest).toBeCalledWith({
-          url: incogniaApi.apiEndpoints.FEEDBACKS,
+          url: apiEndpoints.FEEDBACKS,
           method: 'post',
           params: expectedParams,
           data: expectedData
@@ -245,8 +223,8 @@ describe('API', () => {
   describe('Access token managament', () => {
     describe('when requesting a token ', () => {
       it('calls access token endpoint with creds', async () => {
-        nock(US_BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
-        const accessTokenEndpointCall = nock(US_BASE_ENDPOINT_URL, {
+        nock(BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
+        const accessTokenEndpointCall = nock(BASE_ENDPOINT_URL, {
           reqheaders: {
             'Content-Type': 'application/x-www-form-urlencoded'
           }
@@ -264,7 +242,7 @@ describe('API', () => {
 
       describe('and the request fails', () => {
         it('throws Incognia errors', async () => {
-          nock(US_BASE_ENDPOINT_URL).post('/v1/token').replyWithError({
+          nock(BASE_ENDPOINT_URL).post('/v1/token').replyWithError({
             message: 'something awful happened',
             code: 'AWFUL_ERROR'
           })
@@ -281,14 +259,14 @@ describe('API', () => {
     describe('when calling the api ', () => {
       it('calls access token endpoint only at the first time', async () => {
         const signupId = '123'
-        const accessTokenEndpointFirstCall = nock(US_BASE_ENDPOINT_URL)
+        const accessTokenEndpointFirstCall = nock(BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
-        const signupEndpointGet = nock(US_BASE_ENDPOINT_URL)
+        const signupEndpointGet = nock(BASE_ENDPOINT_URL)
           .persist()
           .get(`/v2/onboarding/signups/${signupId}`)
           .reply(200)
-        const accessTokenEndpointSecondCall = nock(US_BASE_ENDPOINT_URL)
+        const accessTokenEndpointSecondCall = nock(BASE_ENDPOINT_URL)
           .post('/v1/token')
           .reply(200, accessTokenExample)
 
@@ -305,17 +283,13 @@ describe('API', () => {
 
     describe('accessToken validation', () => {
       it('returns true if the token is valid', async () => {
-        nock(US_BASE_ENDPOINT_URL)
-          .post('/v1/token')
-          .reply(200, accessTokenExample)
+        nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
         await incogniaApi.updateAccessToken()
         expect(incogniaApi.isAccessTokenValid()).toEqual(true)
       })
 
       it('returns false if the token is expired', async () => {
-        nock(US_BASE_ENDPOINT_URL)
-          .post('/v1/token')
-          .reply(200, accessTokenExample)
+        nock(BASE_ENDPOINT_URL).post('/v1/token').reply(200, accessTokenExample)
 
         Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
         await incogniaApi.updateAccessToken()

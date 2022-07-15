@@ -7,7 +7,7 @@ import {
   apiEndpoints
 } from '../src/'
 
-const BASE_ENDPOINT_URL = 'https://api.incognia.com'
+const BASE_ENDPOINT_URL = 'https://api.incognia.com/api'
 
 let incogniaApi: IncogniaApi
 

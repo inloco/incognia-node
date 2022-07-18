@@ -45,6 +45,11 @@ export type TransactionResponse = {
   evidence: TransactionEvidenceSummary
 }
 
+type Reason = {
+  code: string
+  source: string
+}
+
 export type RegisterFeedbackBodyProps = {
   accountId?: string
   appId?: string
@@ -263,56 +268,4 @@ export enum FeedbackEvent {
   PromotionAbuse = 'promotion_abuse',
   AccountTakeover = 'account_takeover',
   MposFraud = 'mpos_fraud'
-}
-
-type Reason = {
-  code: ReasonCode
-  source: ReasonSource
-}
-
-enum ReasonCode {
-  AccountTakeover = 'account_takeover',
-  AddressVerification = 'address_verification',
-  Chargeback = 'chargeback',
-  ChargebackNotification = 'chargeback_notification',
-  CustomChurnDebt20D = 'custom_churn_debt_20d',
-  CustomCollusionFraud = 'custom_collusion_fraud',
-  CustomOrderFlowFraud = 'custom_order_flow_fraud',
-  CustomPosAtmFraud = 'custom_pos_atm_fraud',
-  CustomOtherFraud = 'custom_other_fraud',
-  CustomDisciplineBlock = 'custom_discipline_block',
-  DeviceIntegrity = 'device_integrity',
-  DeviceLinkedToCustomChurnDebt20D = 'device_linked_to_custom_churn_debt_20d',
-  DeviceLinkedToCustomChurnDebt20D2NdDegree = 'device_linked_to_custom_churn_debt_20d_2nd_degree',
-  DeviceLinkedToCustomCollusionFraud = 'device_linked_to_custom_collusion_fraud',
-  DeviceLinkedToCustomOrderFlowFraud = 'device_linked_to_custom_order_flow_fraud',
-  DeviceLinkedToCustomPosAtmFraud = 'device_linked_to_custom_pos_atm_fraud',
-  DeviceLinkedToCustomOtherFraud = 'device_linked_to_custom_other_fraud',
-  DeviceLinkedToCustomDisciplineBlock = 'device_linked_to_custom_discipline_block',
-  DeviceLinkedToMposFraud = 'device_linked_to_mpos_fraud',
-  DeviceLinkedToMposFraud2NdDegree = 'device_linked_to_mpos_fraud_2nd_degree',
-  EnvironmentLinkedToCustomChurnDebt20D = 'environment_linked_to_custom_churn_debt_20d',
-  EnvironmentLinkedToMposFraud = 'environment_linked_to_mpos_fraud',
-  HighDensityLocation = 'high_density_location',
-  IdentityFraud = 'identity_fraud',
-  LocationFingerprintMatch = 'location_fingerprint_match',
-  MachineLearningModel = 'machine_learning_model',
-  MposFraud = 'mpos_fraud',
-  MultiDeviceAccount = 'multi_device_account',
-  MultipleAccounts = 'multiple_accounts',
-  MultipleAddressCities = 'multiple_address_cities',
-  MultipleAddressStreets = 'multiple_address_streets',
-  MultipleAddressZipCodes = 'multiple_address_zip_codes',
-  MultipleInstallations = 'multiple_installations',
-  RecentHighRiskAccount = 'recent_high_risk_account',
-  Report = 'report',
-  SdkTampering = 'sdk_tampering',
-  SignupDeclined = 'signup_declined',
-  TrustedLocation = 'trusted_location',
-  Verified = 'verified'
-}
-
-enum ReasonSource {
-  Global = 'global',
-  Local = 'local'
 }

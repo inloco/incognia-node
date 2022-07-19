@@ -10,6 +10,7 @@ import {
   IncogniaError,
   CustomRequestError
 } from './errors'
+import { buildUserAgent } from './utils'
 
 import {
   TransactionType,
@@ -170,6 +171,7 @@ export class IncogniaApi {
         ...options,
         headers: {
           'Content-Type': 'application/json',
+          'User-Agent': buildUserAgent(),
           Authorization: `${this.incogniaToken?.tokenType} ${this.incogniaToken?.accessToken}`
         }
       })
@@ -221,7 +223,8 @@ export class IncogniaApi {
           password: this.clientSecret
         },
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': buildUserAgent()
         }
       })
     } catch (e: unknown) {

@@ -15,11 +15,12 @@
     "node": ">=12"
   },
   "scripts": {
-    "start": "dts watch",
-    "build": "dts build",
+    "start": "yarn genVersion && dts watch",
+    "build": "yarn genVersion && dts build",
     "test": "dts test",
     "lint": "dts lint",
-    "prepare": "dts build"
+    "prepare": "dts build",
+    "genVersion": "genversion --es6 src/version.ts"
   },
   "peerDependencies": {},
   "husky": {
@@ -38,6 +39,7 @@
     "@tsconfig/recommended": "^1.0.1",
     "@types/qs": "^6.9.7",
     "dts-cli": "^0.19.4",
+    "genversion": "^3.1.1",
     "husky": "^7.0.4",
     "nock": "^13.1.4",
     "tslib": "^2.3.1",

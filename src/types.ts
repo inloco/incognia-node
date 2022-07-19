@@ -21,6 +21,7 @@ export type SignupResponse = {
   id: string
   requestId: string
   riskAssessment: RiskAssessment
+  reasons: Array<Reason>
   evidence: SignupEvidenceSummary
 }
 
@@ -40,7 +41,13 @@ export type RegisterPaymentProps = RegisterLoginProps & {
 export type TransactionResponse = {
   id: string
   riskAssessment: RiskAssessment
+  reasons: Array<Reason>
   evidence: TransactionEvidenceSummary
+}
+
+type Reason = {
+  code: string
+  source: string
 }
 
 export type RegisterFeedbackBodyProps = {

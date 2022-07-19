@@ -2,7 +2,7 @@
   "name": "@incognia/api",
   "author": "Incognia (https://us.incognia.com)",
   "repository": "https://github.com/inloco/incognia-node",
-  "version": "4.0.1",
+  "version": "4.1.0",
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/api.esm.js",
@@ -19,7 +19,7 @@
     "build": "yarn genVersion && dts build",
     "test": "dts test",
     "lint": "dts lint",
-    "prepare": "dts build",
+    "prepare": "yarn build",
     "genVersion": "genversion --es6 src/version.ts"
   },
   "peerDependencies": {},

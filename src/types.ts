@@ -269,3 +269,18 @@ export enum FeedbackEvent {
   AccountTakeover = 'account_takeover',
   MposFraud = 'mpos_fraud'
 }
+
+export type SearchAccountsBodyProps = {
+  installationId: string
+}
+
+export type SearchAccountsResponse = {
+  count: number
+  data: Array<AccountData>
+}
+
+type AccountData = {
+  accountId: string
+  firstEventAt: string
+  lastEventAt: string
+}

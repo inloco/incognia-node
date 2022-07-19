@@ -185,6 +185,11 @@ type SignupEvidenceSummary = {
   locationEventsNearAddress: number
   locationEventsQuantity: number
   locationServices: LocationServices
+  accessedAccounts: number
+  appReinstallations: number
+  differentDeclaredAddresses: number
+  distanceFromNearestLocationToDeclaredAddress: number
+  distanceFromLastLocationToDeclaredAddress: number
 }
 
 type TransactionEvidenceSummary = {
@@ -199,6 +204,8 @@ type TransactionEvidenceSummary = {
   locationEventsQuantity: number
   locationServices: LocationServices
   sensorMatchType: SensorMatchType
+  accessedAccounts: number
+  appReinstallations: number
 }
 
 type TransactionAddress = {

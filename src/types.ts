@@ -21,6 +21,7 @@ export type SignupResponse = {
   id: string
   requestId: string
   riskAssessment: RiskAssessment
+  reasons: Array<Reason>
   evidence: SignupEvidenceSummary
 }
 
@@ -40,7 +41,13 @@ export type RegisterPaymentProps = RegisterLoginProps & {
 export type TransactionResponse = {
   id: string
   riskAssessment: RiskAssessment
+  reasons: Array<Reason>
   evidence: TransactionEvidenceSummary
+}
+
+type Reason = {
+  code: string
+  source: string
 }
 
 export type RegisterFeedbackBodyProps = {
@@ -185,6 +192,11 @@ type SignupEvidenceSummary = {
   locationEventsNearAddress: number
   locationEventsQuantity: number
   locationServices: LocationServices
+  accessedAccounts: number
+  appReinstallations: number
+  differentDeclaredAddresses: number
+  distanceFromNearestLocationToDeclaredAddress: number
+  distanceFromLastLocationToDeclaredAddress: number
 }
 
 type TransactionEvidenceSummary = {
@@ -199,6 +211,8 @@ type TransactionEvidenceSummary = {
   locationEventsQuantity: number
   locationServices: LocationServices
   sensorMatchType: SensorMatchType
+  accessedAccounts: number
+  appReinstallations: number
 }
 
 type TransactionAddress = {
@@ -254,4 +268,19 @@ export enum FeedbackEvent {
   PromotionAbuse = 'promotion_abuse',
   AccountTakeover = 'account_takeover',
   MposFraud = 'mpos_fraud'
+}
+
+export type SearchAccountsBodyProps = {
+  installationId: string
+}
+
+export type SearchAccountsResponse = {
+  count: number
+  data: Array<AccountData>
+}
+
+type AccountData = {
+  accountId: string
+  firstEventAt: string
+  lastEventAt: string
 }

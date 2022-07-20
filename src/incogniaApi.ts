@@ -10,6 +10,7 @@ import {
   IncogniaError,
   CustomRequestError
 } from './errors'
+import { buildUserAgent } from './utils'
 
 import {
   TransactionType,
@@ -21,7 +22,9 @@ import {
   SignupResponse,
   Method,
   RegisterSignupProps,
-  RegisterTransactionProps
+  RegisterTransactionProps,
+  SearchAccountsBodyProps,
+  SearchAccountsResponse
 } from './types'
 
 type IncogniaApiConstructor = {
@@ -41,6 +44,7 @@ type ApiEndpoints = {
   SIGNUPS: string
   TRANSACTIONS: string
   FEEDBACKS: string
+  ACCOUNTS: string
 }
 
 const BASE_ENDPOINT = 'https://api.incognia.com/api'
@@ -49,7 +53,8 @@ export const apiEndpoints: ApiEndpoints = {
   TOKEN: `${BASE_ENDPOINT}/v2/token`,
   SIGNUPS: `${BASE_ENDPOINT}/v2/onboarding/signups`,
   TRANSACTIONS: `${BASE_ENDPOINT}/v2/authentication/transactions`,
-  FEEDBACKS: `${BASE_ENDPOINT}/v2/feedbacks`
+  FEEDBACKS: `${BASE_ENDPOINT}/v2/feedbacks`,
+  ACCOUNTS: `${BASE_ENDPOINT}/v2/accounts/search`
 }
 
 export class IncogniaApi {
@@ -142,6 +147,23 @@ export class IncogniaApi {
     })
   }
 
+  // Search Accounts
+  async searchAccounts(
+    props: SearchAccountsBodyProps
+  ): Promise<SearchAccountsResponse> {
+    const { installationId } = props || {}
+    if (!installationId) {
+      throw new IncogniaError('No installationId provided')
+    }
+    const data = convertObjectToSnakeCase(props)
+
+    return this.resourceRequest({
+      url: apiEndpoints.ACCOUNTS,
+      method: Method.Post,
+      data
+    })
+  }
+
   async resourceRequest(options: AxiosRequestConfig) {
     await this.updateAccessToken()
     try {
@@ -149,6 +171,7 @@ export class IncogniaApi {
         ...options,
         headers: {
           'Content-Type': 'application/json',
+          'User-Agent': buildUserAgent(),
           Authorization: `${this.incogniaToken?.tokenType} ${this.incogniaToken?.accessToken}`
         }
       })
@@ -200,7 +223,8 @@ export class IncogniaApi {
           password: this.clientSecret
         },
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': buildUserAgent()
         }
       })
     } catch (e: unknown) {

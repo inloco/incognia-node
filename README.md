@@ -85,8 +85,8 @@ try {
   const login = await incogniaApi.registerLogin({
     installationId: 'installation_id',
     accountId: 'account_id',
-    appId: 'app_id',
-    externalId: 'external_id'
+    appId: 'app_id', // optional field
+    externalId: 'external_id' // optional field
   })
 } catch (error) {
   console.log(error.message)

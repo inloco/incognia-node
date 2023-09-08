@@ -19,24 +19,11 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Set up npm
-        id: npm
-        run: |
-          npm config set prefix ${HOME}/.npm-global
-          echo "$(npm bin -g)" >> $GITHUB_PATH
-          echo "::set-output name=cache-dir::$(npm config get cache)"
-
       - name: Set up yarn
-        id: yarn
-        run: |
-          npm install -g yarn
-          echo "$(yarn global bin)" >> $GITHUB_PATH
-          echo "::set-output name=cache-dir::$(yarn cache dir)"
+        run: npm install -g yarn
 
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          yarn install
+        run: yarn install
 
       - name: Lint
         run: yarn lint

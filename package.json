@@ -8,24 +8,22 @@
   "module": "dist/api.esm.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
-    "node": ">=12"
+    "node": ">=16"
   },
   "scripts": {
-    "start": "yarn genVersion && dts watch",
-    "build": "yarn genVersion && dts build",
-    "test": "dts test",
-    "lint": "dts lint",
-    "prepare": "yarn build",
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prepare": "pnpm build",
     "genVersion": "genversion --es6 src/version.ts"
   },
-  "peerDependencies": {},
   "husky": {
     "hooks": {
-      "pre-commit": "dts lint"
+      "pre-commit": "pnpm lint"
     }
   },
   "prettier": {
@@ -36,17 +34,21 @@
     "trailingComma": "none"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "^1.0.1",
-    "@types/qs": "^6.9.7",
-    "dts-cli": "^2.0.3",
+    "@tsconfig/recommended": "^1.0.2",
+    "@types/node": "^20.6.0",
+    "@types/qs": "^6.9.8",
+    "@typescript-eslint/eslint-plugin": "^6.7.0",
+    "eslint": "^8.49.0",
     "genversion": "^3.1.1",
-    "husky": "^7.0.4",
-    "nock": "^13.1.4",
-    "tslib": "^2.3.1",
-    "typescript": "^4.4.4"
+    "husky": "^8.0.3",
+    "nock": "^13.3.3",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9",
+    "vite-plugin-dts": "^3.5.3",
+    "vitest": "^0.34.4"
   },
   "dependencies": {
-    "axios": "^0.24.0",
+    "axios": "^1.5.0",
     "qs": "^6.11.2"
   }
 }

@@ -1,4 +1,5 @@
 import nock from 'nock'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   FeedbackEvent,
   IncogniaApi,
@@ -61,7 +62,7 @@ describe('API', () => {
             code: 'AWFUL_ERROR'
           })
 
-          var dispatchRequest = async () => {
+          const dispatchRequest = async () => {
             await incogniaApi.resourceRequest({
               url: `${BASE_ENDPOINT_URL}/someUrl`,
               method: 'get'
@@ -185,7 +186,7 @@ describe('API', () => {
       })
 
       it('registers feedback when all required params are filled', async () => {
-        incogniaApi.resourceRequest = jest.fn()
+        incogniaApi.resourceRequest = vi.fn()
 
         await incogniaApi.registerFeedback(
           {
@@ -292,7 +293,7 @@ describe('API', () => {
             code: 'AWFUL_ERROR'
           })
 
-          var dispatchRequest = async () => {
+          const dispatchRequest = async () => {
             await incogniaApi.requestToken()
           }
 
@@ -336,10 +337,10 @@ describe('API', () => {
       it('returns false if the token is expired', async () => {
         nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
 
-        Date.now = jest.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
+        Date.now = vi.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
         await incogniaApi.updateAccessToken()
-        Date.now = jest.fn(() => {
-          var date = new Date(Date.UTC(2021, 3, 14))
+        Date.now = vi.fn(() => {
+          const date = new Date(Date.UTC(2021, 3, 14))
           date.setUTCSeconds(accessTokenExample.expires_in)
 
           return date.valueOf()

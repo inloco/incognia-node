@@ -34,7 +34,8 @@ export type RegisterLoginProps = {
   accountId: string
   relatedAccountId?: string
   policyId?: string
-  location?: Location
+  location?: TransactionLocation
+  paymentMethodIdentifier?: string
   [x: string]: any
 }
 
@@ -43,13 +44,11 @@ export type RegisterPaymentProps = {
   accountId: string
   relatedAccountId?: string
   policyId?: string
-  location?: Location
   externalId?: string
   addresses?: Array<TransactionAddress>
   paymentValue?: PaymentValue
   paymentMethods?: Array<PaymentMethod>
-  paymentMethodIdentifier?: string
-  coupon?: Array<Coupon>
+  coupon?: Coupon
   [x: string]: any
 }
 
@@ -94,7 +93,7 @@ export type RegisterTransactionProps = (
   type: TransactionType
 }
 
-type Location = {
+type TransactionLocation = {
   latitude: number
   longitude: number
   timestamp?: number

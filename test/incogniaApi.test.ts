@@ -190,7 +190,7 @@ describe('API', () => {
         accountId: 'account_id',
         appId: 'app_id',
         externalId: 'external_id',
-        coupon: [{ type: CouponType.FixedValue, value: 10 }]
+        coupon: { type: CouponType.FixedValue, value: 10 }
       })
       expect(payment).toEqual(expectedResponse)
     })

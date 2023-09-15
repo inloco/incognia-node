@@ -24,7 +24,7 @@ function deepMapObjectKeys(value: any, f: CaseFunction): any {
 }
 
 const snakeCase = (s: string) =>
-  s.replace(/[A-Z]/g, char => `_${char.toLowerCase()}`)
+  s.replace(/([a-z0-9])([A-Z0-9])/g, '$1_$2').toLowerCase()
 
 const camelCase = (s: string) =>
-  s.replace(/_[a-z]/g, underscoreChar => underscoreChar[1].toUpperCase())
+  s.replace(/_[a-z0-9]/g, underscoreChar => underscoreChar[1].toUpperCase())

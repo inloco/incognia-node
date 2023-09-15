@@ -2,6 +2,7 @@ import nock from 'nock'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   FeedbackEvent,
+  CouponType,
   IncogniaApi,
   IncogniaApiError,
   IncogniaError,
@@ -102,13 +103,15 @@ describe('API', () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
-        risk_assessment: 'low_risk'
+        risk_assessment: 'low_risk',
+        signup_attempts_by_device_total_10d: 5
       }
 
       const expectedResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         requestId: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
-        riskAssessment: 'low_risk'
+        riskAssessment: 'low_risk',
+        signupAttemptsByDeviceTotal10d: 5
       }
 
       nock(BASE_ENDPOINT_URL)
@@ -117,6 +120,7 @@ describe('API', () => {
 
       const signup = await incogniaApi.registerSignup({
         installationId: 'installation_id',
+        policyId: 'policy_id',
         structuredAddress: {
           locale: 'en-US',
           countryName: 'United States of America',
@@ -137,12 +141,22 @@ describe('API', () => {
     it('registers login', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-        risk_assessment: 'low_risk'
+        risk_assessment: 'low_risk',
+        app_tampering: {
+          result: 'not_detected',
+          app_debugging: 'not_detected',
+          code_injection: 'not_detected'
+        }
       }
 
       const expectedResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-        riskAssessment: 'low_risk'
+        riskAssessment: 'low_risk',
+        appTampering: {
+          result: 'not_detected',
+          appDebugging: 'not_detected',
+          codeInjection: 'not_detected'
+        }
       }
 
       nock(BASE_ENDPOINT_URL)
@@ -175,7 +189,8 @@ describe('API', () => {
         installationId: 'installation_id',
         accountId: 'account_id',
         appId: 'app_id',
-        externalId: 'external_id'
+        externalId: 'external_id',
+        coupon: [{ type: CouponType.FixedValue, value: 10 }]
       })
       expect(payment).toEqual(expectedResponse)
     })

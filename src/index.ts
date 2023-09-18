@@ -1,5 +1,6 @@
 export { IncogniaApi, apiEndpoints } from './incogniaApi'
 export {
+  CouponType,
   FeedbackEvent,
   PaymentMethodType,
   TransactionAddressType

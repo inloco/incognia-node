@@ -255,9 +255,8 @@ type SignupEvidenceSummary = {
   differentDeclaredAddresses: number
   distanceFromNearestLocationToDeclaredAddress: number
   distanceFromLastLocationToDeclaredAddress: number
-  accountsByDeviceTotal3d: number
-  accountsByDeviceTotal10d: number
-  accessedAccountsByDeviceTotal60d: number
+  accountsByDeviceTotal3d?: number
+  accountsByDeviceTotal10d?: number
   signupAttemptsByDeviceTotal10d: number
 }
 
@@ -282,7 +281,7 @@ type TransactionEvidenceSummary = {
   deviceTransactionSum?: Array<TransactionSumEvidence>
   accountsByDeviceTotal3d?: number
   accountsByDeviceTotal10d?: number
-  accessedAccountsByDeviceTotal60d: number
+  accessedAccountsByDeviceTotal60d?: number
   consortiumAccessedAccountsByDeviceTotal30d?: number
   cancelledTransactionsByDeviceTotal7d?: number
   cancelledTransactionsByDeviceTotal30d?: number

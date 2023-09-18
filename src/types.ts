@@ -67,8 +67,8 @@ type Reason = {
 }
 
 export type RegisterFeedbackBodyProps = {
+  event: string
   accountId?: string
-  event: FeedbackEvent
   installationId?: string
   loginId?: string
   paymentId?: string
@@ -257,7 +257,7 @@ type SignupEvidenceSummary = {
   distanceFromLastLocationToDeclaredAddress: number
   accountsByDeviceTotal3d: number
   accountsByDeviceTotal10d: number
-  accessedAccountsByDeviceTotal60d?: number
+  accessedAccountsByDeviceTotal60d: number
   signupAttemptsByDeviceTotal10d: number
 }
 
@@ -282,7 +282,7 @@ type TransactionEvidenceSummary = {
   deviceTransactionSum?: Array<TransactionSumEvidence>
   accountsByDeviceTotal3d?: number
   accountsByDeviceTotal10d?: number
-  accessedAccountsByDeviceTotal60d?: number
+  accessedAccountsByDeviceTotal60d: number
   consortiumAccessedAccountsByDeviceTotal30d?: number
   cancelledTransactionsByDeviceTotal7d?: number
   cancelledTransactionsByDeviceTotal30d?: number
@@ -297,7 +297,7 @@ type TransactionAddress = {
 }
 
 type TransactionSumEvidence = {
-  currency?: string
+  currency: string
   amount: number
 }
 
@@ -307,26 +307,27 @@ type PaymentValue = {
 }
 
 export enum CouponType {
-  PercentOff = 'percent_off',
-  FixedValue = 'fixed_value'
+  FixedValue = 'fixed_value',
+  PercentOff = 'percent_off'
 }
 
 type Coupon = {
+  type: CouponType
   id?: string
-  type?: CouponType
   value?: number
   maxDiscount?: number
   name?: string
 }
 
 export enum PaymentMethodType {
+  ApplePay = 'apple_pay',
+  AccountBalance = 'account_balance',
   CreditCard = 'credit_card',
   DebitCard = 'debit_card',
-  ApplePay = 'apple_pay',
   GooglePay = 'google_pay',
+  MealVoucher = 'meal_voucher',
   NuPay = 'nu_pay',
-  Pix = 'pix',
-  MealVoucher = 'meal_voucher'
+  Pix = 'pix'
 }
 
 type CardInfo = {
@@ -343,30 +344,30 @@ type PaymentMethod = {
 }
 
 export enum FeedbackEvent {
-  PaymentAccepted = 'payment_accepted',
-  PaymentAcceptedByThirdParty = 'payment_accepted_by_third_party',
-  PaymentAcceptedByControlGroup = 'payment_accepted_by_control_group',
-  PaymentDeclined = 'payment_declined',
-  PaymentDeclinedByRiskAnalysis = 'payment_declined_by_risk_analysis',
-  PaymentDeclinedByManualReview = 'payment_declined_by_manual_review',
-  PaymentDeclinedByBusiness = 'payment_declined_by_business',
-  PaymentDeclinedByAcquirer = 'payment_declined_by_acquirer',
+  AccountTakeover = 'account_takeover',
+  ChallengeFailed = 'challenge_failed',
+  ChallengePassed = 'challenge_passed',
+  Chargeback = 'chargeback',
+  ChargebackNotification = 'chargeback_notification',
+  IdentityFraud = 'identity_fraud',
   LoginAccepted = 'login_accepted',
   LoginDeclined = 'login_declined',
-  SignupAccepted = 'signup_accepted',
-  SignupDeclined = 'signup_declined',
-  ChallengePassed = 'challenge_passed',
-  ChallengeFailed = 'challenge_failed',
+  MposFraud = 'mpos_fraud',
   PasswordChangedSuccessfully = 'password_changed_successfully',
   PasswordChangeFailed = 'password_change_failed',
-  Verified = 'verified',
-  IdentityFraud = 'identity_fraud',
-  ChargebackNotification = 'chargeback_notification',
-  Chargeback = 'chargeback',
+  PaymentAccepted = 'payment_accepted',
+  PaymentAcceptedByControlGroup = 'payment_accepted_by_control_group',
+  PaymentAcceptedByThirdParty = 'payment_accepted_by_third_party',
+  PaymentDeclined = 'payment_declined',
+  PaymentDeclinedByAcquirer = 'payment_declined_by_acquirer',
+  PaymentDeclinedByBusiness = 'payment_declined_by_business',
+  PaymentDeclinedByManualReview = 'payment_declined_by_manual_review',
+  PaymentDeclinedByRiskAnalysis = 'payment_declined_by_risk_analysis',
   PromotionAbuse = 'promotion_abuse',
-  AccountTakeover = 'account_takeover',
-  MposFraud = 'mpos_fraud',
-  Reset = 'reset'
+  Reset = 'reset',
+  SignupAccepted = 'signup_accepted',
+  SignupDeclined = 'signup_declined',
+  Verified = 'verified'
 }
 
 export type SearchAccountsBodyProps = {

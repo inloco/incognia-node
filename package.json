@@ -4,6 +4,7 @@
   "repository": "https://github.com/inloco/incognia-node",
   "version": "4.2.0",
   "license": "MIT",
+  "type": "module",
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "typings": "dist/index.d.ts",

@@ -149,12 +149,16 @@ describe('API', () => {
         riskAssessment: 'low_risk'
       }
 
+      const sessionToken = 'session_token'
+
       nock(BASE_ENDPOINT_URL)
-        .post(`/v2/onboarding/signups`)
+        .post(`/v2/onboarding/signups`, {
+          session_token: sessionToken
+        })
         .reply(200, apiResponse)
 
       const webSignup = await incogniaApi.registerWebSignup({
-        sessionToken: 'session_token'
+        sessionToken
       })
       expect(webSignup).toEqual(expectedResponse)
     })

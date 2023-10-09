@@ -433,6 +433,7 @@ type CardInfo = {
 
 type PaymentMethod = {
   type: PaymentMethodType
+  identifier?: string
   creditCardInfo?: CardInfo
   debitCardInfo?: CardInfo
 }

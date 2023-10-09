@@ -1,31 +1,33 @@
 import axios, { AxiosRequestConfig } from 'axios'
 import qs from 'qs'
-
+import {
+  CustomRequestError,
+  IncogniaError,
+  throwCustomRequestError
+} from './errors'
 import {
   convertObjectToCamelCase,
   convertObjectToSnakeCase
 } from './formatting'
 import {
-  throwCustomRequestError,
-  IncogniaError,
-  CustomRequestError
-} from './errors'
-import { buildUserAgent } from './utils'
-
-import {
-  TransactionType,
-  RegisterPaymentProps,
-  RegisterLoginProps,
-  RegisterFeedbackParamsProps,
-  RegisterFeedbackBodyProps,
-  TransactionResponse,
-  SignupResponse,
   Method,
+  RegisterFeedbackBodyProps,
+  RegisterFeedbackParamsProps,
+  RegisterLoginProps,
+  RegisterPaymentProps,
   RegisterSignupProps,
   RegisterTransactionProps,
+  RegisterWebLoginProps,
+  RegisterWebSignupProps,
   SearchAccountsBodyProps,
-  SearchAccountsResponse
+  SearchAccountsResponse,
+  SignupResponse,
+  TransactionResponse,
+  TransactionType,
+  WebSignupResponse,
+  WebTransactionResponse
 } from './types'
+import { buildUserAgent } from './utils'
 
 type IncogniaApiConstructor = {
   clientId: string
@@ -92,21 +94,47 @@ export class IncogniaApi {
       throw new IncogniaError('No installationId provided')
     }
 
-    const data = convertObjectToSnakeCase(props)
-    return this.resourceRequest({
-      url: apiEndpoints.SIGNUPS,
-      method: Method.Post,
-      data
-    })
+    return this.#registerBaseSignup(props)
+  }
+
+  async registerWebSignup(
+    props: RegisterWebSignupProps
+  ): Promise<WebSignupResponse> {
+    const { sessionToken } = props || {}
+    if (!sessionToken) {
+      throw new IncogniaError('No sessionToken provided')
+    }
+
+    return this.#registerBaseSignup(props)
   }
 
   async registerLogin(props: RegisterLoginProps): Promise<TransactionResponse> {
+    const { installationId, accountId } = props || {}
+    if (!installationId || !accountId) {
+      throw new IncogniaError('No installationId or accountId provided')
+    }
+
+    return this.#registerTransaction({ ...props, type: TransactionType.Login })
+  }
+
+  async registerWebLogin(
+    props: RegisterWebLoginProps
+  ): Promise<WebTransactionResponse> {
+    const { sessionToken, accountId } = props || {}
+    if (!sessionToken || !accountId) {
+      throw new IncogniaError('No sessionToken or accountId provided')
+    }
     return this.#registerTransaction({ ...props, type: TransactionType.Login })
   }
 
   async registerPayment(
     props: RegisterPaymentProps
   ): Promise<TransactionResponse> {
+    const { installationId, accountId } = props || {}
+    if (!installationId || !accountId) {
+      throw new IncogniaError('No installationId or accountId provided')
+    }
+
     return this.#registerTransaction({
       ...props,
       type: TransactionType.Payment
@@ -133,12 +161,18 @@ export class IncogniaApi {
     })
   }
 
-  async #registerTransaction(props: RegisterTransactionProps) {
-    const { installationId, accountId } = props || {}
-    if (!installationId || !accountId) {
-      throw new IncogniaError('No installationId or accountId provided')
-    }
+  async #registerBaseSignup(
+    props: RegisterSignupProps | RegisterWebSignupProps
+  ) {
+    const data = convertObjectToSnakeCase(props)
+    return this.resourceRequest({
+      url: apiEndpoints.SIGNUPS,
+      method: Method.Post,
+      data
+    })
+  }
 
+  async #registerTransaction(props: RegisterTransactionProps) {
     const data = convertObjectToSnakeCase(props)
     return this.resourceRequest({
       url: apiEndpoints.TRANSACTIONS,

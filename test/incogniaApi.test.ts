@@ -1,8 +1,8 @@
 import nock from 'nock'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
-  FeedbackEvent,
   CouponType,
+  FeedbackEvent,
   IncogniaApi,
   IncogniaApiError,
   IncogniaError,
@@ -138,6 +138,31 @@ describe('API', () => {
       expect(signup).toEqual(expectedResponse)
     })
 
+    it('registers a web signup', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      const sessionToken = 'session_token'
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/onboarding/signups`, {
+          session_token: sessionToken
+        })
+        .reply(200, apiResponse)
+
+      const webSignup = await incogniaApi.registerWebSignup({
+        sessionToken
+      })
+      expect(webSignup).toEqual(expectedResponse)
+    })
+
     it('registers login', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
@@ -168,6 +193,28 @@ describe('API', () => {
         accountId: 'account_id'
       })
       expect(login).toEqual(expectedResponse)
+    })
+
+    it('registers a web login', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const webLogin = await incogniaApi.registerWebLogin({
+        sessionToken: 'session_token',
+        accountId: 'account_id'
+      })
+      expect(webLogin).toEqual(expectedResponse)
     })
 
     it('registers payment', async () => {

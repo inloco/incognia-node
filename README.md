@@ -37,9 +37,9 @@ const incogniaApi = new IncogniaApi({
 
 ## API methods
 
-### Registering a Signup
+### Registering a Mobile Signup
 
-This method registers a new signup for the given installation and address, returning a signup assessment, containing the risk assessment and supporting evidence:
+This method registers a new mobile signup for the given installation and address, returning a signup assessment, containing the risk assessment and supporting evidence:
 
 ```js
 try {
@@ -64,7 +64,22 @@ try {
 }
 ```
 
-### Getting a Signup
+### Registering a Web Signup
+
+This method registers a new web signup for the given session token, returning a signup assessment, containing the risk assessment and supporting evidence:
+
+```js
+try {
+  const signup = await incogniaApi.registerWebSignup({
+    sessionToken: 'session_token',
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
+
+### Getting a Mobile Signup
 
 This method allows you to retrieve the latest assessment for a given signup event, returning a signup assessment, containing the risk assessment and supporting evidence:
 
@@ -76,9 +91,9 @@ try {
 }
 ```
 
-### Registering a Login
+### Registering a Mobile Login
 
-This method registers a new login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new mobile login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
@@ -91,6 +106,22 @@ try {
   console.log(error.message)
 }
 ```
+
+### Registering a Web Login
+
+This method registers a new web login for the given session token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+
+```js
+try {
+  const login = await incogniaApi.registerWebLogin({
+    sessionToken: 'session_token',
+    accountId: 'account_id',
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
 
 ### Registering a Payment
 

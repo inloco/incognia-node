@@ -18,11 +18,13 @@ import {
   RegisterSignupProps,
   RegisterTransactionProps,
   RegisterWebLoginProps,
+  RegisterWebSignupProps,
   SearchAccountsBodyProps,
   SearchAccountsResponse,
   SignupResponse,
   TransactionResponse,
   TransactionType,
+  WebSignupResponse,
   WebTransactionResponse
 } from './types'
 import { buildUserAgent } from './utils'
@@ -90,6 +92,22 @@ export class IncogniaApi {
     const { installationId } = props || {}
     if (!installationId) {
       throw new IncogniaError('No installationId provided')
+    }
+
+    const data = convertObjectToSnakeCase(props)
+    return this.resourceRequest({
+      url: apiEndpoints.SIGNUPS,
+      method: Method.Post,
+      data
+    })
+  }
+
+  async registerWebSignup(
+    props: RegisterWebSignupProps
+  ): Promise<WebSignupResponse> {
+    const { sessionToken } = props || {}
+    if (!sessionToken) {
+      throw new IncogniaError('No sessionToken provided')
     }
 
     const data = convertObjectToSnakeCase(props)

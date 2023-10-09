@@ -9,25 +9,42 @@ export enum TransactionAddressType {
   Home = 'home'
 }
 
-export type RegisterSignupProps = {
-  installationId: string
-  addressCoordinates?: AddressCoordinates
-  addressLine?: string
-  structuredAddress?: StructuredAddress
+export type RegisterSignupBaseProps = {
   accountId?: string
-  externalId?: string
   policyId?: string
   [x: string]: any
 }
 
-export type SignupResponse = {
+export type RegisterSignupProps = RegisterSignupBaseProps & {
+  installationId: string
+  addressCoordinates?: AddressCoordinates
+  addressLine?: string
+  structuredAddress?: StructuredAddress
+  externalId?: string
+}
+
+export type RegisterWebSignupProps = RegisterSignupBaseProps & {
+  sessionToken: string
+}
+
+export type SignupBaseResponse = {
   id: string
-  requestId: string
-  deviceId: string
+  installationId: string
   riskAssessment: RiskAssessment
   reasons: Array<Reason>
+}
+
+export type SignupResponse = SignupBaseResponse & {
+  requestId: string
+  deviceId: string
   evidence: SignupEvidenceSummary
 }
+
+export type WebSignupResponse = SignupBaseResponse & {
+  evidence: WebSignupEvidenceSummary
+}
+
+export type WebSignupEvidenceSummary = WebEvidenceSummary
 
 type RegisterLoginBaseProps = {
   accountId: string
@@ -303,7 +320,9 @@ type TransactionEvidenceSummary = {
   devicesByAccountTotal30d?: number
 }
 
-type WebTransactionEvidenceSummary = {
+type WebTransactionEvidenceSummary = WebEvidenceSummary
+
+type WebEvidenceSummary = {
   vpn?: VpnEvidence
   vpnapiIo?: VpnapiIoEvidence
   bot?: BotEvidence

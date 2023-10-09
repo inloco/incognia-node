@@ -29,14 +29,21 @@ export type SignupResponse = {
   evidence: SignupEvidenceSummary
 }
 
-export type RegisterLoginProps = {
-  installationId: string
+type RegisterLoginBaseProps = {
   accountId: string
-  relatedAccountId?: string
   policyId?: string
+  [x: string]: any
+}
+
+export type RegisterLoginProps = RegisterLoginBaseProps & {
+  installationId: string
+  relatedAccountId?: string
   location?: TransactionLocation
   paymentMethodIdentifier?: string
-  [x: string]: any
+}
+
+export type RegisterWebLoginProps = RegisterLoginBaseProps & {
+  sessionToken: string
 }
 
 export type RegisterPaymentProps = {
@@ -52,13 +59,20 @@ export type RegisterPaymentProps = {
   [x: string]: any
 }
 
-export type TransactionResponse = {
+export type TransactionBaseResponse = {
   id: string
   installationId: string
-  deviceId: string
   riskAssessment: RiskAssessment
   reasons: Array<Reason>
+}
+
+export type TransactionResponse = TransactionBaseResponse & {
+  deviceId: string
   evidence: TransactionEvidenceSummary
+}
+
+export type WebTransactionResponse = TransactionBaseResponse & {
+  evidence: WebTransactionEvidenceSummary
 }
 
 type Reason = {
@@ -88,6 +102,7 @@ export enum TransactionType {
 
 export type RegisterTransactionProps = (
   | RegisterLoginProps
+  | RegisterWebLoginProps
   | RegisterPaymentProps
 ) & {
   type: TransactionType
@@ -286,6 +301,65 @@ type TransactionEvidenceSummary = {
   cancelledTransactionsByDeviceTotal7d?: number
   cancelledTransactionsByDeviceTotal30d?: number
   devicesByAccountTotal30d?: number
+}
+
+type WebTransactionEvidenceSummary = {
+  vpn?: VpnEvidence
+  vpnapiIo?: VpnapiIoEvidence
+  bot?: BotEvidence
+  multipleAccounts?: MultipleAccountsEvidence
+  multipleInstallations?: MultipleInstallationsEvidence
+  suspiciousFingerprintVelocity?: SuspiciousFingerprintVelocityEvidence
+  deviceModel?: string
+}
+
+type VpnEvidence = {
+  result?: DetectionResult
+  rttDetectionScore?: number
+  tcpSignatureDetectionScore?: number
+  ipDatabaseDetectionScore?: number
+}
+
+type VpnapiIoEvidence = {
+  result: DetectionResult
+  vpn: DetectionResult
+  proxy: DetectionResult
+  tor: DetectionResult
+  relay: DetectionResult
+}
+
+type BotEvidence = {
+  result?: DetectionResult
+}
+
+type MultipleAccountsEvidence = {
+  accountsByDeviceTotal15d?: number
+  accountsByDeviceTotal30d?: number
+  accountsByDeviceTotal60d?: number
+  accountsByInstallationTotal15d?: number
+  accountsByInstallationTotal30d?: number
+  accountsByInstallationTotal60d?: number
+  accountsByIpTotal15d?: number
+}
+
+type MultipleInstallationsEvidence = {
+  result?: DetectionResult
+  installationsByIpTotal15d?: number
+}
+
+type SuspiciousFingerprintVelocityEvidence = {
+  canvasGeometriesByInstallationTotal15d?: number
+  canvasGeometriesByIpTotal15d?: number
+  canvasTextsByInstallationTotal15d?: number
+  canvasTextsByIpTotal15d?: number
+  webglCanvasDataByInstallationTotal15d?: number
+  webglCanvasDataByIpTotal15d?: number
+  eventsByInstallationTotal15d?: number
+  eventsByIpTotal15d?: number
+  sessionsByInstallationTotal15d?: number
+  sessionsByIpTotal15d?: number
+  visitorsByInstallationTotal15d?: number
+  visitorsByIpTotal15d?: number
 }
 
 type TransactionAddress = {

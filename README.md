@@ -76,9 +76,9 @@ try {
 }
 ```
 
-### Registering a Login
+### Registering a Mobile Login
 
-This method registers a new login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new mobile login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
@@ -91,6 +91,22 @@ try {
   console.log(error.message)
 }
 ```
+
+### Registering a Web Login
+
+This method registers a new web login for the given session token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+
+```js
+try {
+  const login = await incogniaApi.registerWebLogin({
+    sessionToken: 'session_token',
+    accountId: 'account_id',
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
 
 ### Registering a Payment
 

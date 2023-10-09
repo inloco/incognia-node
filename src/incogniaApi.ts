@@ -166,7 +166,7 @@ export class IncogniaApi {
   ) {
     const data = convertObjectToSnakeCase(props)
     return this.resourceRequest({
-      url: apiEndpoints.TRANSACTIONS,
+      url: apiEndpoints.SIGNUPS,
       method: Method.Post,
       data
     })

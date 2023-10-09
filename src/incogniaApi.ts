@@ -94,12 +94,7 @@ export class IncogniaApi {
       throw new IncogniaError('No installationId provided')
     }
 
-    const data = convertObjectToSnakeCase(props)
-    return this.resourceRequest({
-      url: apiEndpoints.SIGNUPS,
-      method: Method.Post,
-      data
-    })
+    return this.#registerBaseSignup(props)
   }
 
   async registerWebSignup(
@@ -110,12 +105,7 @@ export class IncogniaApi {
       throw new IncogniaError('No sessionToken provided')
     }
 
-    const data = convertObjectToSnakeCase(props)
-    return this.resourceRequest({
-      url: apiEndpoints.SIGNUPS,
-      method: Method.Post,
-      data
-    })
+    return this.#registerBaseSignup(props)
   }
 
   async registerLogin(props: RegisterLoginProps): Promise<TransactionResponse> {
@@ -167,6 +157,17 @@ export class IncogniaApi {
       url: apiEndpoints.FEEDBACKS,
       method: Method.Post,
       params,
+      data
+    })
+  }
+
+  async #registerBaseSignup(
+    props: RegisterSignupProps | RegisterWebSignupProps
+  ) {
+    const data = convertObjectToSnakeCase(props)
+    return this.resourceRequest({
+      url: apiEndpoints.TRANSACTIONS,
+      method: Method.Post,
       data
     })
   }

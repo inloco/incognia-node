@@ -28,6 +28,7 @@ export type RegisterWebSignupProps = RegisterSignupBaseProps & {
 }
 
 export type SignupBaseResponse = {
+  deviceId: string
   id: string
   installationId: string
   riskAssessment: RiskAssessment
@@ -36,7 +37,6 @@ export type SignupBaseResponse = {
 
 export type SignupResponse = SignupBaseResponse & {
   requestId: string
-  deviceId: string
   evidence: SignupEvidenceSummary
 }
 
@@ -77,6 +77,7 @@ export type RegisterPaymentProps = {
 }
 
 export type TransactionBaseResponse = {
+  deviceId: string
   id: string
   installationId: string
   riskAssessment: RiskAssessment
@@ -84,7 +85,6 @@ export type TransactionBaseResponse = {
 }
 
 export type TransactionResponse = TransactionBaseResponse & {
-  deviceId: string
   evidence: TransactionEvidenceSummary
 }
 
@@ -352,6 +352,7 @@ type BotEvidence = {
 }
 
 type MultipleAccountsEvidence = {
+  result?: DetectionResult
   accountsByDeviceTotal15d?: number
   accountsByDeviceTotal30d?: number
   accountsByDeviceTotal60d?: number
@@ -367,6 +368,7 @@ type MultipleInstallationsEvidence = {
 }
 
 type SuspiciousFingerprintVelocityEvidence = {
+  result?: DetectionResult
   canvasGeometriesByInstallationTotal15d?: number
   canvasGeometriesByIpTotal15d?: number
   canvasTextsByInstallationTotal15d?: number

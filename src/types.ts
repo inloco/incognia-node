@@ -245,6 +245,11 @@ type ActivityEvidence = {
   lastKnownAddressActivity: string
 }
 
+type RemoteAccess = {
+  result: DetectionResult
+  suspectAccessibilityServicesRunning: DetectionResult
+}
+
 enum DeviceFraudReputation {
   ConfirmedFraud = 'confirmed_fraud',
   Allowed = 'allowed',
@@ -318,6 +323,7 @@ type TransactionEvidenceSummary = {
   cancelledTransactionsByDeviceTotal7d?: number
   cancelledTransactionsByDeviceTotal30d?: number
   devicesByAccountTotal30d?: number
+  remoteAccess?: RemoteAccess
 }
 
 type WebTransactionEvidenceSummary = WebEvidenceSummary

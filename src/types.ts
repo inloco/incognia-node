@@ -57,6 +57,8 @@ export type RegisterLoginProps = RegisterLoginBaseProps & {
   relatedAccountId?: string
   location?: TransactionLocation
   paymentMethodIdentifier?: string
+  paymentValue?: PaymentValue
+  paymentMethods?: Array<PaymentMethod>
 }
 
 export type RegisterWebLoginProps = RegisterLoginBaseProps & {

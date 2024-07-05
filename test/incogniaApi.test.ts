@@ -257,51 +257,6 @@ describe('API', () => {
         })
       })
     })
-
-    it('retrieves accounts', async () => {
-      const timestamp = '2022-06-02T22:25:30.885104Z'
-
-      const apiResponse = {
-        count: 2,
-        data: [
-          {
-            account_id: '1',
-            first_event_at: timestamp,
-            last_event_at: timestamp
-          },
-          {
-            account_id: '2',
-            first_event_at: timestamp,
-            last_event_at: timestamp
-          }
-        ]
-      }
-
-      const expectedResponse = {
-        count: 2,
-        data: [
-          {
-            accountId: '1',
-            firstEventAt: timestamp,
-            lastEventAt: timestamp
-          },
-          {
-            accountId: '2',
-            firstEventAt: timestamp,
-            lastEventAt: timestamp
-          }
-        ]
-      }
-
-      nock(BASE_ENDPOINT_URL)
-        .post(`/v2/accounts/search`)
-        .reply(200, apiResponse)
-
-      const accounts = await incogniaApi.searchAccounts({
-        installationId: 'installation_id'
-      })
-      expect(accounts).toEqual(expectedResponse)
-    })
   })
 
   describe('Access token managament', () => {

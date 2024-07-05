@@ -19,8 +19,6 @@ import {
   RegisterTransactionProps,
   RegisterWebLoginProps,
   RegisterWebSignupProps,
-  SearchAccountsBodyProps,
-  SearchAccountsResponse,
   SignupResponse,
   TransactionResponse,
   TransactionType,
@@ -46,7 +44,6 @@ type ApiEndpoints = {
   SIGNUPS: string
   TRANSACTIONS: string
   FEEDBACKS: string
-  ACCOUNTS: string
 }
 
 const BASE_ENDPOINT = 'https://api.incognia.com/api'
@@ -55,8 +52,7 @@ export const apiEndpoints: ApiEndpoints = {
   TOKEN: `${BASE_ENDPOINT}/v2/token`,
   SIGNUPS: `${BASE_ENDPOINT}/v2/onboarding/signups`,
   TRANSACTIONS: `${BASE_ENDPOINT}/v2/authentication/transactions`,
-  FEEDBACKS: `${BASE_ENDPOINT}/v2/feedbacks`,
-  ACCOUNTS: `${BASE_ENDPOINT}/v2/accounts/search`
+  FEEDBACKS: `${BASE_ENDPOINT}/v2/feedbacks`
 }
 
 export class IncogniaApi {
@@ -165,23 +161,6 @@ export class IncogniaApi {
     const data = convertObjectToSnakeCase(props)
     return this.resourceRequest({
       url: apiEndpoints.TRANSACTIONS,
-      method: Method.Post,
-      data
-    })
-  }
-
-  // Search Accounts
-  async searchAccounts(
-    props: SearchAccountsBodyProps
-  ): Promise<SearchAccountsResponse> {
-    const { installationId } = props || {}
-    if (!installationId) {
-      throw new IncogniaError('No installationId provided')
-    }
-    const data = convertObjectToSnakeCase(props)
-
-    return this.resourceRequest({
-      url: apiEndpoints.ACCOUNTS,
       method: Method.Post,
       data
     })

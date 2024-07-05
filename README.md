@@ -164,20 +164,6 @@ try {
 }
 ```
 
-### Searching for accounts
-
-This method fetches every account associated with a specific installation, returning the number of accounts and an array containing the account IDs and related timestamps. Use this API to map the relationship between user accounts and devices.
-
-```js
-try {
-  const accounts = await incogniaApi.searchAccounts({
-    installationId: 'installation_id'
-  })
-} catch (error) {
-  console.log(error.message)
-}
-```
-
 ## Typescript enabled
 
 Thanks to Typescript, all methods attributes and data response are typed, meaning any typescript-enabled editor can take advantage of intellisense and auto-complete:

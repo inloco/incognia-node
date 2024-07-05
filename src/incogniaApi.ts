@@ -77,17 +77,6 @@ export class IncogniaApi {
   /*
    ** Resources
    */
-  async getSignupAssessment(signupId: string): Promise<SignupResponse> {
-    if (!signupId) {
-      throw new IncogniaError('No signupId provided')
-    }
-
-    return this.resourceRequest({
-      url: `${apiEndpoints.SIGNUPS}/${signupId}`,
-      method: Method.Get
-    })
-  }
-
   async registerSignup(props: RegisterSignupProps): Promise<SignupResponse> {
     const { installationId } = props || {}
     if (!installationId) {

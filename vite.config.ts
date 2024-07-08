@@ -13,7 +13,10 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/index.ts'),
       formats: ['es', 'cjs'],
-      fileName: format => `index.${format}.js`
+      fileName: format => {
+        if (format === 'cjs') return `index.${format}`
+        return `index.${format}.js`
+      }
     },
     rollupOptions: {
       external: [...Object.keys(dependencies)],

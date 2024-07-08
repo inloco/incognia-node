@@ -78,19 +78,6 @@ try {
 }
 ```
 
-
-### Getting a Mobile Signup
-
-This method allows you to retrieve the latest assessment for a given signup event, returning a signup assessment, containing the risk assessment and supporting evidence:
-
-```js
-try {
-  const signupAssessment = await incogniaApi.getSignupAssessment(signupId)
-} catch (error) {
-  console.log(error.message)
-}
-```
-
 ### Registering a Mobile Login
 
 This method registers a new mobile login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
@@ -171,20 +158,6 @@ try {
     accountId: 'account_id',
     event: 'payment_accepted',
     timestamp: 1610570403068 // milliseconds
-  })
-} catch (error) {
-  console.log(error.message)
-}
-```
-
-### Searching for accounts
-
-This method fetches every account associated with a specific installation, returning the number of accounts and an array containing the account IDs and related timestamps. Use this API to map the relationship between user accounts and devices.
-
-```js
-try {
-  const accounts = await incogniaApi.searchAccounts({
-    installationId: 'installation_id'
   })
 } catch (error) {
   console.log(error.message)

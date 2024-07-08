@@ -472,18 +472,3 @@ export enum FeedbackEvent {
   SignupDeclined = 'signup_declined',
   Verified = 'verified'
 }
-
-export type SearchAccountsBodyProps = {
-  installationId: string
-}
-
-export type SearchAccountsResponse = {
-  count: number
-  data: Array<AccountData>
-}
-
-type AccountData = {
-  accountId: string
-  firstEventAt: string
-  lastEventAt: string
-}

@@ -75,30 +75,6 @@ describe('API', () => {
       })
     })
 
-    it('gets signup assessment', async () => {
-      const apiResponse = {
-        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-        request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
-        risk_assessment: 'low_risk'
-      }
-
-      const expectedResponse = {
-        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-        requestId: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
-        riskAssessment: 'low_risk'
-      }
-
-      nock(BASE_ENDPOINT_URL)
-        .get(`/v2/onboarding/signups/${apiResponse.id}`)
-        .reply(200, apiResponse)
-
-      const signupAssessment = await incogniaApi.getSignupAssessment(
-        apiResponse.id
-      )
-
-      expect(signupAssessment).toEqual(expectedResponse)
-    })
-
     it('registers signup', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
@@ -281,51 +257,6 @@ describe('API', () => {
         })
       })
     })
-
-    it('retrieves accounts', async () => {
-      const timestamp = '2022-06-02T22:25:30.885104Z'
-
-      const apiResponse = {
-        count: 2,
-        data: [
-          {
-            account_id: '1',
-            first_event_at: timestamp,
-            last_event_at: timestamp
-          },
-          {
-            account_id: '2',
-            first_event_at: timestamp,
-            last_event_at: timestamp
-          }
-        ]
-      }
-
-      const expectedResponse = {
-        count: 2,
-        data: [
-          {
-            accountId: '1',
-            firstEventAt: timestamp,
-            lastEventAt: timestamp
-          },
-          {
-            accountId: '2',
-            firstEventAt: timestamp,
-            lastEventAt: timestamp
-          }
-        ]
-      }
-
-      nock(BASE_ENDPOINT_URL)
-        .post(`/v2/accounts/search`)
-        .reply(200, apiResponse)
-
-      const accounts = await incogniaApi.searchAccounts({
-        installationId: 'installation_id'
-      })
-      expect(accounts).toEqual(expectedResponse)
-    })
   })
 
   describe('Access token managament', () => {
@@ -366,25 +297,29 @@ describe('API', () => {
 
     describe('when calling the api ', () => {
       it('calls access token endpoint only at the first time', async () => {
-        const signupId = '123'
         const accessTokenEndpointFirstCall = nock(BASE_ENDPOINT_URL)
           .post('/v2/token')
           .reply(200, accessTokenExample)
-        const signupEndpointGet = nock(BASE_ENDPOINT_URL)
+        const signupEndpointRegister = nock(BASE_ENDPOINT_URL)
           .persist()
-          .get(`/v2/onboarding/signups/${signupId}`)
+          .post(`/v2/onboarding/signups`)
           .reply(200)
         const accessTokenEndpointSecondCall = nock(BASE_ENDPOINT_URL)
           .post('/v2/token')
           .reply(200, accessTokenExample)
 
+        const payload = {
+          installationId: 'installation_id',
+          policyId: 'policy_id'
+        }
+
         //call resource for the first time
-        await incogniaApi.getSignupAssessment(signupId)
+        await incogniaApi.registerSignup(payload)
         expect(accessTokenEndpointFirstCall.isDone()).toBeTruthy()
-        expect(signupEndpointGet.isDone()).toBeTruthy()
+        expect(signupEndpointRegister.isDone()).toBeTruthy()
 
         //call resource for the second time
-        await incogniaApi.getSignupAssessment(signupId)
+        await incogniaApi.registerSignup(payload)
         expect(accessTokenEndpointSecondCall.isDone()).toBeFalsy()
       })
     })

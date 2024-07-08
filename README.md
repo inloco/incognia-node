@@ -22,8 +22,14 @@ yarn add @incognia/api
 
 Require the package:
 
+CommonJS modules:
 ```js
 const { IncogniaApi } = require('@incognia/api')
+```
+
+Or ES modules:
+```js
+import { IncogniaApi } from "@incognia/api";
 ```
 
 Instantiate with your clientId and clientSecret:

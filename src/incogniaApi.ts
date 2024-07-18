@@ -130,9 +130,9 @@ export class IncogniaApi {
     bodyParams: RegisterFeedbackBodyProps,
     queryParams?: RegisterFeedbackParamsProps
   ): Promise<void> {
-    const { event, timestamp } = bodyParams || {}
-    if (!event || !timestamp) {
-      throw new IncogniaError('No event or timestamp provided')
+    const { event } = bodyParams || {}
+    if (!event) {
+      throw new IncogniaError('No event provided')
     }
 
     const params = queryParams && convertObjectToSnakeCase(queryParams)

@@ -106,7 +106,9 @@ export type RegisterFeedbackBodyProps = {
   loginId?: string
   paymentId?: string
   signupId?: string
+  /** @deprecated use occurredAt instead */
   timestamp?: number
+  occurredAt?: Date
   [x: string]: any
 }
 
@@ -130,7 +132,9 @@ export type RegisterTransactionProps = (
 type TransactionLocation = {
   latitude: number
   longitude: number
+  /** @deprecated use collectedAt instead */
   timestamp?: number
+  collectedAt?: Date
 }
 
 type AddressCoordinates = {

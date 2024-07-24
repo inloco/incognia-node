@@ -162,8 +162,8 @@ try {
   incogniaApi.registerFeedback({
     installationId: 'installation_id',
     accountId: 'account_id',
-    event: 'payment_accepted',
-    timestamp: 1610570403068 // milliseconds
+    event: FeedbackEvent.AccountTakeover,
+    occurredAt: '2024-07-22T15:20:00Z'
   })
 } catch (error) {
   console.log(error.message)

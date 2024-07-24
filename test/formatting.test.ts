@@ -10,12 +10,14 @@ describe('convertObjectToSnakeCase', () => {
       convertObjectToSnakeCase({
         keyName: { nestedKey: 2 },
         a: [{ nestedInArray: 'black_rice' }],
-        keyNameWithNumber60d: 3
+        keyNameWithNumber60d: 3,
+        keyValueIsDate: new Date('2024-07-17T01:02:03Z')
       })
     ).toEqual({
       key_name: { nested_key: 2 },
       a: [{ nested_in_array: 'black_rice' }],
-      key_name_with_number_60d: 3
+      key_name_with_number_60d: 3,
+      key_value_is_date: '2024-07-17T01:02:03.000Z'
     })
   })
 })

@@ -228,9 +228,40 @@ describe('API', () => {
 
         await incogniaApi.registerFeedback(
           {
-            installationId: 'installation_id',
-            accountId: 'account_id',
+            event: FeedbackEvent.AccountTakeover
+          },
+          {
+            dryRun: true
+          }
+        )
+
+        const expectedData = {
+          event: FeedbackEvent.AccountTakeover,
+        }
+
+        const expectedParams = {
+          dry_run: true
+        }
+
+        expect(incogniaApi.resourceRequest).toBeCalledWith({
+          url: apiEndpoints.FEEDBACKS,
+          method: 'post',
+          params: expectedParams,
+          data: expectedData
+        })
+      })
+
+      it('registers feedback when all params are filled', async () => {
+        incogniaApi.resourceRequest = vi.fn()
+
+        await incogniaApi.registerFeedback(
+          {
             event: FeedbackEvent.AccountTakeover,
+            accountId: 'account_id',
+            installationId: 'installation_id',
+            loginId: 'login_id',
+            paymentId: 'payment_id',
+            signupId: 'signup_id',
             timestamp: 123
           },
           {
@@ -239,9 +270,12 @@ describe('API', () => {
         )
 
         const expectedData = {
-          installation_id: 'installation_id',
-          account_id: 'account_id',
           event: FeedbackEvent.AccountTakeover,
+          account_id: 'account_id',
+          installation_id: 'installation_id',
+          login_id: 'login_id',
+          payment_id: 'payment_id',
+          signup_id: 'signup_id',
           timestamp: 123
         }
 

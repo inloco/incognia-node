@@ -103,12 +103,15 @@ export type RegisterFeedbackBodyProps = {
   event: string
   accountId?: string
   installationId?: string
+  sessionToken?: string
+  requestToken?: string
   loginId?: string
   paymentId?: string
   signupId?: string
   /** @deprecated use occurredAt instead */
   timestamp?: number
   occurredAt?: Date
+  expiresAt?: Date
   [x: string]: any
 }
 

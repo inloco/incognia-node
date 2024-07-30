@@ -65,10 +65,8 @@ export type RegisterWebLoginProps = RegisterLoginBaseProps & {
   sessionToken: string
 }
 
-export type RegisterPaymentProps = {
-  installationId: string
+export type RegisterPaymentBaseProps = {
   accountId: string
-  relatedAccountId?: string
   policyId?: string
   externalId?: string
   addresses?: Array<TransactionAddress>
@@ -76,6 +74,15 @@ export type RegisterPaymentProps = {
   paymentMethods?: Array<PaymentMethod>
   coupon?: Coupon
   [x: string]: any
+}
+
+export type RegisterPaymentProps = RegisterPaymentBaseProps & {
+  installationId: string
+  relatedAccountId?: string
+}
+
+export type RegisterWebPaymentProps = RegisterPaymentBaseProps & {
+  sessionToken: string
 }
 
 export type TransactionBaseResponse = {

@@ -19,6 +19,7 @@ import {
   RegisterTransactionProps,
   RegisterWebLoginProps,
   RegisterWebSignupProps,
+  RegisterWebPaymentProps,
   SignupResponse,
   TransactionResponse,
   TransactionType,
@@ -120,6 +121,19 @@ export class IncogniaApi {
       throw new IncogniaError('No installationId or accountId provided')
     }
 
+    return this.#registerTransaction({
+      ...props,
+      type: TransactionType.Payment
+    })
+  }
+
+  async registerWebPayment(
+    props: RegisterWebPaymentProps
+  ): Promise<WebTransactionResponse> {
+    const { sessionToken, accountId } = props || {}
+    if (!sessionToken || !accountId) {
+      throw new IncogniaError('No sessionToken or accountId provided')
+    }
     return this.#registerTransaction({
       ...props,
       type: TransactionType.Payment

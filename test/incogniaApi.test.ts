@@ -218,6 +218,28 @@ describe('API', () => {
       expect(payment).toEqual(expectedResponse)
     })
 
+    it('registers a web payment', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const webPayment = await incogniaApi.registerWebPayment({
+        sessionToken: 'session_token',
+        accountId: 'account_id'
+      })
+      expect(webPayment).toEqual(expectedResponse)
+    })
+
     describe('Registers feedback', () => {
       beforeAll(() => {
         nock(BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
@@ -236,7 +258,7 @@ describe('API', () => {
         )
 
         const expectedData = {
-          event: FeedbackEvent.AccountTakeover,
+          event: FeedbackEvent.AccountTakeover
         }
 
         const expectedParams = {
@@ -265,8 +287,8 @@ describe('API', () => {
             paymentId: 'payment_id',
             signupId: 'signup_id',
             timestamp: 123,
-            occurredAt: new Date("Jul 19 2024 01:02:03 UTC"),
-            expiresAt:  new Date("Jul 30 2024 01:02:03 UTC"),
+            occurredAt: new Date('Jul 19 2024 01:02:03 UTC'),
+            expiresAt: new Date('Jul 30 2024 01:02:03 UTC')
           },
           {
             dryRun: true

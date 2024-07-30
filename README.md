@@ -23,13 +23,15 @@ yarn add @incognia/api
 Require the package:
 
 CommonJS modules:
+
 ```js
 const { IncogniaApi } = require('@incognia/api')
 ```
 
 Or ES modules:
+
 ```js
-import { IncogniaApi } from "@incognia/api";
+import { IncogniaApi } from '@incognia/api'
 ```
 
 Instantiate with your clientId and clientSecret:
@@ -77,7 +79,7 @@ This method registers a new web signup for the given session token, returning a 
 ```js
 try {
   const signup = await incogniaApi.registerWebSignup({
-    sessionToken: 'session_token',
+    sessionToken: 'session_token'
   })
 } catch (error) {
   console.log(error.message)
@@ -108,13 +110,12 @@ This method registers a new web login for the given session token and account, r
 try {
   const login = await incogniaApi.registerWebLogin({
     sessionToken: 'session_token',
-    accountId: 'account_id',
+    accountId: 'account_id'
   })
 } catch (error) {
   console.log(error.message)
 }
 ```
-
 
 ### Registering a Payment
 
@@ -147,6 +148,21 @@ try {
         type: 'shipping'
       }
     ]
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
+### Registering a Web Payment
+
+This method registers a new web payment for the given session token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+
+```js
+try {
+  const payment = await incogniaApi.registerWebPayment({
+    sessionToken: 'session_token',
+    accountId: 'account_id'
   })
 } catch (error) {
   console.log(error.message)

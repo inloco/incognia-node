@@ -2,8 +2,7 @@ import nock from 'nock'
 import { IncogniaApiError } from '../src'
 import { describe, expect, it } from 'vitest'
 import { requestResource } from '../src/request'
-
-const BASE_ENDPOINT_URL = 'https://api.incognia.com/api'
+import { BASE_ENDPOINT } from '../src/endpoints'
 
 const token = {
   createdAt: Date.now().valueOf(),
@@ -17,7 +16,7 @@ describe('requestResource', () => {
     it('informs Authorization header when requesting resource', async () => {
       const expectedAuthorizationHeader = `${token.tokenType} ${token.accessToken}`
 
-      const resourceRequest = nock(BASE_ENDPOINT_URL, {
+      const resourceRequest = nock(BASE_ENDPOINT, {
         reqheaders: {
           'Content-Type': 'application/json',
           Authorization: expectedAuthorizationHeader
@@ -28,7 +27,7 @@ describe('requestResource', () => {
 
       await requestResource(
         {
-          url: `${BASE_ENDPOINT_URL}/someUrl`,
+          url: `${BASE_ENDPOINT}/someUrl`,
           method: 'get'
         },
         token
@@ -39,7 +38,7 @@ describe('requestResource', () => {
 
     describe('and the request fails', () => {
       it('throws Incognia errors', async () => {
-        nock(BASE_ENDPOINT_URL).get('/someUrl').replyWithError({
+        nock(BASE_ENDPOINT).get('/someUrl').replyWithError({
           message: 'something awful happened',
           code: 'AWFUL_ERROR'
         })
@@ -47,7 +46,7 @@ describe('requestResource', () => {
         const dispatchRequest = async () => {
           await requestResource(
             {
-              url: `${BASE_ENDPOINT_URL}/someUrl`,
+              url: `${BASE_ENDPOINT}/someUrl`,
               method: 'get'
             },
             token

@@ -5,7 +5,7 @@ type ApiEndpoints = {
   FEEDBACKS: string
 }
 
-const BASE_ENDPOINT = 'https://api.incognia.com/api'
+export const BASE_ENDPOINT = 'https://api.incognia.com/api'
 
 export const apiEndpoints: ApiEndpoints = {
   TOKEN: `${BASE_ENDPOINT}/v2/token`,

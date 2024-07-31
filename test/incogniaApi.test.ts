@@ -1,8 +1,7 @@
 import nock from 'nock'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CouponType, FeedbackEvent, IncogniaApi } from '../src/'
-
-const BASE_ENDPOINT_URL = 'https://api.incognia.com/api'
+import { BASE_ENDPOINT } from '../src/endpoints'
 
 const credentials = {
   clientId: 'clientId',
@@ -64,7 +63,7 @@ describe('Incognia API', () => {
   describe('when the API is initialized', () => {
     beforeEach(() => {
       IncogniaApi.init(credentials)
-      nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
+      nock(BASE_ENDPOINT).post('/v2/token').reply(200, accessTokenExample)
     })
 
     it('validates signup', async () => {
@@ -88,9 +87,7 @@ describe('Incognia API', () => {
         signupAttemptsByDeviceTotal10d: 5
       }
 
-      nock(BASE_ENDPOINT_URL)
-        .post(`/v2/onboarding/signups`)
-        .reply(200, apiResponse)
+      nock(BASE_ENDPOINT).post(`/v2/onboarding/signups`).reply(200, apiResponse)
 
       const signup = await IncogniaApi.registerSignup({
         installationId: 'installation_id',
@@ -131,7 +128,7 @@ describe('Incognia API', () => {
 
       const sessionToken = 'session_token'
 
-      nock(BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT)
         .post(`/v2/onboarding/signups`, {
           session_token: sessionToken
         })
@@ -173,7 +170,7 @@ describe('Incognia API', () => {
         }
       }
 
-      nock(BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT)
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
@@ -204,7 +201,7 @@ describe('Incognia API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT)
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
@@ -235,7 +232,7 @@ describe('Incognia API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT)
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
@@ -269,7 +266,7 @@ describe('Incognia API', () => {
         riskAssessment: 'low_risk'
       }
 
-      nock(BASE_ENDPOINT_URL)
+      nock(BASE_ENDPOINT)
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
@@ -290,7 +287,7 @@ describe('Incognia API', () => {
       it('registers feedback when all required params are filled', async () => {
         const apiResponse = {}
 
-        nock(BASE_ENDPOINT_URL)
+        nock(BASE_ENDPOINT)
           .post(`/v2/feedbacks?dry_run=true`)
           .reply(200, apiResponse)
 
@@ -309,7 +306,7 @@ describe('Incognia API', () => {
       it('registers feedback when all params are filled', async () => {
         const apiResponse = {}
 
-        nock(BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, apiResponse)
+        nock(BASE_ENDPOINT).post(`/v2/feedbacks`).reply(200, apiResponse)
 
         expect(
           IncogniaApi.registerFeedback({

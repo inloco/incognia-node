@@ -232,9 +232,9 @@ try {
 
 ## Migration to v6
 
-The v6 has brought many changes to the `IncogniaApi` interface, transforming the previous instance methods into static methods.
+The v6 changed the `IncogniaApi` interface, transforming the previous instance methods into static methods.
 
-When migrating to v6, it'll be necessary to adjust the `IncogniaApi` usage as follows.
+When migrating to v6, adjust the `IncogniaApi` usage as follows.
 
 ### Initialization
 
@@ -256,7 +256,7 @@ IncogniaApi.init({
 
 ### Register methods
 
-Every method that was called on a `IncogniaApi` instance is now static, and should be called on the `IncogniaApi` class.
+Every method of the `IncogniaApi` instance is now static, and should be called on the `IncogniaApi` class.
 
 ```
 // Before

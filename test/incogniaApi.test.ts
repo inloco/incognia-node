@@ -1,17 +1,13 @@
 import nock from 'nock'
-import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  CouponType,
-  FeedbackEvent,
-  IncogniaApi,
-  IncogniaApiError,
-  IncogniaError,
-  apiEndpoints
-} from '../src/'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { CouponType, FeedbackEvent, IncogniaApi } from '../src/'
 
 const BASE_ENDPOINT_URL = 'https://api.incognia.com/api'
 
-let incogniaApi: IncogniaApi
+const credentials = {
+  clientId: 'clientId',
+  clientSecret: 'clientSecret'
+}
 
 const accessTokenExample = {
   access_token: 'access_token',
@@ -19,60 +15,62 @@ const accessTokenExample = {
   token_type: 'Bearer'
 }
 
-const credentials = {
-  clientId: 'clientId',
-  clientSecret: 'clientSecret'
-}
+describe('Incognia API', () => {
+  beforeEach(() => nock.cleanAll())
 
-describe('API', () => {
-  beforeEach(() => {
-    nock.cleanAll()
-    incogniaApi = new IncogniaApi(credentials)
+  describe('when the API is not initialized', () => {
+    it('throws an error when trying to initialize without clientId or clientSecret', () => {
+      expect(() =>
+        IncogniaApi.init({ clientId: '', clientSecret: 'clientSecret' })
+      ).toThrow('Missing required parameter: clientId')
+      expect(() =>
+        IncogniaApi.init({ clientId: 'clientId', clientSecret: '' })
+      ).toThrow('Missing required parameter: clientSecret')
+    })
+
+    it('throws an initialization error on each method call', () => {
+      const errorMessage = 'IncogniaApi not initialized'
+      const props = {
+        installationId: 'id',
+        accountId: 'id',
+        sessionToken: 'id',
+        event: FeedbackEvent.AccountTakeover
+      }
+
+      expect(() => IncogniaApi.registerSignup(props)).rejects.toThrow(
+        errorMessage
+      )
+      expect(() => IncogniaApi.registerWebSignup(props)).rejects.toThrow(
+        errorMessage
+      )
+      expect(() => IncogniaApi.registerLogin(props)).rejects.toThrow(
+        errorMessage
+      )
+      expect(() => IncogniaApi.registerWebLogin(props)).rejects.toThrow(
+        errorMessage
+      )
+      expect(() => IncogniaApi.registerPayment(props)).rejects.toThrow(
+        errorMessage
+      )
+      expect(() => IncogniaApi.registerWebPayment(props)).rejects.toThrow(
+        errorMessage
+      )
+      expect(() => IncogniaApi.registerFeedback(props)).rejects.toThrow(
+        errorMessage
+      )
+    })
   })
 
-  describe('Resources', () => {
+  describe('when the API is initialized', () => {
     beforeEach(() => {
+      IncogniaApi.init(credentials)
       nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
     })
 
-    describe('when requesting a resource', () => {
-      it('informs Authorization header when requesting resource', async () => {
-        const expectedAuthorizationHeader = `${accessTokenExample.token_type} ${accessTokenExample.access_token}`
-
-        const resourceRequest = nock(BASE_ENDPOINT_URL, {
-          reqheaders: {
-            'Content-Type': 'application/json',
-            Authorization: expectedAuthorizationHeader
-          }
-        })
-          .get(`/someUrl`)
-          .reply(200, {})
-
-        await incogniaApi.resourceRequest({
-          url: `${BASE_ENDPOINT_URL}/someUrl`,
-          method: 'get'
-        })
-
-        expect(resourceRequest.isDone()).toBeTruthy()
-      })
-
-      describe('and the request fails', () => {
-        it('throws Incognia errors', async () => {
-          nock(BASE_ENDPOINT_URL).get('/someUrl').replyWithError({
-            message: 'something awful happened',
-            code: 'AWFUL_ERROR'
-          })
-
-          const dispatchRequest = async () => {
-            await incogniaApi.resourceRequest({
-              url: `${BASE_ENDPOINT_URL}/someUrl`,
-              method: 'get'
-            })
-          }
-
-          await expect(dispatchRequest).rejects.toThrowError(IncogniaApiError)
-        })
-      })
+    it('validates signup', async () => {
+      expect(() => IncogniaApi.registerSignup({} as any)).rejects.toThrow(
+        'Missing required parameter: installationId'
+      )
     })
 
     it('registers signup', async () => {
@@ -94,7 +92,7 @@ describe('API', () => {
         .post(`/v2/onboarding/signups`)
         .reply(200, apiResponse)
 
-      const signup = await incogniaApi.registerSignup({
+      const signup = await IncogniaApi.registerSignup({
         installationId: 'installation_id',
         policyId: 'policy_id',
         structuredAddress: {
@@ -112,6 +110,12 @@ describe('API', () => {
         }
       })
       expect(signup).toEqual(expectedResponse)
+    })
+
+    it('validates a web signup', async () => {
+      expect(() => IncogniaApi.registerWebSignup({} as any)).rejects.toThrow(
+        'Missing required parameter: sessionToken'
+      )
     })
 
     it('registers a web signup', async () => {
@@ -133,10 +137,19 @@ describe('API', () => {
         })
         .reply(200, apiResponse)
 
-      const webSignup = await incogniaApi.registerWebSignup({
+      const webSignup = await IncogniaApi.registerWebSignup({
         sessionToken
       })
       expect(webSignup).toEqual(expectedResponse)
+    })
+
+    it('validates login', async () => {
+      expect(() =>
+        IncogniaApi.registerLogin({ accountId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: installationId')
+      expect(() =>
+        IncogniaApi.registerLogin({ installationId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: accountId')
     })
 
     it('registers login', async () => {
@@ -164,11 +177,20 @@ describe('API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
-      const login = await incogniaApi.registerLogin({
+      const login = await IncogniaApi.registerLogin({
         installationId: 'installation_id',
         accountId: 'account_id'
       })
       expect(login).toEqual(expectedResponse)
+    })
+
+    it('validates a web login', async () => {
+      expect(() =>
+        IncogniaApi.registerWebLogin({ accountId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: sessionToken')
+      expect(() =>
+        IncogniaApi.registerWebLogin({ sessionToken: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: accountId')
     })
 
     it('registers a web login', async () => {
@@ -186,11 +208,20 @@ describe('API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
-      const webLogin = await incogniaApi.registerWebLogin({
+      const webLogin = await IncogniaApi.registerWebLogin({
         sessionToken: 'session_token',
         accountId: 'account_id'
       })
       expect(webLogin).toEqual(expectedResponse)
+    })
+
+    it('validates payment', async () => {
+      expect(() =>
+        IncogniaApi.registerPayment({ accountId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: installationId')
+      expect(() =>
+        IncogniaApi.registerPayment({ installationId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: accountId')
     })
 
     it('registers payment', async () => {
@@ -208,7 +239,7 @@ describe('API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
-      const payment = await incogniaApi.registerPayment({
+      const payment = await IncogniaApi.registerPayment({
         installationId: 'installation_id',
         accountId: 'account_id',
         appId: 'app_id',
@@ -216,6 +247,15 @@ describe('API', () => {
         coupon: { type: CouponType.FixedValue, value: 10 }
       })
       expect(payment).toEqual(expectedResponse)
+    })
+
+    it('validates a web payment', async () => {
+      expect(() =>
+        IncogniaApi.registerWebPayment({ accountId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: sessionToken')
+      expect(() =>
+        IncogniaApi.registerWebPayment({ sessionToken: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: accountId')
     })
 
     it('registers a web payment', async () => {
@@ -233,51 +273,46 @@ describe('API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
-      const webPayment = await incogniaApi.registerWebPayment({
+      const webPayment = await IncogniaApi.registerWebPayment({
         sessionToken: 'session_token',
         accountId: 'account_id'
       })
       expect(webPayment).toEqual(expectedResponse)
     })
 
-    describe('Registers feedback', () => {
-      beforeAll(() => {
-        nock(BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
-      })
+    it('validates feedback', async () => {
+      expect(() =>
+        IncogniaApi.registerFeedback({ accountId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: event')
+    })
 
+    describe('registers feedback', () => {
       it('registers feedback when all required params are filled', async () => {
-        incogniaApi.resourceRequest = vi.fn()
+        const apiResponse = {}
 
-        await incogniaApi.registerFeedback(
-          {
-            event: FeedbackEvent.AccountTakeover
-          },
-          {
-            dryRun: true
-          }
-        )
+        nock(BASE_ENDPOINT_URL)
+          .post(`/v2/feedbacks?dry_run=true`)
+          .reply(200, apiResponse)
 
-        const expectedData = {
-          event: FeedbackEvent.AccountTakeover,
-        }
-
-        const expectedParams = {
-          dry_run: true
-        }
-
-        expect(incogniaApi.resourceRequest).toBeCalledWith({
-          url: apiEndpoints.FEEDBACKS,
-          method: 'post',
-          params: expectedParams,
-          data: expectedData
-        })
+        expect(
+          IncogniaApi.registerFeedback(
+            {
+              event: FeedbackEvent.AccountTakeover
+            },
+            {
+              dryRun: true
+            }
+          )
+        ).resolves.toEqual(apiResponse)
       })
 
       it('registers feedback when all params are filled', async () => {
-        incogniaApi.resourceRequest = vi.fn()
+        const apiResponse = {}
 
-        await incogniaApi.registerFeedback(
-          {
+        nock(BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, apiResponse)
+
+        expect(
+          IncogniaApi.registerFeedback({
             event: FeedbackEvent.AccountTakeover,
             accountId: 'account_id',
             installationId: 'installation_id',
@@ -287,141 +322,11 @@ describe('API', () => {
             paymentId: 'payment_id',
             signupId: 'signup_id',
             timestamp: 123,
-            occurredAt: new Date("Jul 19 2024 01:02:03 UTC"),
-            expiresAt:  new Date("Jul 30 2024 01:02:03 UTC"),
-          },
-          {
-            dryRun: true
-          }
-        )
-
-        const expectedData = {
-          event: FeedbackEvent.AccountTakeover,
-          account_id: 'account_id',
-          installation_id: 'installation_id',
-          session_token: 'session_token',
-          request_token: 'request_token',
-          login_id: 'login_id',
-          payment_id: 'payment_id',
-          signup_id: 'signup_id',
-          timestamp: 123,
-          occurred_at: '2024-07-19T01:02:03.000Z',
-          expires_at: '2024-07-30T01:02:03.000Z'
-        }
-
-        const expectedParams = {
-          dry_run: true
-        }
-
-        expect(incogniaApi.resourceRequest).toBeCalledWith({
-          url: apiEndpoints.FEEDBACKS,
-          method: 'post',
-          params: expectedParams,
-          data: expectedData
-        })
-      })
-    })
-  })
-
-  describe('Access token managament', () => {
-    describe('when requesting a token ', () => {
-      it('calls access token endpoint with creds', async () => {
-        nock(BASE_ENDPOINT_URL).post(`/v2/feedbacks`).reply(200, {})
-        const accessTokenEndpointCall = nock(BASE_ENDPOINT_URL, {
-          reqheaders: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        })
-          .post('/v2/token', { grant_type: 'client_credentials' })
-          .basicAuth({
-            user: credentials.clientId,
-            pass: credentials.clientSecret
+            occurredAt: new Date('Jul 19 2024 01:02:03 UTC'),
+            expiresAt: new Date('Jul 30 2024 01:02:03 UTC')
           })
-          .reply(200, accessTokenExample)
-
-        await incogniaApi.requestToken()
-        expect(accessTokenEndpointCall.isDone()).toBeTruthy()
+        ).resolves.toEqual(apiResponse)
       })
-
-      describe('and the request fails', () => {
-        it('throws Incognia errors', async () => {
-          nock(BASE_ENDPOINT_URL).post('/v2/token').replyWithError({
-            message: 'something awful happened',
-            code: 'AWFUL_ERROR'
-          })
-
-          const dispatchRequest = async () => {
-            await incogniaApi.requestToken()
-          }
-
-          await expect(dispatchRequest).rejects.toThrowError(IncogniaApiError)
-        })
-      })
-    })
-
-    describe('when calling the api ', () => {
-      it('calls access token endpoint only at the first time', async () => {
-        const accessTokenEndpointFirstCall = nock(BASE_ENDPOINT_URL)
-          .post('/v2/token')
-          .reply(200, accessTokenExample)
-        const signupEndpointRegister = nock(BASE_ENDPOINT_URL)
-          .persist()
-          .post(`/v2/onboarding/signups`)
-          .reply(200)
-        const accessTokenEndpointSecondCall = nock(BASE_ENDPOINT_URL)
-          .post('/v2/token')
-          .reply(200, accessTokenExample)
-
-        const payload = {
-          installationId: 'installation_id',
-          policyId: 'policy_id'
-        }
-
-        //call resource for the first time
-        await incogniaApi.registerSignup(payload)
-        expect(accessTokenEndpointFirstCall.isDone()).toBeTruthy()
-        expect(signupEndpointRegister.isDone()).toBeTruthy()
-
-        //call resource for the second time
-        await incogniaApi.registerSignup(payload)
-        expect(accessTokenEndpointSecondCall.isDone()).toBeFalsy()
-      })
-    })
-
-    describe('accessToken validation', () => {
-      it('returns true if the token is valid', async () => {
-        nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
-        await incogniaApi.updateAccessToken()
-        expect(incogniaApi.isAccessTokenValid()).toEqual(true)
-      })
-
-      it('returns false if the token is expired', async () => {
-        nock(BASE_ENDPOINT_URL).post('/v2/token').reply(200, accessTokenExample)
-
-        Date.now = vi.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
-        await incogniaApi.updateAccessToken()
-        Date.now = vi.fn(() => {
-          const date = new Date(Date.UTC(2021, 3, 14))
-          date.setUTCSeconds(accessTokenExample.expires_in)
-
-          return date.valueOf()
-        })
-        expect(incogniaApi.isAccessTokenValid()).toEqual(false)
-      })
-
-      it('returns false if there is no token', async () => {
-        expect(incogniaApi.isAccessTokenValid()).toEqual(false)
-      })
-    })
-  })
-
-  describe('when no clientId or clientSecret is provided', () => {
-    it('throws an error', () => {
-      const initIncognia = () => {
-        new IncogniaApi({ clientId: '', clientSecret: 'clientSecret' })
-      }
-      expect(initIncognia).toThrow('No clientId or clientSecret provided')
-      expect(initIncognia).toThrowError(IncogniaError)
     })
   })
 })

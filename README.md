@@ -23,19 +23,21 @@ yarn add @incognia/api
 Require the package:
 
 CommonJS modules:
+
 ```js
 const { IncogniaApi } = require('@incognia/api')
 ```
 
 Or ES modules:
+
 ```js
-import { IncogniaApi } from "@incognia/api";
+import { IncogniaApi } from '@incognia/api'
 ```
 
-Instantiate with your clientId and clientSecret:
+Initialize the `IncogniaApi` with your `clientId` and `clientSecret`. This is a required step and must be done before calling any of the API methods.
 
 ```js
-const incogniaApi = new IncogniaApi({
+IncogniaApi.init({
   clientId: 'clientId',
   clientSecret: 'clientSecret'
 })
@@ -49,7 +51,7 @@ This method registers a new mobile signup for the given installation and address
 
 ```js
 try {
-  const signup = await incogniaApi.registerSignup({
+  const signup = await IncogniaApi.registerSignup({
     installationId: 'installation_id',
     structuredAddress: {
       locale: 'en-US',
@@ -76,8 +78,8 @@ This method registers a new web signup for the given session token, returning a 
 
 ```js
 try {
-  const signup = await incogniaApi.registerWebSignup({
-    sessionToken: 'session_token',
+  const signup = await IncogniaApi.registerWebSignup({
+    sessionToken: 'session_token'
   })
 } catch (error) {
   console.log(error.message)
@@ -90,7 +92,7 @@ This method registers a new mobile login for the given installation and account,
 
 ```js
 try {
-  const login = await incogniaApi.registerLogin({
+  const login = await IncogniaApi.registerLogin({
     installationId: 'installation_id',
     accountId: 'account_id',
     externalId: 'external_id' // optional field
@@ -106,15 +108,14 @@ This method registers a new web login for the given session token and account, r
 
 ```js
 try {
-  const login = await incogniaApi.registerWebLogin({
+  const login = await IncogniaApi.registerWebLogin({
     sessionToken: 'session_token',
-    accountId: 'account_id',
+    accountId: 'account_id'
   })
 } catch (error) {
   console.log(error.message)
 }
 ```
-
 
 ### Registering a Payment
 
@@ -122,7 +123,7 @@ This method registers a new payment for the given installation and account, retu
 
 ```js
 try {
-  const payment = await incogniaApi.registerPayment({
+  const payment = await IncogniaApi.registerPayment({
     installationId: 'installation_id',
     accountId: 'account_id',
     addresses: [
@@ -159,7 +160,7 @@ This method registers a new web payment for the given session token and account,
 
 ```js
 try {
-  const payment = await incogniaApi.registerWebPayment({
+  const payment = await IncogniaApi.registerWebPayment({
     sessionToken: 'session_token',
     accountId: 'account_id'
   })
@@ -174,7 +175,7 @@ This method registers a feedback event for the given identifiers related to a si
 
 ```js
 try {
-  incogniaApi.registerFeedback({
+  IncogniaApi.registerFeedback({
     installationId: 'installation_id',
     accountId: 'account_id',
     event: FeedbackEvent.AccountTakeover,
@@ -217,7 +218,7 @@ Every method call can throw `IncogniaApiError` and `IncogniaError`.
 const { IncogniaApi, IncogniaApiError } = require('@incognia/api')
 
 try {
-  const loginAssessment = await incogniaApi.registerLogin({
+  const loginAssessment = await IncogniaApi.registerLogin({
     installationId: 'installation_id',
     accountId: 'account_id'
   })
@@ -227,6 +228,48 @@ try {
     console.log(error.payload)
   }
 }
+```
+
+## Migration to v6
+
+The v6 has brought many changes to the `IncogniaApi` interface, transforming the previous instance methods into static methods.
+
+When migrating to v6, it'll be necessary to adjust the `IncogniaApi` usage as follows.
+
+### Initialization
+
+Instead of creating an instance of the `IncogniaApi` class using your API credentials, just initialize the `IncogniaApi` with your credentials using the `init()` method. Initializing the `IncogniaApi` is a required step and must be done before calling any of the other `IncogniaApi` methods.
+
+```
+// Before
+const incogniaApi = new IncogniaApi({
+  clientId: 'clientId',
+  clientSecret: 'clientSecret'
+})
+
+// After
+IncogniaApi.init({
+  clientId: 'clientId',
+  clientSecret: 'clientSecret'
+})
+```
+
+### Register methods
+
+Every method that was called on a `IncogniaApi` instance is now static, and should be called on the `IncogniaApi` class.
+
+```
+// Before
+const signup = await incogniaApi.registerSignup({...})
+const login = await incogniaApi.registerLogin({...})
+const payment = await incogniaApi.registerPayment({...})
+incogniaApi.registerFeedback({...})
+
+// After
+const signup = await IncogniaApi.registerSignup({...})
+const login = await IncogniaApi.registerLogin({...})
+const payment = await IncogniaApi.registerPayment({...})
+IncogniaApi.registerFeedback({...})
 ```
 
 ## More documentation

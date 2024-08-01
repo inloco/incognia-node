@@ -1,14 +1,5 @@
-import axios, { AxiosRequestConfig } from 'axios'
-import qs from 'qs'
-import {
-  CustomRequestError,
-  IncogniaError,
-  throwCustomRequestError
-} from './errors'
-import {
-  convertObjectToCamelCase,
-  convertObjectToSnakeCase
-} from './formatting'
+import { IncogniaError } from './errors'
+import { convertObjectToSnakeCase } from './formatting'
 import {
   Method,
   RegisterFeedbackBodyProps,
@@ -26,226 +17,189 @@ import {
   WebSignupResponse,
   WebTransactionResponse
 } from './types'
-import { buildUserAgent } from './utils'
+import { TokenManager } from './token'
+import { apiEndpoints } from './endpoints'
+import { requestResource } from './request'
 
 type IncogniaApiConstructor = {
   clientId: string
   clientSecret: string
 }
 
-type IncogniaToken = {
-  createdAt: number
-  expiresIn: number
-  accessToken: string
-  tokenType: string
-}
-
-type ApiEndpoints = {
-  TOKEN: string
-  SIGNUPS: string
-  TRANSACTIONS: string
-  FEEDBACKS: string
-}
-
-const BASE_ENDPOINT = 'https://api.incognia.com/api'
-
-export const apiEndpoints: ApiEndpoints = {
-  TOKEN: `${BASE_ENDPOINT}/v2/token`,
-  SIGNUPS: `${BASE_ENDPOINT}/v2/onboarding/signups`,
-  TRANSACTIONS: `${BASE_ENDPOINT}/v2/authentication/transactions`,
-  FEEDBACKS: `${BASE_ENDPOINT}/v2/feedbacks`
+const errorMessages = {
+  CLIENT_ID: 'Missing required parameter: clientId',
+  CLIENT_SECRET: 'Missing required parameter: clientSecret',
+  INSTALLATION_ID: 'Missing required parameter: installationId',
+  SESSION_TOKEN: 'Missing required parameter: sessionToken',
+  ACCOUNT_ID: 'Missing required parameter: accountId',
+  EVENT: 'Missing required parameter: event',
+  INIT: 'IncogniaApi not initialized'
 }
 
 export class IncogniaApi {
-  readonly clientId: string
-  readonly clientSecret: string
-  incogniaToken: IncogniaToken | null
+  /*
+   ** Singleton
+   */
+  private static instance?: IncogniaApi
 
-  constructor({ clientId, clientSecret }: IncogniaApiConstructor) {
-    if (!clientId || !clientSecret) {
-      throw new IncogniaError('No clientId or clientSecret provided')
+  /*
+   ** Instance properties
+   */
+  readonly tokenManager: TokenManager
+
+  /*
+   ** Initialization
+   */
+  private constructor({ clientId, clientSecret }: IncogniaApiConstructor) {
+    this.tokenManager = new TokenManager({ clientId, clientSecret })
+  }
+
+  public static init({ clientId, clientSecret }: IncogniaApiConstructor): void {
+    if (!IncogniaApi.instance) {
+      if (!clientId) throw new IncogniaError(errorMessages.CLIENT_ID)
+      if (!clientSecret) throw new IncogniaError(errorMessages.CLIENT_SECRET)
+
+      IncogniaApi.instance = new IncogniaApi({ clientId, clientSecret })
     }
-
-    this.clientId = clientId
-    this.clientSecret = clientSecret
-    this.incogniaToken = null
   }
 
   /*
-   ** Resources
+   ** Static Methods
    */
-  async registerSignup(props: RegisterSignupProps): Promise<SignupResponse> {
+  public static async registerSignup(
+    props: RegisterSignupProps
+  ): Promise<SignupResponse> {
     const { installationId } = props || {}
-    if (!installationId) {
-      throw new IncogniaError('No installationId provided')
-    }
+    if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
+    if (!installationId) throw new IncogniaError(errorMessages.INSTALLATION_ID)
 
-    return this.#registerBaseSignup(props)
+    return IncogniaApi.instance.#registerSignup(props)
   }
 
-  async registerWebSignup(
+  public static async registerWebSignup(
     props: RegisterWebSignupProps
   ): Promise<WebSignupResponse> {
     const { sessionToken } = props || {}
-    if (!sessionToken) {
-      throw new IncogniaError('No sessionToken provided')
-    }
+    if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
+    if (!sessionToken) throw new IncogniaError(errorMessages.SESSION_TOKEN)
 
-    return this.#registerBaseSignup(props)
+    return IncogniaApi.instance.#registerSignup(props)
   }
 
-  async registerLogin(props: RegisterLoginProps): Promise<TransactionResponse> {
+  public static async registerLogin(
+    props: RegisterLoginProps
+  ): Promise<TransactionResponse> {
     const { installationId, accountId } = props || {}
-    if (!installationId || !accountId) {
-      throw new IncogniaError('No installationId or accountId provided')
-    }
+    if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
+    if (!installationId) throw new IncogniaError(errorMessages.INSTALLATION_ID)
+    if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
 
-    return this.#registerTransaction({ ...props, type: TransactionType.Login })
+    return IncogniaApi.instance.#registerTransaction({
+      ...props,
+      type: TransactionType.Login
+    })
   }
 
-  async registerWebLogin(
+  public static async registerWebLogin(
     props: RegisterWebLoginProps
   ): Promise<WebTransactionResponse> {
     const { sessionToken, accountId } = props || {}
-    if (!sessionToken || !accountId) {
-      throw new IncogniaError('No sessionToken or accountId provided')
-    }
-    return this.#registerTransaction({ ...props, type: TransactionType.Login })
+    if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
+    if (!sessionToken) throw new IncogniaError(errorMessages.SESSION_TOKEN)
+    if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
+
+    return IncogniaApi.instance.#registerTransaction({
+      ...props,
+      type: TransactionType.Login
+    })
   }
 
-  async registerPayment(
+  public static async registerPayment(
     props: RegisterPaymentProps
   ): Promise<TransactionResponse> {
     const { installationId, accountId } = props || {}
-    if (!installationId || !accountId) {
-      throw new IncogniaError('No installationId or accountId provided')
-    }
+    if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
+    if (!installationId) throw new IncogniaError(errorMessages.INSTALLATION_ID)
+    if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
 
-    return this.#registerTransaction({
+    return IncogniaApi.instance.#registerTransaction({
       ...props,
       type: TransactionType.Payment
     })
   }
 
-  async registerWebPayment(
+  public static async registerWebPayment(
     props: RegisterWebPaymentProps
   ): Promise<WebTransactionResponse> {
     const { sessionToken, accountId } = props || {}
-    if (!sessionToken || !accountId) {
-      throw new IncogniaError('No sessionToken or accountId provided')
-    }
-    return this.#registerTransaction({
+    if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
+    if (!sessionToken) throw new IncogniaError(errorMessages.SESSION_TOKEN)
+    if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
+
+    return IncogniaApi.instance.#registerTransaction({
       ...props,
       type: TransactionType.Payment
     })
   }
 
-
-  async registerFeedback(
+  public static async registerFeedback(
     bodyParams: RegisterFeedbackBodyProps,
     queryParams?: RegisterFeedbackParamsProps
   ): Promise<void> {
     const { event } = bodyParams || {}
-    if (!event) {
-      throw new IncogniaError('No event provided')
-    }
+    if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
+    if (!event) throw new IncogniaError(errorMessages.EVENT)
 
-    const params = queryParams && convertObjectToSnakeCase(queryParams)
-
-    const data = convertObjectToSnakeCase(bodyParams)
-    return this.resourceRequest({
-      url: apiEndpoints.FEEDBACKS,
-      method: Method.Post,
-      params,
-      data
-    })
+    return IncogniaApi.instance.#registerFeedback(bodyParams, queryParams)
   }
 
-  async #registerBaseSignup(
-    props: RegisterSignupProps | RegisterWebSignupProps
-  ) {
+  /*
+   ** Instance Methods
+   */
+  async #registerSignup(props: RegisterSignupProps | RegisterWebSignupProps) {
     const data = convertObjectToSnakeCase(props)
-    return this.resourceRequest({
-      url: apiEndpoints.SIGNUPS,
-      method: Method.Post,
-      data
-    })
+    const token = await this.tokenManager.getToken()
+
+    return requestResource(
+      {
+        url: apiEndpoints.SIGNUPS,
+        method: Method.Post,
+        data
+      },
+      token
+    )
   }
 
   async #registerTransaction(props: RegisterTransactionProps) {
     const data = convertObjectToSnakeCase(props)
-    return this.resourceRequest({
-      url: apiEndpoints.TRANSACTIONS,
-      method: Method.Post,
-      data
-    })
-  }
+    const token = await this.tokenManager.getToken()
 
-  async resourceRequest(options: AxiosRequestConfig) {
-    await this.updateAccessToken()
-    try {
-      const response = await axios({
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          'User-Agent': buildUserAgent(),
-          Authorization: `${this.incogniaToken?.tokenType} ${this.incogniaToken?.accessToken}`
-        }
-      })
-      return convertObjectToCamelCase(response.data)
-    } catch (e: unknown) {
-      throwCustomRequestError(e as CustomRequestError)
-    }
-  }
-
-  //Token Management
-  async updateAccessToken() {
-    if (this.isAccessTokenValid()) return
-
-    const axiosResponse = await this.requestToken()
-    const data = axiosResponse?.data
-
-    this.incogniaToken = {
-      createdAt: Math.round(Date.now() / 1000),
-      expiresIn: parseInt(data.expires_in),
-      accessToken: data.access_token,
-      tokenType: data.token_type
-    }
-  }
-
-  isAccessTokenValid() {
-    if (!this.incogniaToken) return false
-
-    const createdAt = this.incogniaToken.createdAt
-    const expiresIn = this.incogniaToken.expiresIn
-
-    const expirationLimit = createdAt + expiresIn
-    const nowInSeconds = Math.round(Date.now() / 1000)
-
-    if (expirationLimit <= nowInSeconds) {
-      return false
-    }
-
-    return true
-  }
-
-  async requestToken() {
-    try {
-      return await axios({
+    return requestResource(
+      {
+        url: apiEndpoints.TRANSACTIONS,
         method: Method.Post,
-        url: apiEndpoints.TOKEN,
-        data: qs.stringify({ grant_type: 'client_credentials' }),
-        auth: {
-          username: this.clientId,
-          password: this.clientSecret
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': buildUserAgent()
-        }
-      })
-    } catch (e: unknown) {
-      throwCustomRequestError(e as CustomRequestError)
-    }
+        data
+      },
+      token
+    )
+  }
+
+  async #registerFeedback(
+    bodyParams: RegisterFeedbackBodyProps,
+    queryParams?: RegisterFeedbackParamsProps
+  ) {
+    const params = queryParams && convertObjectToSnakeCase(queryParams)
+    const data = convertObjectToSnakeCase(bodyParams)
+    const token = await this.tokenManager.getToken()
+
+    return requestResource(
+      {
+        url: apiEndpoints.FEEDBACKS,
+        method: Method.Post,
+        params,
+        data
+      },
+      token
+    )
   }
 }

@@ -240,7 +240,7 @@ When migrating to v6, adjust the `IncogniaApi` usage as follows.
 
 Instead of creating an instance of the `IncogniaApi` class using your API credentials, just initialize the `IncogniaApi` with your credentials using the `init()` method. Initializing the `IncogniaApi` is a required step and must be done before calling any of the other `IncogniaApi` methods.
 
-```
+```js
 // Before
 const incogniaApi = new IncogniaApi({
   clientId: 'clientId',
@@ -258,7 +258,7 @@ IncogniaApi.init({
 
 Every method of the `IncogniaApi` instance is now static, and should be called on the `IncogniaApi` class.
 
-```
+```js
 // Before
 const signup = await incogniaApi.registerSignup({...})
 const login = await incogniaApi.registerLogin({...})

@@ -10,13 +10,14 @@ export enum TransactionAddressType {
 }
 
 export type RegisterSignupBaseProps = {
+  requestToken?: string
   accountId?: string
   policyId?: string
   [x: string]: any
 }
 
 export type RegisterSignupProps = RegisterSignupBaseProps & {
-  installationId: string
+  installationId?: string
   addressCoordinates?: AddressCoordinates
   addressLine?: string
   structuredAddress?: StructuredAddress
@@ -24,7 +25,7 @@ export type RegisterSignupProps = RegisterSignupBaseProps & {
 }
 
 export type RegisterWebSignupProps = RegisterSignupBaseProps & {
-  sessionToken: string
+  sessionToken?: string
 }
 
 export type SignupBaseResponse = {
@@ -48,12 +49,13 @@ export type WebSignupEvidenceSummary = WebEvidenceSummary
 
 type RegisterLoginBaseProps = {
   accountId: string
+  requestToken?: string
   policyId?: string
   [x: string]: any
 }
 
 export type RegisterLoginProps = RegisterLoginBaseProps & {
-  installationId: string
+  installationId?: string
   relatedAccountId?: string
   location?: TransactionLocation
   paymentMethodIdentifier?: string
@@ -62,11 +64,12 @@ export type RegisterLoginProps = RegisterLoginBaseProps & {
 }
 
 export type RegisterWebLoginProps = RegisterLoginBaseProps & {
-  sessionToken: string
+  sessionToken?: string
 }
 
 export type RegisterPaymentBaseProps = {
   accountId: string
+  requestToken?: string
   policyId?: string
   externalId?: string
   addresses?: Array<TransactionAddress>
@@ -77,12 +80,12 @@ export type RegisterPaymentBaseProps = {
 }
 
 export type RegisterPaymentProps = RegisterPaymentBaseProps & {
-  installationId: string
+  installationId?: string
   relatedAccountId?: string
 }
 
 export type RegisterWebPaymentProps = RegisterPaymentBaseProps & {
-  sessionToken: string
+  sessionToken?: string
 }
 
 export type TransactionBaseResponse = {

@@ -75,9 +75,9 @@ export class IncogniaApi {
    ** Resources
    */
   async registerSignup(props: RegisterSignupProps): Promise<SignupResponse> {
-    const { installationId } = props || {}
-    if (!installationId) {
-      throw new IncogniaError('No installationId provided')
+    const { installationId, requestToken } = props || {}
+    if (!installationId && !requestToken) {
+      throw new IncogniaError('No installationId or requestToken provided')
     }
 
     return this.#registerBaseSignup(props)
@@ -86,18 +86,21 @@ export class IncogniaApi {
   async registerWebSignup(
     props: RegisterWebSignupProps
   ): Promise<WebSignupResponse> {
-    const { sessionToken } = props || {}
-    if (!sessionToken) {
-      throw new IncogniaError('No sessionToken provided')
+    const { sessionToken, requestToken } = props || {}
+    if (!sessionToken && !requestToken) {
+      throw new IncogniaError('No sessionToken or requestToken provided')
     }
 
     return this.#registerBaseSignup(props)
   }
 
   async registerLogin(props: RegisterLoginProps): Promise<TransactionResponse> {
-    const { installationId, accountId } = props || {}
-    if (!installationId || !accountId) {
-      throw new IncogniaError('No installationId or accountId provided')
+    const { installationId, requestToken, accountId } = props || {}
+    if (!installationId && !requestToken) {
+      throw new IncogniaError('No installationId or requestToken provided')
+    }
+    if (!accountId) {
+      throw new IncogniaError('No accountId provided')
     }
 
     return this.#registerTransaction({ ...props, type: TransactionType.Login })
@@ -106,19 +109,26 @@ export class IncogniaApi {
   async registerWebLogin(
     props: RegisterWebLoginProps
   ): Promise<WebTransactionResponse> {
-    const { sessionToken, accountId } = props || {}
-    if (!sessionToken || !accountId) {
-      throw new IncogniaError('No sessionToken or accountId provided')
+    const { sessionToken, requestToken, accountId } = props || {}
+    if (!sessionToken && !requestToken) {
+      throw new IncogniaError('No sessionToken or requestToken provided')
     }
+    if (!accountId) {
+      throw new IncogniaError('No accountId provided')
+    }
+
     return this.#registerTransaction({ ...props, type: TransactionType.Login })
   }
 
   async registerPayment(
     props: RegisterPaymentProps
   ): Promise<TransactionResponse> {
-    const { installationId, accountId } = props || {}
-    if (!installationId || !accountId) {
-      throw new IncogniaError('No installationId or accountId provided')
+    const { installationId, requestToken, accountId } = props || {}
+    if (!installationId && !requestToken) {
+      throw new IncogniaError('No installationId or requestToken provided')
+    }
+    if (!accountId) {
+      throw new IncogniaError('No accountId provided')
     }
 
     return this.#registerTransaction({
@@ -130,16 +140,19 @@ export class IncogniaApi {
   async registerWebPayment(
     props: RegisterWebPaymentProps
   ): Promise<WebTransactionResponse> {
-    const { sessionToken, accountId } = props || {}
-    if (!sessionToken || !accountId) {
-      throw new IncogniaError('No sessionToken or accountId provided')
+    const { sessionToken, requestToken, accountId } = props || {}
+    if (!sessionToken && !requestToken) {
+      throw new IncogniaError('No sessionToken or requestToken provided')
     }
+    if (!accountId) {
+      throw new IncogniaError('No accountId provided')
+    }
+
     return this.#registerTransaction({
       ...props,
       type: TransactionType.Payment
     })
   }
-
 
   async registerFeedback(
     bodyParams: RegisterFeedbackBodyProps,

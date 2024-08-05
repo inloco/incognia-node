@@ -2,7 +2,7 @@
   "name": "@incognia/api",
   "author": "Incognia (https://incognia.com)",
   "repository": "https://github.com/inloco/incognia-node",
-  "version": "5.1.0",
+  "version": "5.2.0",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs",

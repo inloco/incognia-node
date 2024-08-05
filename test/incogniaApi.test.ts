@@ -75,7 +75,13 @@ describe('API', () => {
       })
     })
 
-    it('registers signup', async () => {
+    it('validates a signup', async () => {
+      expect(() => incogniaApi.registerSignup({})).rejects.toThrowError(
+        'No installationId or requestToken provided'
+      )
+    })
+
+    it('registers signup with installation_id', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
@@ -114,7 +120,52 @@ describe('API', () => {
       expect(signup).toEqual(expectedResponse)
     })
 
-    it('registers a web signup', async () => {
+    it('registers signup with request_token', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
+        risk_assessment: 'low_risk',
+        signup_attempts_by_device_total_10d: 5
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        requestId: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',
+        riskAssessment: 'low_risk',
+        signupAttemptsByDeviceTotal10d: 5
+      }
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/onboarding/signups`)
+        .reply(200, apiResponse)
+
+      const signup = await incogniaApi.registerSignup({
+        requestToken: 'token',
+        policyId: 'policy_id',
+        structuredAddress: {
+          locale: 'en-US',
+          countryName: 'United States of America',
+          countryCode: 'US',
+          state: 'NY',
+          city: 'New York City',
+          borough: 'Manhattan',
+          neighborhood: 'Midtown',
+          street: 'W 34th St.',
+          number: '20',
+          complements: 'Floor 2',
+          postalCode: '10001'
+        }
+      })
+      expect(signup).toEqual(expectedResponse)
+    })
+
+    it('validates a web signup', async () => {
+      expect(() => incogniaApi.registerWebSignup({})).rejects.toThrowError(
+        'No sessionToken or requestToken provided'
+      )
+    })
+
+    it('registers a web signup with session token', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         risk_assessment: 'low_risk'
@@ -139,7 +190,44 @@ describe('API', () => {
       expect(webSignup).toEqual(expectedResponse)
     })
 
-    it('registers login', async () => {
+    it('registers a web signup with request token', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      const requestToken = 'request_token'
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/onboarding/signups`, {
+          request_token: requestToken
+        })
+        .reply(200, apiResponse)
+
+      const webSignup = await incogniaApi.registerWebSignup({
+        requestToken
+      })
+      expect(webSignup).toEqual(expectedResponse)
+    })
+
+    it('validates a login', async () => {
+      expect(() =>
+        incogniaApi.registerLogin({ accountId: 'id' })
+      ).rejects.toThrowError('No installationId or requestToken provided')
+      expect(() =>
+        incogniaApi.registerLogin({ installationId: 'id' } as any)
+      ).rejects.toThrowError('No accountId provided')
+      expect(() =>
+        incogniaApi.registerLogin({ requestToken: 'token' } as any)
+      ).rejects.toThrowError('No accountId provided')
+    })
+
+    it('registers login with installation_id', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         risk_assessment: 'low_risk',
@@ -171,7 +259,51 @@ describe('API', () => {
       expect(login).toEqual(expectedResponse)
     })
 
-    it('registers a web login', async () => {
+    it('registers login with request_token', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk',
+        app_tampering: {
+          result: 'not_detected',
+          app_debugging: 'not_detected',
+          code_injection: 'not_detected'
+        }
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk',
+        appTampering: {
+          result: 'not_detected',
+          appDebugging: 'not_detected',
+          codeInjection: 'not_detected'
+        }
+      }
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const login = await incogniaApi.registerLogin({
+        requestToken: 'request_token',
+        accountId: 'account_id'
+      })
+      expect(login).toEqual(expectedResponse)
+    })
+
+    it('validates a web login', async () => {
+      expect(() =>
+        incogniaApi.registerWebLogin({ accountId: 'id' })
+      ).rejects.toThrowError('No sessionToken or requestToken provided')
+      expect(() =>
+        incogniaApi.registerWebLogin({ sessionToken: 'token' } as any)
+      ).rejects.toThrowError('No accountId provided')
+      expect(() =>
+        incogniaApi.registerWebLogin({ requestToken: 'token' } as any)
+      ).rejects.toThrowError('No accountId provided')
+    })
+
+    it('registers a web login with session token', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         risk_assessment: 'low_risk'
@@ -193,7 +325,41 @@ describe('API', () => {
       expect(webLogin).toEqual(expectedResponse)
     })
 
-    it('registers payment', async () => {
+    it('registers a web login with request token', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const webLogin = await incogniaApi.registerWebLogin({
+        requestToken: 'request_token',
+        accountId: 'account_id'
+      })
+      expect(webLogin).toEqual(expectedResponse)
+    })
+
+    it('validates a payment', async () => {
+      expect(() =>
+        incogniaApi.registerPayment({ accountId: 'id' })
+      ).rejects.toThrowError('No installationId or requestToken provided')
+      expect(() =>
+        incogniaApi.registerPayment({ installationId: 'id' } as any)
+      ).rejects.toThrowError('No accountId provided')
+      expect(() =>
+        incogniaApi.registerPayment({ requestToken: 'token' } as any)
+      ).rejects.toThrowError('No accountId provided')
+    })
+
+    it('registers payment with installation_id', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         risk_assessment: 'low_risk'
@@ -218,7 +384,44 @@ describe('API', () => {
       expect(payment).toEqual(expectedResponse)
     })
 
-    it('registers a web payment', async () => {
+    it('registers payment with request_token', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const payment = await incogniaApi.registerPayment({
+        requestToken: 'request_token',
+        accountId: 'account_id',
+        appId: 'app_id',
+        externalId: 'external_id',
+        coupon: { type: CouponType.FixedValue, value: 10 }
+      })
+      expect(payment).toEqual(expectedResponse)
+    })
+
+    it('validates a web payment', async () => {
+      expect(() =>
+        incogniaApi.registerWebPayment({ accountId: 'id' })
+      ).rejects.toThrowError('No sessionToken or requestToken provided')
+      expect(() =>
+        incogniaApi.registerWebPayment({ sessionToken: 'token' } as any)
+      ).rejects.toThrowError('No accountId provided')
+      expect(() =>
+        incogniaApi.registerWebPayment({ requestToken: 'token' } as any)
+      ).rejects.toThrowError('No accountId provided')
+    })
+
+    it('registers a web payment with session_token', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         risk_assessment: 'low_risk'
@@ -235,6 +438,28 @@ describe('API', () => {
 
       const webPayment = await incogniaApi.registerWebPayment({
         sessionToken: 'session_token',
+        accountId: 'account_id'
+      })
+      expect(webPayment).toEqual(expectedResponse)
+    })
+
+    it('registers a web payment with request_token', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(BASE_ENDPOINT_URL)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const webPayment = await incogniaApi.registerWebPayment({
+        requestToken: 'request_token',
         accountId: 'account_id'
       })
       expect(webPayment).toEqual(expectedResponse)
@@ -258,7 +483,7 @@ describe('API', () => {
         )
 
         const expectedData = {
-          event: FeedbackEvent.AccountTakeover,
+          event: FeedbackEvent.AccountTakeover
         }
 
         const expectedParams = {
@@ -287,8 +512,8 @@ describe('API', () => {
             paymentId: 'payment_id',
             signupId: 'signup_id',
             timestamp: 123,
-            occurredAt: new Date("Jul 19 2024 01:02:03 UTC"),
-            expiresAt:  new Date("Jul 30 2024 01:02:03 UTC"),
+            occurredAt: new Date('Jul 19 2024 01:02:03 UTC'),
+            expiresAt: new Date('Jul 30 2024 01:02:03 UTC')
           },
           {
             dryRun: true

@@ -23,13 +23,15 @@ yarn add @incognia/api
 Require the package:
 
 CommonJS modules:
+
 ```js
 const { IncogniaApi } = require('@incognia/api')
 ```
 
 Or ES modules:
+
 ```js
-import { IncogniaApi } from "@incognia/api";
+import { IncogniaApi } from '@incognia/api'
 ```
 
 Instantiate with your clientId and clientSecret:
@@ -45,7 +47,7 @@ const incogniaApi = new IncogniaApi({
 
 ### Registering a Mobile Signup
 
-This method registers a new mobile signup for the given installation and address, returning a signup assessment, containing the risk assessment and supporting evidence:
+This method registers a new mobile signup for the given installation (or request token) and address, returning a signup assessment, containing the risk assessment and supporting evidence:
 
 ```js
 try {
@@ -72,12 +74,12 @@ try {
 
 ### Registering a Web Signup
 
-This method registers a new web signup for the given session token, returning a signup assessment, containing the risk assessment and supporting evidence:
+This method registers a new web signup for the given session token (or request token), returning a signup assessment, containing the risk assessment and supporting evidence:
 
 ```js
 try {
   const signup = await incogniaApi.registerWebSignup({
-    sessionToken: 'session_token',
+    sessionToken: 'session_token'
   })
 } catch (error) {
   console.log(error.message)
@@ -86,7 +88,7 @@ try {
 
 ### Registering a Mobile Login
 
-This method registers a new mobile login for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new mobile login for the given installation (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
@@ -102,23 +104,22 @@ try {
 
 ### Registering a Web Login
 
-This method registers a new web login for the given session token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new web login for the given session token (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
   const login = await incogniaApi.registerWebLogin({
     sessionToken: 'session_token',
-    accountId: 'account_id',
+    accountId: 'account_id'
   })
 } catch (error) {
   console.log(error.message)
 }
 ```
 
-
 ### Registering a Payment
 
-This method registers a new payment for the given installation and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new payment for the given installation (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
@@ -155,7 +156,7 @@ try {
 
 ### Registering a Web Payment
 
-This method registers a new web payment for the given session token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new web payment for the given session token (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {

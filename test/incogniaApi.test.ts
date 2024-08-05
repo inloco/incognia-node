@@ -144,8 +144,8 @@ describe('Incognia API', () => {
         IncogniaApi.registerLogin({ accountId: 'id' } as any)
       ).rejects.toThrow('Missing required parameter: requestToken')
       expect(() =>
-        IncogniaApi.registerLogin({ requestToke: 'token' } as any)
-      ).rejects.toThrow('Missing required parameter: requestToken')
+        IncogniaApi.registerLogin({ requestToken: 'token' } as any)
+      ).rejects.toThrow('Missing required parameter: accountId')
     })
 
     it('registers login', async () => {

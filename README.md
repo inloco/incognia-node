@@ -153,6 +153,21 @@ try {
 }
 ```
 
+### Registering a Web Payment
+
+This method registers a new web payment for the given session token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+
+```js
+try {
+  const payment = await incogniaApi.registerWebPayment({
+    sessionToken: 'session_token',
+    accountId: 'account_id'
+  })
+} catch (error) {
+  console.log(error.message)
+}
+```
+
 ### Sending Feedback
 
 This method registers a feedback event for the given identifiers related to a signup, login or payment.

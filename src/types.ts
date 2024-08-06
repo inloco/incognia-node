@@ -11,8 +11,8 @@ export enum TransactionAddressType {
 
 export type RegisterSignupBaseProps = {
   requestToken: string
+  policyId: string
   accountId?: string
-  policyId?: string
   [x: string]: any
 }
 
@@ -46,8 +46,8 @@ export type WebSignupEvidenceSummary = WebEvidenceSummary
 
 type RegisterLoginBaseProps = {
   requestToken: string
+  policyId: string
   accountId: string
-  policyId?: string
   [x: string]: any
 }
 
@@ -63,8 +63,8 @@ export type RegisterWebLoginProps = RegisterLoginBaseProps
 
 export type RegisterPaymentBaseProps = {
   requestToken: string
+  policyId: string
   accountId: string
-  policyId?: string
   externalId?: string
   addresses?: Array<TransactionAddress>
   paymentValue?: PaymentValue

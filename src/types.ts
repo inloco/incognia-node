@@ -10,23 +10,20 @@ export enum TransactionAddressType {
 }
 
 export type RegisterSignupBaseProps = {
-  requestToken?: string
+  requestToken: string
+  policyId: string
   accountId?: string
-  policyId?: string
   [x: string]: any
 }
 
 export type RegisterSignupProps = RegisterSignupBaseProps & {
-  installationId?: string
   addressCoordinates?: AddressCoordinates
   addressLine?: string
   structuredAddress?: StructuredAddress
   externalId?: string
 }
 
-export type RegisterWebSignupProps = RegisterSignupBaseProps & {
-  sessionToken?: string
-}
+export type RegisterWebSignupProps = RegisterSignupBaseProps
 
 export type SignupBaseResponse = {
   deviceId: string
@@ -48,14 +45,13 @@ export type WebSignupResponse = SignupBaseResponse & {
 export type WebSignupEvidenceSummary = WebEvidenceSummary
 
 type RegisterLoginBaseProps = {
+  requestToken: string
+  policyId: string
   accountId: string
-  requestToken?: string
-  policyId?: string
   [x: string]: any
 }
 
 export type RegisterLoginProps = RegisterLoginBaseProps & {
-  installationId?: string
   relatedAccountId?: string
   location?: TransactionLocation
   paymentMethodIdentifier?: string
@@ -63,14 +59,12 @@ export type RegisterLoginProps = RegisterLoginBaseProps & {
   paymentMethods?: Array<PaymentMethod>
 }
 
-export type RegisterWebLoginProps = RegisterLoginBaseProps & {
-  sessionToken?: string
-}
+export type RegisterWebLoginProps = RegisterLoginBaseProps
 
 export type RegisterPaymentBaseProps = {
+  requestToken: string
+  policyId: string
   accountId: string
-  requestToken?: string
-  policyId?: string
   externalId?: string
   addresses?: Array<TransactionAddress>
   paymentValue?: PaymentValue
@@ -80,13 +74,10 @@ export type RegisterPaymentBaseProps = {
 }
 
 export type RegisterPaymentProps = RegisterPaymentBaseProps & {
-  installationId?: string
   relatedAccountId?: string
 }
 
-export type RegisterWebPaymentProps = RegisterPaymentBaseProps & {
-  sessionToken?: string
-}
+export type RegisterWebPaymentProps = RegisterPaymentBaseProps
 
 export type TransactionBaseResponse = {
   deviceId: string
@@ -118,8 +109,6 @@ export type RegisterFeedbackBodyProps = {
   loginId?: string
   paymentId?: string
   signupId?: string
-  /** @deprecated use occurredAt instead */
-  timestamp?: number
   occurredAt?: Date
   expiresAt?: Date
   [x: string]: any
@@ -145,8 +134,6 @@ export type RegisterTransactionProps = (
 type TransactionLocation = {
   latitude: number
   longitude: number
-  /** @deprecated use collectedAt instead */
-  timestamp?: number
   collectedAt?: Date
 }
 
@@ -464,17 +451,19 @@ type PaymentMethod = {
 }
 
 export enum FeedbackEvent {
+  AccountAllowed = 'account_allowed',
   AccountTakeover = 'account_takeover',
-  ChallengeFailed = 'challenge_failed',
-  ChallengePassed = 'challenge_passed',
   Chargeback = 'chargeback',
   ChargebackNotification = 'chargeback_notification',
+  DeviceAllowed = 'device_allowed',
   IdentityFraud = 'identity_fraud',
   LoginAccepted = 'login_accepted',
+  LoginAcceptedByDeviceVerification = 'login_accepted_by_device_verification',
+  LoginAcceptedByFacialBiometrics = 'login_accepted_by_facial_biometrics',
+  LoginAcceptedByManualReview = 'login_accepted_by_manual_review',
   LoginDeclined = 'login_declined',
-  MposFraud = 'mpos_fraud',
-  PasswordChangedSuccessfully = 'password_changed_successfully',
-  PasswordChangeFailed = 'password_change_failed',
+  LoginDeclinedByFacialBiometrics = 'login_declined_by_facial_biometrics',
+  LoginDeclinedByManualReview = 'login_declined_by_manual_review',
   PaymentAccepted = 'payment_accepted',
   PaymentAcceptedByControlGroup = 'payment_accepted_by_control_group',
   PaymentAcceptedByThirdParty = 'payment_accepted_by_third_party',

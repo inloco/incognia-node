@@ -1,4 +1,5 @@
-export { IncogniaApi, apiEndpoints } from './incogniaApi'
+export { IncogniaApi } from './incogniaApi'
+export { apiEndpoints } from './endpoints'
 export {
   CouponType,
   FeedbackEvent,

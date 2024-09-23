@@ -75,13 +75,7 @@ describe('Incognia API', () => {
       ).rejects.toThrow('Missing required parameter: policyId')
     })
 
-    it('validates a signup', async () => {
-      expect(() => incogniaApi.registerSignup({})).rejects.toThrowError(
-        'No installationId or requestToken provided'
-      )
-    })
-
-    it('registers signup with installation_id', async () => {
+    it('registers signup', async () => {
       const apiResponse = {
         id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
         request_id: '8afc84a7-f1d4-488d-bd69-36d9a37168b7',

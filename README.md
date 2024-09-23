@@ -283,7 +283,7 @@ Furthermore, the `installationId` and `sessionToken` parameters were removed, an
 ```js
 // Before
 const loginAssessment = await incogniaApi.registerLogin({
-  installation_id: 'installation_id',
+  installationId: 'installation_id',
   accountId: 'account_id'
 })
 const webPaymentAssessment = await incogniaApi.registerWebPayment({

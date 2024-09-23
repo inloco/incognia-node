@@ -511,7 +511,6 @@ describe('API', () => {
             loginId: 'login_id',
             paymentId: 'payment_id',
             signupId: 'signup_id',
-            timestamp: 123,
             occurredAt: new Date('Jul 19 2024 01:02:03 UTC'),
             expiresAt: new Date('Jul 30 2024 01:02:03 UTC')
           },
@@ -529,7 +528,6 @@ describe('API', () => {
           login_id: 'login_id',
           payment_id: 'payment_id',
           signup_id: 'signup_id',
-          timestamp: 123,
           occurred_at: '2024-07-19T01:02:03.000Z',
           expires_at: '2024-07-30T01:02:03.000Z'
         }

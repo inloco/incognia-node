@@ -53,6 +53,7 @@ This method registers a new mobile signup for the given request token and addres
 try {
   const signup = await IncogniaApi.registerSignup({
     requestToken: 'request_token',
+    policyId: 'policy_id',
     structuredAddress: {
       locale: 'en-US',
       countryName: 'United States of America',
@@ -79,7 +80,8 @@ This method registers a new web signup for the given request token, returning a 
 ```js
 try {
   const signup = await IncogniaApi.registerWebSignup({
-    requestToken: 'request_token'
+    requestToken: 'request_token',
+    policyId: 'policy_id'
   })
 } catch (error) {
   console.log(error.message)
@@ -95,6 +97,7 @@ try {
   const login = await IncogniaApi.registerLogin({
     requestToken: 'request_token',
     accountId: 'account_id',
+    policyId: 'policy_id',
     externalId: 'external_id' // optional field
   })
 } catch (error) {
@@ -110,7 +113,8 @@ This method registers a new web login for the given request token and account, r
 try {
   const login = await IncogniaApi.registerWebLogin({
     requestToken: 'request_token',
-    accountId: 'account_id'
+    accountId: 'account_id',
+    policyId: 'policy_id'
   })
 } catch (error) {
   console.log(error.message)
@@ -126,6 +130,7 @@ try {
   const payment = await IncogniaApi.registerPayment({
     requestToken: 'request_token',
     accountId: 'account_id',
+    policyId: 'policy_id',
     addresses: [
       {
         structuredAddress: {
@@ -162,7 +167,8 @@ This method registers a new web payment for the given request token and account,
 try {
   const payment = await IncogniaApi.registerWebPayment({
     requestToken: 'request_token',
-    accountId: 'account_id'
+    accountId: 'account_id',
+    policyId: 'policy_id'
   })
 } catch (error) {
   console.log(error.message)
@@ -272,7 +278,7 @@ const payment = await IncogniaApi.registerPayment({...})
 IncogniaApi.registerFeedback({...})
 ```
 
-Furthermore, the `installationId` and `sessionToken` parameters were removed, and `requestToken` should be used instead. The `requestToken` field can receive the previous `installationId` and `sessionToken` values, as well as the new `requestToken` value from the Mobile and Web SDKs.
+Furthermore, the `installationId` and `sessionToken` parameters were removed, and `requestToken` should be used instead. The `requestToken` field can receive the previous `installationId` and `sessionToken` values, as well as the new `requestToken` value from the Mobile and Web SDKs. Also, the `policyId` is now a required parameter and must be used on every assessment.
 
 ```js
 // Before
@@ -288,11 +294,13 @@ const webPaymentAssessment = await incogniaApi.registerWebPayment({
 // After
 const loginAssessment = await IncogniaApi.registerLogin({
   requestToken: 'installation_id',
-  accountId: 'account_id'
+  accountId: 'account_id',
+  policyId: 'policy_id'
 })
 const webPaymentAssessment = await IncogniaApi.registerWebPayment({
   requestToken: 'session_token',
-  accountId: 'account_id'
+  accountId: 'account_id',
+  policyId: 'policy_id'
 })
 ```
 

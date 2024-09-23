@@ -32,6 +32,7 @@ describe('Incognia API', () => {
       const props = {
         accountId: 'id',
         requestToken: 'id',
+        policyId: 'id',
         event: FeedbackEvent.AccountTakeover
       }
 
@@ -66,9 +67,12 @@ describe('Incognia API', () => {
     })
 
     it('validates signup', async () => {
-      expect(() => IncogniaApi.registerSignup({} as any)).rejects.toThrow(
-        'Missing required parameter: requestToken'
-      )
+      expect(() =>
+        IncogniaApi.registerSignup({ policyId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: requestToken')
+      expect(() =>
+        IncogniaApi.registerSignup({ requestToken: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: policyId')
     })
 
     it('validates a signup', async () => {
@@ -115,9 +119,12 @@ describe('Incognia API', () => {
     })
 
     it('validates a web signup', async () => {
-      expect(() => IncogniaApi.registerWebSignup({} as any)).rejects.toThrow(
-        'Missing required parameter: requestToken'
-      )
+      expect(() =>
+        IncogniaApi.registerWebSignup({ policyId: 'id' } as any)
+      ).rejects.toThrow('Missing required parameter: requestToken')
+      expect(() =>
+        IncogniaApi.registerWebSignup({ requestToken: 'token' } as any)
+      ).rejects.toThrow('Missing required parameter: policyId')
     })
 
     it('registers a web signup', async () => {
@@ -135,12 +142,14 @@ describe('Incognia API', () => {
 
       nock(BASE_ENDPOINT)
         .post(`/v2/onboarding/signups`, {
-          request_token: requestToken
+          request_token: requestToken,
+          policy_id: 'policy_id'
         })
         .reply(200, apiResponse)
 
       const webSignup = await IncogniaApi.registerWebSignup({
-        requestToken
+        requestToken,
+        policyId: 'policy_id'
       })
       expect(webSignup).toEqual(expectedResponse)
     })
@@ -181,7 +190,8 @@ describe('Incognia API', () => {
 
       const login = await IncogniaApi.registerLogin({
         requestToken: 'request_token',
-        accountId: 'account_id'
+        accountId: 'account_id',
+        policyId: 'policy_id'
       })
       expect(login).toEqual(expectedResponse)
     })
@@ -193,6 +203,12 @@ describe('Incognia API', () => {
       expect(() =>
         IncogniaApi.registerWebLogin({ requestToken: 'token' } as any)
       ).rejects.toThrow('Missing required parameter: accountId')
+      expect(() =>
+        IncogniaApi.registerWebLogin({
+          accountId: 'id',
+          requestToken: 'token'
+        } as any)
+      ).rejects.toThrow('Missing required parameter: policyId')
     })
 
     it('registers a web login', async () => {
@@ -212,7 +228,8 @@ describe('Incognia API', () => {
 
       const webLogin = await IncogniaApi.registerWebLogin({
         requestToken: 'request_token',
-        accountId: 'account_id'
+        accountId: 'account_id',
+        policyId: 'policy_id'
       })
       expect(webLogin).toEqual(expectedResponse)
     })
@@ -224,6 +241,12 @@ describe('Incognia API', () => {
       expect(() =>
         IncogniaApi.registerPayment({ requestToken: 'token' } as any)
       ).rejects.toThrow('Missing required parameter: accountId')
+      expect(() =>
+        IncogniaApi.registerPayment({
+          accountId: 'id',
+          requestToken: 'token'
+        } as any)
+      ).rejects.toThrow('Missing required parameter: policyId')
     })
 
     it('registers payment', async () => {
@@ -246,6 +269,7 @@ describe('Incognia API', () => {
         accountId: 'account_id',
         appId: 'app_id',
         externalId: 'external_id',
+        policyId: 'policy_id',
         coupon: { type: CouponType.FixedValue, value: 10 }
       })
       expect(payment).toEqual(expectedResponse)
@@ -258,6 +282,12 @@ describe('Incognia API', () => {
       expect(() =>
         IncogniaApi.registerWebPayment({ requestToken: 'token' } as any)
       ).rejects.toThrow('Missing required parameter: accountId')
+      expect(() =>
+        IncogniaApi.registerWebPayment({
+          accountId: 'id',
+          requestToken: 'token'
+        } as any)
+      ).rejects.toThrow('Missing required parameter: policyId')
     })
 
     it('registers a web payment', async () => {
@@ -277,7 +307,8 @@ describe('Incognia API', () => {
 
       const webPayment = await IncogniaApi.registerWebPayment({
         requestToken: 'request_token',
-        accountId: 'account_id'
+        accountId: 'account_id',
+        policyId: 'policy_id'
       })
       expect(webPayment).toEqual(expectedResponse)
     })

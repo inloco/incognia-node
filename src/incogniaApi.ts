@@ -31,6 +31,7 @@ const errorMessages = {
   CLIENT_SECRET: 'Missing required parameter: clientSecret',
   REQUEST_TOKEN: 'Missing required parameter: requestToken',
   ACCOUNT_ID: 'Missing required parameter: accountId',
+  POLICY_ID: 'Missing required parameter: policyId',
   EVENT: 'Missing required parameter: event',
   INIT: 'IncogniaApi not initialized'
 }
@@ -68,9 +69,10 @@ export class IncogniaApi {
   public static async registerSignup(
     props: RegisterSignupProps
   ): Promise<SignupResponse> {
-    const { requestToken } = props || {}
+    const { requestToken, policyId } = props || {}
     if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
     if (!requestToken) throw new IncogniaError(errorMessages.REQUEST_TOKEN)
+    if (!policyId) throw new IncogniaError(errorMessages.POLICY_ID)
 
     return IncogniaApi.instance.#registerSignup(props)
   }
@@ -78,9 +80,10 @@ export class IncogniaApi {
   public static async registerWebSignup(
     props: RegisterWebSignupProps
   ): Promise<WebSignupResponse> {
-    const { requestToken } = props || {}
+    const { requestToken, policyId } = props || {}
     if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
     if (!requestToken) throw new IncogniaError(errorMessages.REQUEST_TOKEN)
+    if (!policyId) throw new IncogniaError(errorMessages.POLICY_ID)
 
     return IncogniaApi.instance.#registerSignup(props)
   }
@@ -88,10 +91,11 @@ export class IncogniaApi {
   public static async registerLogin(
     props: RegisterLoginProps
   ): Promise<TransactionResponse> {
-    const { requestToken, accountId } = props || {}
+    const { requestToken, accountId, policyId } = props || {}
     if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
     if (!requestToken) throw new IncogniaError(errorMessages.REQUEST_TOKEN)
     if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
+    if (!policyId) throw new IncogniaError(errorMessages.POLICY_ID)
 
     return IncogniaApi.instance.#registerTransaction({
       ...props,
@@ -102,10 +106,11 @@ export class IncogniaApi {
   public static async registerWebLogin(
     props: RegisterWebLoginProps
   ): Promise<WebTransactionResponse> {
-    const { requestToken, accountId } = props || {}
+    const { requestToken, accountId, policyId } = props || {}
     if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
     if (!requestToken) throw new IncogniaError(errorMessages.REQUEST_TOKEN)
     if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
+    if (!policyId) throw new IncogniaError(errorMessages.POLICY_ID)
 
     return IncogniaApi.instance.#registerTransaction({
       ...props,
@@ -116,10 +121,11 @@ export class IncogniaApi {
   public static async registerPayment(
     props: RegisterPaymentProps
   ): Promise<TransactionResponse> {
-    const { requestToken, accountId } = props || {}
+    const { requestToken, accountId, policyId } = props || {}
     if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
     if (!requestToken) throw new IncogniaError(errorMessages.REQUEST_TOKEN)
     if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
+    if (!policyId) throw new IncogniaError(errorMessages.POLICY_ID)
 
     return IncogniaApi.instance.#registerTransaction({
       ...props,
@@ -130,10 +136,11 @@ export class IncogniaApi {
   public static async registerWebPayment(
     props: RegisterWebPaymentProps
   ): Promise<WebTransactionResponse> {
-    const { requestToken, accountId } = props || {}
+    const { requestToken, accountId, policyId } = props || {}
     if (!IncogniaApi.instance) throw new IncogniaError(errorMessages.INIT)
     if (!requestToken) throw new IncogniaError(errorMessages.REQUEST_TOKEN)
     if (!accountId) throw new IncogniaError(errorMessages.ACCOUNT_ID)
+    if (!policyId) throw new IncogniaError(errorMessages.POLICY_ID)
 
     return IncogniaApi.instance.#registerTransaction({
       ...props,

@@ -47,12 +47,12 @@ IncogniaApi.init({
 
 ### Registering a Mobile Signup
 
-This method registers a new mobile signup for the given installation (or request token) and address, returning a signup assessment, containing the risk assessment and supporting evidence:
+This method registers a new mobile signup for the given request token and address, returning a signup assessment, containing the risk assessment and supporting evidence:
 
 ```js
 try {
   const signup = await IncogniaApi.registerSignup({
-    installationId: 'installation_id',
+    requestToken: 'request_token',
     structuredAddress: {
       locale: 'en-US',
       countryName: 'United States of America',
@@ -74,12 +74,12 @@ try {
 
 ### Registering a Web Signup
 
-This method registers a new web signup for the given session token (or request token), returning a signup assessment, containing the risk assessment and supporting evidence:
+This method registers a new web signup for the given request token, returning a signup assessment, containing the risk assessment and supporting evidence:
 
 ```js
 try {
   const signup = await IncogniaApi.registerWebSignup({
-    sessionToken: 'session_token'
+    requestToken: 'request_token'
   })
 } catch (error) {
   console.log(error.message)
@@ -88,12 +88,12 @@ try {
 
 ### Registering a Mobile Login
 
-This method registers a new mobile login for the given installation (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new mobile login for the given request token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
   const login = await IncogniaApi.registerLogin({
-    installationId: 'installation_id',
+    requestToken: 'request_token',
     accountId: 'account_id',
     externalId: 'external_id' // optional field
   })
@@ -104,12 +104,12 @@ try {
 
 ### Registering a Web Login
 
-This method registers a new web login for the given session token (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new web login for the given request token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
   const login = await IncogniaApi.registerWebLogin({
-    sessionToken: 'session_token',
+    requestToken: 'request_token',
     accountId: 'account_id'
   })
 } catch (error) {
@@ -119,12 +119,12 @@ try {
 
 ### Registering a Payment
 
-This method registers a new payment for the given installation (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new payment for the given request token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
   const payment = await IncogniaApi.registerPayment({
-    installationId: 'installation_id',
+    requestToken: 'request_token',
     accountId: 'account_id',
     addresses: [
       {
@@ -156,12 +156,12 @@ try {
 
 ### Registering a Web Payment
 
-This method registers a new web payment for the given session token (or request token) and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
+This method registers a new web payment for the given request token and account, returning a transaction assessment, containing the risk assessment and supporting evidence.
 
 ```js
 try {
   const payment = await IncogniaApi.registerWebPayment({
-    sessionToken: 'session_token',
+    requestToken: 'request_token',
     accountId: 'account_id'
   })
 } catch (error) {
@@ -219,7 +219,7 @@ const { IncogniaApi, IncogniaApiError } = require('@incognia/api')
 
 try {
   const loginAssessment = await IncogniaApi.registerLogin({
-    installationId: 'installation_id',
+    requestToken: 'request_token',
     accountId: 'account_id'
   })
 } catch (error) {
@@ -270,6 +270,30 @@ const signup = await IncogniaApi.registerSignup({...})
 const login = await IncogniaApi.registerLogin({...})
 const payment = await IncogniaApi.registerPayment({...})
 IncogniaApi.registerFeedback({...})
+```
+
+Furthermore, the `installationId` and `sessionToken` parameters were removed, and `requestToken` should be used instead. The `requestToken` field can receive the previous `installationId` and `sessionToken` values, as well as the new `requestToken` value from the Mobile and Web SDKs.
+
+```js
+// Before
+const loginAssessment = await incogniaApi.registerLogin({
+  installation_id: 'installation_id',
+  accountId: 'account_id'
+})
+const webPaymentAssessment = await incogniaApi.registerWebPayment({
+  sessionToken: 'session_token',
+  accountId: 'account_id'
+})
+
+// After
+const loginAssessment = await IncogniaApi.registerLogin({
+  requestToken: 'installation_id',
+  accountId: 'account_id'
+})
+const webPaymentAssessment = await IncogniaApi.registerWebPayment({
+  requestToken: 'session_token',
+  accountId: 'account_id'
+})
 ```
 
 ## More documentation

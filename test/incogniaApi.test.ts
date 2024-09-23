@@ -30,9 +30,8 @@ describe('Incognia API', () => {
     it('throws an initialization error on each method call', () => {
       const errorMessage = 'IncogniaApi not initialized'
       const props = {
-        installationId: 'id',
         accountId: 'id',
-        sessionToken: 'id',
+        requestToken: 'id',
         event: FeedbackEvent.AccountTakeover
       }
 
@@ -68,7 +67,7 @@ describe('Incognia API', () => {
 
     it('validates signup', async () => {
       expect(() => IncogniaApi.registerSignup({} as any)).rejects.toThrow(
-        'Missing required parameter: installationId'
+        'Missing required parameter: requestToken'
       )
     })
 
@@ -96,7 +95,7 @@ describe('Incognia API', () => {
       nock(BASE_ENDPOINT).post(`/v2/onboarding/signups`).reply(200, apiResponse)
 
       const signup = await IncogniaApi.registerSignup({
-        installationId: 'installation_id',
+        requestToken: 'request_token',
         policyId: 'policy_id',
         structuredAddress: {
           locale: 'en-US',
@@ -117,7 +116,7 @@ describe('Incognia API', () => {
 
     it('validates a web signup', async () => {
       expect(() => IncogniaApi.registerWebSignup({} as any)).rejects.toThrow(
-        'Missing required parameter: sessionToken'
+        'Missing required parameter: requestToken'
       )
     })
 
@@ -132,16 +131,16 @@ describe('Incognia API', () => {
         riskAssessment: 'low_risk'
       }
 
-      const sessionToken = 'session_token'
+      const requestToken = 'request_token'
 
       nock(BASE_ENDPOINT)
         .post(`/v2/onboarding/signups`, {
-          session_token: sessionToken
+          request_token: requestToken
         })
         .reply(200, apiResponse)
 
       const webSignup = await IncogniaApi.registerWebSignup({
-        sessionToken
+        requestToken
       })
       expect(webSignup).toEqual(expectedResponse)
     })
@@ -149,9 +148,9 @@ describe('Incognia API', () => {
     it('validates login', async () => {
       expect(() =>
         IncogniaApi.registerLogin({ accountId: 'id' } as any)
-      ).rejects.toThrow('Missing required parameter: installationId')
+      ).rejects.toThrow('Missing required parameter: requestToken')
       expect(() =>
-        IncogniaApi.registerLogin({ installationId: 'id' } as any)
+        IncogniaApi.registerLogin({ requestToken: 'token' } as any)
       ).rejects.toThrow('Missing required parameter: accountId')
     })
 
@@ -181,7 +180,7 @@ describe('Incognia API', () => {
         .reply(200, apiResponse)
 
       const login = await IncogniaApi.registerLogin({
-        installationId: 'installation_id',
+        requestToken: 'request_token',
         accountId: 'account_id'
       })
       expect(login).toEqual(expectedResponse)
@@ -190,9 +189,9 @@ describe('Incognia API', () => {
     it('validates a web login', async () => {
       expect(() =>
         IncogniaApi.registerWebLogin({ accountId: 'id' } as any)
-      ).rejects.toThrow('Missing required parameter: sessionToken')
+      ).rejects.toThrow('Missing required parameter: requestToken')
       expect(() =>
-        IncogniaApi.registerWebLogin({ sessionToken: 'id' } as any)
+        IncogniaApi.registerWebLogin({ requestToken: 'token' } as any)
       ).rejects.toThrow('Missing required parameter: accountId')
     })
 
@@ -212,7 +211,7 @@ describe('Incognia API', () => {
         .reply(200, apiResponse)
 
       const webLogin = await IncogniaApi.registerWebLogin({
-        sessionToken: 'session_token',
+        requestToken: 'request_token',
         accountId: 'account_id'
       })
       expect(webLogin).toEqual(expectedResponse)
@@ -221,9 +220,9 @@ describe('Incognia API', () => {
     it('validates payment', async () => {
       expect(() =>
         IncogniaApi.registerPayment({ accountId: 'id' } as any)
-      ).rejects.toThrow('Missing required parameter: installationId')
+      ).rejects.toThrow('Missing required parameter: requestToken')
       expect(() =>
-        IncogniaApi.registerPayment({ installationId: 'id' } as any)
+        IncogniaApi.registerPayment({ requestToken: 'token' } as any)
       ).rejects.toThrow('Missing required parameter: accountId')
     })
 
@@ -243,7 +242,7 @@ describe('Incognia API', () => {
         .reply(200, apiResponse)
 
       const payment = await IncogniaApi.registerPayment({
-        installationId: 'installation_id',
+        requestToken: 'request_token',
         accountId: 'account_id',
         appId: 'app_id',
         externalId: 'external_id',
@@ -255,9 +254,9 @@ describe('Incognia API', () => {
     it('validates a web payment', async () => {
       expect(() =>
         IncogniaApi.registerWebPayment({ accountId: 'id' } as any)
-      ).rejects.toThrow('Missing required parameter: sessionToken')
+      ).rejects.toThrow('Missing required parameter: requestToken')
       expect(() =>
-        IncogniaApi.registerWebPayment({ sessionToken: 'id' } as any)
+        IncogniaApi.registerWebPayment({ requestToken: 'token' } as any)
       ).rejects.toThrow('Missing required parameter: accountId')
     })
 
@@ -277,7 +276,7 @@ describe('Incognia API', () => {
         .reply(200, apiResponse)
 
       const webPayment = await IncogniaApi.registerWebPayment({
-        sessionToken: 'session_token',
+        requestToken: 'request_token',
         accountId: 'account_id'
       })
       expect(webPayment).toEqual(expectedResponse)

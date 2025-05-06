@@ -75,6 +75,7 @@ export type RegisterPaymentBaseProps = {
 
 export type RegisterPaymentProps = RegisterPaymentBaseProps & {
   relatedAccountId?: string
+  location?: TransactionLocation
 }
 
 export type RegisterWebPaymentProps = RegisterPaymentBaseProps
@@ -131,7 +132,7 @@ export type RegisterTransactionProps = (
   type: TransactionType
 }
 
-type TransactionLocation = {
+export type TransactionLocation = {
   latitude: number
   longitude: number
   collectedAt?: Date

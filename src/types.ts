@@ -13,6 +13,7 @@ export type RegisterSignupBaseProps = {
   requestToken: string
   policyId: string
   accountId?: string
+  personId?: PersonId
   [x: string]: any
 }
 
@@ -48,6 +49,7 @@ type RegisterLoginBaseProps = {
   requestToken: string
   policyId: string
   accountId: string
+  personId?: PersonId
   [x: string]: any
 }
 
@@ -65,6 +67,7 @@ export type RegisterPaymentBaseProps = {
   requestToken: string
   policyId: string
   accountId: string
+  personId?: PersonId
   externalId?: string
   addresses?: Array<TransactionAddress>
   paymentValue?: PaymentValue
@@ -104,6 +107,7 @@ type Reason = {
 export type RegisterFeedbackBodyProps = {
   event: string
   accountId?: string
+  personId?: PersonId
   installationId?: string
   sessionToken?: string
   requestToken?: string
@@ -449,6 +453,11 @@ type PaymentMethod = {
   identifier?: string
   creditCardInfo?: CardInfo
   debitCardInfo?: CardInfo
+}
+
+type PersonId = {
+  type: string
+  value: string
 }
 
 export enum FeedbackEvent {

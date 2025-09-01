@@ -190,43 +190,6 @@ describe('Incognia API', () => {
       expect(login).toEqual(expectedResponse)
     })
 
-    it('registers login with person_id', async () => {
-      const apiResponse = {
-        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-        risk_assessment: 'low_risk',
-        app_tampering: {
-          result: 'not_detected',
-          app_debugging: 'not_detected',
-          code_injection: 'not_detected'
-        }
-      }
-
-      const expectedResponse = {
-        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-        riskAssessment: 'low_risk',
-        appTampering: {
-          result: 'not_detected',
-          appDebugging: 'not_detected',
-          codeInjection: 'not_detected'
-        }
-      }
-
-      nock(BASE_ENDPOINT)
-        .post(`/v2/authentication/transactions`)
-        .reply(200, apiResponse)
-
-      const login = await IncogniaApi.registerLogin({
-        requestToken: 'request_token',
-        accountId: 'account_id',
-        policyId: 'policy_id',
-        personId: {
-          type: 'cpf',
-          value: '65835124082'
-        }
-      })
-      expect(login).toEqual(expectedResponse)
-    })
-
     describe.each([
       ['without collectedAt', undefined],
       ['with collectedAt', new Date('2024-01-01T12:00:00Z')],

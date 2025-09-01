@@ -50,6 +50,7 @@ type RegisterLoginBaseProps = {
   policyId: string
   accountId: string
   personId?: PersonId
+  storeId?: string
   [x: string]: any
 }
 
@@ -68,6 +69,7 @@ export type RegisterPaymentBaseProps = {
   policyId: string
   accountId: string
   personId?: PersonId
+  storeId?: string
   externalId?: string
   addresses?: Array<TransactionAddress>
   paymentValue?: PaymentValue

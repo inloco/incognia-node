@@ -13,6 +13,29 @@ const token = {
 
 describe('requestResource', () => {
   describe('when requesting a resource', () => {
+    it('informs Authorization header when requesting resource', async () => {
+      const expectedAuthorizationHeader = `${token.tokenType} ${token.accessToken}`
+
+      const resourceRequest = nock(BASE_ENDPOINT, {
+        reqheaders: {
+          'Content-Type': 'application/json',
+          Authorization: expectedAuthorizationHeader
+        }
+      })
+        .get(`/someUrl`)
+        .reply(200, {})
+
+      await requestResource(
+        {
+          url: `${BASE_ENDPOINT}/someUrl`,
+          method: 'get'
+        },
+        token
+      )
+
+      expect(resourceRequest.isDone()).toBeTruthy()
+    })
+
     describe('and the request fails', () => {
       it('throws Incognia errors', async () => {
         nock(BASE_ENDPOINT).get('/someUrl').replyWithError({

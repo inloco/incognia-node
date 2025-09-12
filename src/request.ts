@@ -110,7 +110,7 @@ export class RequestManager {
         if (axios.isAxiosError(err)) {
           const status = err.response?.status
           if (typeof status === 'number' && status >= 400 && status < 500) {
-            throw err // surface immediately; caller will handle/normalize
+            throw err
           }
         }
 

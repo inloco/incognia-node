@@ -15,7 +15,8 @@ import {
   TransactionResponse,
   TransactionType,
   WebSignupResponse,
-  WebTransactionResponse
+  WebTransactionResponse,
+  IncogniaApiOptions
 } from './types'
 import { apiEndpoints } from './endpoints'
 import { RequestManager } from './request'
@@ -23,6 +24,7 @@ import { RequestManager } from './request'
 type IncogniaApiConstructor = {
   clientId: string
   clientSecret: string
+  options?: IncogniaApiOptions
 }
 
 const errorMessages = {
@@ -49,21 +51,31 @@ export class IncogniaApi {
   /*
    ** Initialization
    */
-  private constructor({ clientId, clientSecret }: IncogniaApiConstructor) {
+  private constructor({
+    clientId,
+    clientSecret,
+    options
+  }: IncogniaApiConstructor) {
     this.requestManager = new RequestManager({
       clientId,
-      clientSecret
+      clientSecret,
+      keepAlive: options?.keepAlive
     })
   }
 
-  public static init({ clientId, clientSecret }: IncogniaApiConstructor): void {
+  public static init({
+    clientId,
+    clientSecret,
+    options
+  }: IncogniaApiConstructor): void {
     if (!IncogniaApi.instance) {
       if (!clientId) throw new IncogniaError(errorMessages.CLIENT_ID)
       if (!clientSecret) throw new IncogniaError(errorMessages.CLIENT_SECRET)
 
       IncogniaApi.instance = new IncogniaApi({
         clientId,
-        clientSecret
+        clientSecret,
+        options
       })
     }
   }

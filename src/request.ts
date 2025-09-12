@@ -105,8 +105,19 @@ export class RequestManager {
         return await fn()
       } catch (err) {
         lastError = err
+
+        // Do not retry on client errors (4xx)
+        if (axios.isAxiosError(err)) {
+          const status = err.response?.status
+          if (typeof status === 'number' && status >= 400 && status < 500) {
+            throw err // surface immediately; caller will handle/normalize
+          }
+        }
+
+        // No more retries left
         if (attempt === this.maxRetries) break
 
+        // Wait before next attempt
         await new Promise(res => setTimeout(res, this.retryDelayMs))
       }
       attempt++

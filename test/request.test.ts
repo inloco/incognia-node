@@ -244,4 +244,37 @@ describe('requestManager retry logic', () => {
     expect(tokenScope.isDone()).toBe(true)
     expect(resScope.isDone()).toBe(true)
   })
+
+  it('does not retry on 4xx client errors', async () => {
+    const requestManager = new RequestManager({
+      ...credentials,
+      maxRetries: 1, // would retry if allowed
+      retryDelayMs: 50
+    })
+
+    // Token succeeds
+    nock(BASE_ENDPOINT, {
+      reqheaders: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
+      .post('/v2/token', { grant_type: 'client_credentials' })
+      .basicAuth({ user: credentials.clientId, pass: credentials.clientSecret })
+      .reply(200, accessTokenResponseExample)
+
+    // Resource: respond 400 once; ensure it's only called once
+    const scope = nock(BASE_ENDPOINT)
+      .post('/client-error')
+      .reply(400, { error: 'Bad Request' })
+      .post('/client-error')
+      .reply(200, { ok: true }) // would succeed if called again
+
+    const call = requestManager.requestResource({
+      url: `${BASE_ENDPOINT}/client-error`,
+      method: 'post'
+    })
+
+    await expect(call).rejects.toThrow(IncogniaApiError)
+    expect(scope.isDone()).toBeFalsy() // second call not made
+  })
 })

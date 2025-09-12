@@ -4,8 +4,7 @@ export {
   CouponType,
   FeedbackEvent,
   PaymentMethodType,
-  TransactionAddressType,
-  IncogniaApiOptions
+  TransactionAddressType
 } from './types'
 
 export { IncogniaApiError, IncogniaError } from './errors'

@@ -65,7 +65,7 @@ IncogniaApi.init({
 - **keepAlive**: boolean. Default: `false`.
   - When `true`, the library sets Node's `https.Agent` with `keepAlive: true` on the internal Axios instance, enabling connection reuse.
 - **maxRetries**: number. Default: `0`.
-  - Maximum number of retry attempts for failed requests. Retries are only performed on transient errors such as network failures or server errors (5xx responses).
+  - Maximum number of retry attempts for failed requests.
 - **retryDelayMs**: number. Default: `200`.
   - The delay in milliseconds between each retry attempt. Useful for preventing overwhelming the API when multiple retries are configured.
 

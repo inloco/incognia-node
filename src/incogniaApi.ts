@@ -59,7 +59,9 @@ export class IncogniaApi {
     this.requestManager = new RequestManager({
       clientId,
       clientSecret,
-      keepAlive: options?.keepAlive
+      keepAlive: options?.keepAlive,
+      maxRetries: options?.maxRetries,
+      retryDelayMs: options?.retryDelayMs
     })
   }
 

@@ -494,6 +494,6 @@ export enum FeedbackEvent {
 }
 
 export type RequesterOptions = {
-  keepAlive?: boolean,
+  keepAlive?: boolean
   retryOptions?: IAxiosRetryConfig
 }

@@ -7,21 +7,28 @@ import { Method } from './types'
 import { apiEndpoints } from './endpoints'
 import QueryString from 'qs'
 import { TokenStorage } from './token'
+import https from 'https'
 
 type RequestManagerConstructor = {
   clientId: string
   clientSecret: string
+  keepAlive?: boolean
 }
 
 export class RequestManager {
   readonly clientId: string
   readonly clientSecret: string
-
+  readonly httpsAgent: https.Agent
   readonly tokenStorage: TokenStorage
 
-  constructor({ clientId, clientSecret }: RequestManagerConstructor) {
+  constructor({
+    clientId,
+    clientSecret,
+    keepAlive = false
+  }: RequestManagerConstructor) {
     this.clientId = clientId
     this.clientSecret = clientSecret
+    this.httpsAgent = new https.Agent({ keepAlive })
 
     this.tokenStorage = new TokenStorage({
       onRequestToken: async () => this.requestToken()
@@ -38,7 +45,8 @@ export class RequestManager {
           'Content-Type': 'application/json',
           'User-Agent': buildUserAgent(),
           Authorization: `${token?.tokenType} ${token?.accessToken}`
-        }
+        },
+        httpsAgent: this.httpsAgent
       })
       return convertObjectToCamelCase(response.data)
     } catch (e: unknown) {
@@ -59,7 +67,8 @@ export class RequestManager {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'User-Agent': buildUserAgent()
-        }
+        },
+        httpsAgent: this.httpsAgent
       })
 
       const data = axiosResponse?.data

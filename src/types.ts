@@ -1,3 +1,7 @@
+export type IncogniaApiOptions = {
+  keepAlive?: boolean
+}
+
 export enum Method {
   Post = 'post',
   Get = 'get'

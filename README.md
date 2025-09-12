@@ -43,6 +43,24 @@ IncogniaApi.init({
 })
 ```
 
+### Incognia API Options (`options`)
+
+You can optionally configure HTTP behavior when initializing the SDK via the `options` parameter. These options affect all requests made by the library after initialization.
+
+```js
+IncogniaApi.init({
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
+  options: {
+    // Reuse TCP connections for better performance in high-throughput environments (Default: false)
+    keepAlive: true
+  }
+})
+```
+
+- **keepAlive**: boolean. Default: `false`.
+  - When `true`, the library sets Node's `https.Agent` with `keepAlive: true` on the internal Axios instance, enabling connection reuse.
+
 ## API methods
 
 ### Registering a Mobile Signup

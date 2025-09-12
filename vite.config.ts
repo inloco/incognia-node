@@ -2,6 +2,12 @@ import path from 'path'
 import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 import { dependencies } from './package.json'
+import { builtinModules } from 'module'
+
+const nodeBuiltins = [
+  ...builtinModules,
+  ...builtinModules.map(m => `node:${m}`)
+]
 
 export default defineConfig({
   plugins: [
@@ -19,10 +25,11 @@ export default defineConfig({
       }
     },
     rollupOptions: {
-      external: [...Object.keys(dependencies)],
+      external: [...Object.keys(dependencies), ...nodeBuiltins],
       output: {
         preserveModules: true,
-        exports: 'named'
+        exports: 'named',
+        interop: 'auto'
       }
     },
     target: 'esnext',

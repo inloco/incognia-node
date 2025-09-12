@@ -7,7 +7,7 @@ import { Method } from './types'
 import { apiEndpoints } from './endpoints'
 import QueryString from 'qs'
 import { TokenStorage } from './token'
-import https from 'https'
+import https from 'node:https'
 
 type RequestManagerConstructor = {
   clientId: string

@@ -15,15 +15,17 @@ import {
   TransactionResponse,
   TransactionType,
   WebSignupResponse,
-  WebTransactionResponse
+  WebTransactionResponse,
+  RequesterOptions,
 } from './types'
 import { TokenManager } from './token'
 import { apiEndpoints } from './endpoints'
-import { requestResource } from './request'
+import { requestResource, setRequesterOptions } from './request'
 
 type IncogniaApiConstructor = {
   clientId: string
-  clientSecret: string
+  clientSecret: string,
+  requesterOptions?: RequesterOptions
 }
 
 const errorMessages = {
@@ -54,12 +56,13 @@ export class IncogniaApi {
     this.tokenManager = new TokenManager({ clientId, clientSecret })
   }
 
-  public static init({ clientId, clientSecret }: IncogniaApiConstructor): void {
+  public static init({ clientId, clientSecret, requesterOptions }: IncogniaApiConstructor): void {
     if (!IncogniaApi.instance) {
       if (!clientId) throw new IncogniaError(errorMessages.CLIENT_ID)
       if (!clientSecret) throw new IncogniaError(errorMessages.CLIENT_SECRET)
 
-      IncogniaApi.instance = new IncogniaApi({ clientId, clientSecret })
+      IncogniaApi.instance = new IncogniaApi({ clientId, clientSecret });
+      setRequesterOptions(requesterOptions);
     }
   }
 

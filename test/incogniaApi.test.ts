@@ -1,6 +1,7 @@
 import nock from 'nock'
-import { beforeEach, describe, expect, it } from 'vitest'
-import { CouponType, FeedbackEvent, IncogniaApi, TransactionLocation } from '../src/'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { CouponType, FeedbackEvent, IncogniaApi } from '../src/'
+import type { RequesterOptions, TransactionLocation } from '../src/types'
 import { BASE_ENDPOINT } from '../src/endpoints'
 
 const credentials = {
@@ -16,6 +17,29 @@ const accessTokenExample = {
 
 describe('Incognia API', () => {
   beforeEach(() => nock.cleanAll())
+
+  describe('when init with retryOptions', () => {
+    it('validates requesterOptions is passed to setRequesterOptions function', async () => {
+      vi.resetModules()
+
+      const mockSetRequesterOptions = vi.fn()
+      vi.doMock('../src/request', () => ({
+        setRequesterOptions: mockSetRequesterOptions,
+        requestResource: vi.fn()
+      }))
+
+      const { IncogniaApi: IncogniaApiWithMock } = await import('../src/incogniaApi')
+      const requesterOptions: RequesterOptions = {
+        keepAlive: true,
+        retryOptions: { retries: 5 }
+      }
+
+      IncogniaApiWithMock.init({ ...credentials, requesterOptions })
+      expect(mockSetRequesterOptions).toHaveBeenCalledWith(requesterOptions)
+
+      vi.resetModules()
+    })
+  })
 
   describe('when the API is not initialized', () => {
     it('throws an error when trying to initialize without clientId or clientSecret', () => {

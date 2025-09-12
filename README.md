@@ -43,6 +43,38 @@ IncogniaApi.init({
 })
 ```
 
+### Request options (`requesterOptions`)
+
+You can optionally configure HTTP behavior when initializing the SDK via the `requesterOptions` parameter. These options affect all requests made by the library after initialization.
+
+```js
+IncogniaApi.init({
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
+  requesterOptions: {
+    // Reuse TCP connections for better performance in high-throughput environments
+    keepAlive: true,
+
+    // Configure retries using axios-retry options
+    retryOptions: {
+      retries: 5,
+      // You may pass any axios-retry option (e.g., retryDelay, retryCondition)
+    }
+  }
+})
+```
+
+- **keepAlive**: boolean. Default: `false`.
+  - When `true`, the library sets Node's `http.Agent` and `https.Agent` with `keepAlive: true` on the internal Axios instance, enabling connection reuse.
+
+- **retryOptions**: `IAxiosRetryConfig` from axios-retry. Default: `{ retries: 3 }`.
+  - Merged with the library default; your values override defaults. See the full list in the [axios-retry options](https://github.com/softonic/axios-retry#options).
+
+**Behavior and defaults**
+- If `requesterOptions` is omitted: `keepAlive` is disabled; retries are enabled with 3 attempts.
+- If only `keepAlive` is provided: keep-alive is enabled and retries still use the default `{ retries: 3 }`.
+- If only `retryOptions` is provided: those retry settings are applied; keep-alive remains disabled.
+
 ## API methods
 
 ### Registering a Mobile Signup

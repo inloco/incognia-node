@@ -1,3 +1,5 @@
+import { IAxiosRetryConfig } from "axios-retry"
+
 export enum Method {
   Post = 'post',
   Get = 'get'
@@ -489,4 +491,9 @@ export enum FeedbackEvent {
   SignupAccepted = 'signup_accepted',
   SignupDeclined = 'signup_declined',
   Verified = 'verified'
+}
+
+export type RequesterOptions = {
+  keepAlive?: boolean,
+  retryOptions?: IAxiosRetryConfig
 }

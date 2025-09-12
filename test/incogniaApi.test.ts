@@ -1,6 +1,7 @@
 import nock from 'nock'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { CouponType, FeedbackEvent, IncogniaApi, TransactionLocation } from '../src/'
+import { CouponType, FeedbackEvent, IncogniaApi } from '../src/'
+import { TransactionLocation } from '../src/types'
 import { BASE_ENDPOINT } from '../src/endpoints'
 
 const credentials = {
@@ -192,7 +193,7 @@ describe('Incognia API', () => {
 
     describe.each([
       ['without collectedAt', undefined],
-      ['with collectedAt', new Date('2024-01-01T12:00:00Z')],
+      ['with collectedAt', new Date('2024-01-01T12:00:00Z')]
     ])('registers login with location data %s', (_description, collectedAt) => {
       it('returns the expected response', async () => {
         const apiResponse = {
@@ -203,8 +204,8 @@ describe('Incognia API', () => {
             app_debugging: 'not_detected',
             code_injection: 'not_detected'
           }
-        };
-    
+        }
+
         const expectedResponse = {
           id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
           riskAssessment: 'low_risk',
@@ -213,28 +214,28 @@ describe('Incognia API', () => {
             appDebugging: 'not_detected',
             codeInjection: 'not_detected'
           }
-        };
-    
+        }
+
         const location: TransactionLocation = {
           latitude: 37.7749,
           longitude: -122.4194,
-          ...(collectedAt && { collectedAt }),
-        };
-    
+          ...(collectedAt && { collectedAt })
+        }
+
         nock(BASE_ENDPOINT)
           .post(`/v2/authentication/transactions`)
-          .reply(200, apiResponse);
-    
+          .reply(200, apiResponse)
+
         const login = await IncogniaApi.registerLogin({
           requestToken: 'request_token',
           accountId: 'account_id',
           policyId: 'policy_id',
-          location: location,
-        });
-        expect(login).toEqual(expectedResponse);
-      });
-    });
-    
+          location: location
+        })
+        expect(login).toEqual(expectedResponse)
+      })
+    })
+
     it('validates a web login', async () => {
       expect(() =>
         IncogniaApi.registerWebLogin({ accountId: 'id' } as any)
@@ -316,41 +317,44 @@ describe('Incognia API', () => {
 
     describe.each([
       ['without collectedAt', undefined],
-      ['with collectedAt', new Date('2024-01-01T12:00:00Z')],
-    ])('registers payment with location data %s', (_description, collectedAt) => {
-      it('returns the expected response', async () => {
-        const apiResponse = {
-          id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-          risk_assessment: 'low_risk'
-        }
-  
-        const expectedResponse = {
-          id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
-          riskAssessment: 'low_risk'
-        }
+      ['with collectedAt', new Date('2024-01-01T12:00:00Z')]
+    ])(
+      'registers payment with location data %s',
+      (_description, collectedAt) => {
+        it('returns the expected response', async () => {
+          const apiResponse = {
+            id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+            risk_assessment: 'low_risk'
+          }
 
-        const location: TransactionLocation = {
-          latitude: 37.7749,
-          longitude: -122.4194,
-          ...(collectedAt && { collectedAt }),
-        };
-  
-        nock(BASE_ENDPOINT)
-          .post(`/v2/authentication/transactions`)
-          .reply(200, apiResponse)
-    
-        const payment = await IncogniaApi.registerPayment({
-          requestToken: 'request_token',
-          accountId: 'account_id',
-          appId: 'app_id',
-          externalId: 'external_id',
-          policyId: 'policy_id',
-          coupon: { type: CouponType.FixedValue, value: 10 },
-          location: location,
-        });
-        expect(payment).toEqual(expectedResponse);
-      });
-    });
+          const expectedResponse = {
+            id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+            riskAssessment: 'low_risk'
+          }
+
+          const location: TransactionLocation = {
+            latitude: 37.7749,
+            longitude: -122.4194,
+            ...(collectedAt && { collectedAt })
+          }
+
+          nock(BASE_ENDPOINT)
+            .post(`/v2/authentication/transactions`)
+            .reply(200, apiResponse)
+
+          const payment = await IncogniaApi.registerPayment({
+            requestToken: 'request_token',
+            accountId: 'account_id',
+            appId: 'app_id',
+            externalId: 'external_id',
+            policyId: 'policy_id',
+            coupon: { type: CouponType.FixedValue, value: 10 },
+            location: location
+          })
+          expect(payment).toEqual(expectedResponse)
+        })
+      }
+    )
 
     it('validates a web payment', async () => {
       expect(() =>

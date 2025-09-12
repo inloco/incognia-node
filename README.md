@@ -52,13 +52,13 @@ IncogniaApi.init({
   clientId: 'clientId',
   clientSecret: 'clientSecret',
   options: {
-    // Reuse TCP connections for better performance in high-throughput environments (Default: true)
+    // Reuse TCP connections for better performance in high-throughput environments (Default: false)
     keepAlive: true
   }
 })
 ```
 
-- **keepAlive**: boolean. Default: `true`.
+- **keepAlive**: boolean. Default: `false`.
   - When `true`, the library sets Node's `https.Agent` with `keepAlive: true` on the internal Axios instance, enabling connection reuse.
 
 ## API methods

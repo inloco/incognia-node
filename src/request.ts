@@ -24,7 +24,7 @@ export class RequestManager {
   constructor({
     clientId,
     clientSecret,
-    keepAlive = true
+    keepAlive = false
   }: RequestManagerConstructor) {
     this.clientId = clientId
     this.clientSecret = clientSecret

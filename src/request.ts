@@ -3,22 +3,75 @@ import { convertObjectToCamelCase } from './formatting'
 import { buildUserAgent } from './utils'
 import axios, { AxiosRequestConfig } from 'axios'
 import { IncogniaToken } from './token'
+import { Method } from './types'
+import { apiEndpoints } from './endpoints'
+import QueryString from 'qs'
+import { TokenStorage } from './token'
 
-export async function requestResource(
-  options: AxiosRequestConfig,
-  token: IncogniaToken | null
-) {
-  try {
-    const response = await axios({
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'User-Agent': buildUserAgent(),
-        Authorization: `${token?.tokenType} ${token?.accessToken}`
-      }
+type RequestManagerConstructor = {
+  clientId: string
+  clientSecret: string
+}
+
+export class RequestManager {
+  readonly clientId: string
+  readonly clientSecret: string
+
+  readonly tokenStorage: TokenStorage
+
+  constructor({ clientId, clientSecret }: RequestManagerConstructor) {
+    this.clientId = clientId
+    this.clientSecret = clientSecret
+
+    this.tokenStorage = new TokenStorage({
+      onRequestToken: async () => this.requestToken()
     })
-    return convertObjectToCamelCase(response.data)
-  } catch (e: unknown) {
-    throwCustomRequestError(e as CustomRequestError)
+  }
+
+  async requestResource(options: AxiosRequestConfig) {
+    const token = await this.tokenStorage.getToken()
+
+    try {
+      const response = await axios({
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': buildUserAgent(),
+          Authorization: `${token?.tokenType} ${token?.accessToken}`
+        }
+      })
+      return convertObjectToCamelCase(response.data)
+    } catch (e: unknown) {
+      throwCustomRequestError(e as CustomRequestError)
+    }
+  }
+
+  async requestToken(): Promise<IncogniaToken | undefined> {
+    try {
+      const axiosResponse = await axios({
+        method: Method.Post,
+        url: apiEndpoints.TOKEN,
+        data: QueryString.stringify({ grant_type: 'client_credentials' }),
+        auth: {
+          username: this.clientId,
+          password: this.clientSecret
+        },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': buildUserAgent()
+        }
+      })
+
+      const data = axiosResponse?.data
+
+      return {
+        createdAt: Math.round(Date.now() / 1000),
+        expiresIn: parseInt(data.expires_in),
+        accessToken: data.access_token,
+        tokenType: data.token_type
+      }
+    } catch (e: unknown) {
+      throwCustomRequestError(e as CustomRequestError)
+    }
   }
 }

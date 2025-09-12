@@ -17,9 +17,8 @@ import {
   WebSignupResponse,
   WebTransactionResponse
 } from './types'
-import { TokenManager } from './token'
 import { apiEndpoints } from './endpoints'
-import { requestResource } from './request'
+import { RequestManager } from './request'
 
 type IncogniaApiConstructor = {
   clientId: string
@@ -45,13 +44,16 @@ export class IncogniaApi {
   /*
    ** Instance properties
    */
-  readonly tokenManager: TokenManager
+  readonly requestManager: RequestManager
 
   /*
    ** Initialization
    */
   private constructor({ clientId, clientSecret }: IncogniaApiConstructor) {
-    this.tokenManager = new TokenManager({ clientId, clientSecret })
+    this.requestManager = new RequestManager({
+      clientId,
+      clientSecret
+    })
   }
 
   public static init({ clientId, clientSecret }: IncogniaApiConstructor): void {
@@ -59,7 +61,10 @@ export class IncogniaApi {
       if (!clientId) throw new IncogniaError(errorMessages.CLIENT_ID)
       if (!clientSecret) throw new IncogniaError(errorMessages.CLIENT_SECRET)
 
-      IncogniaApi.instance = new IncogniaApi({ clientId, clientSecret })
+      IncogniaApi.instance = new IncogniaApi({
+        clientId,
+        clientSecret
+      })
     }
   }
 
@@ -164,30 +169,22 @@ export class IncogniaApi {
    */
   async #registerSignup(props: RegisterSignupProps | RegisterWebSignupProps) {
     const data = convertObjectToSnakeCase(props)
-    const token = await this.tokenManager.getToken()
 
-    return requestResource(
-      {
-        url: apiEndpoints.SIGNUPS,
-        method: Method.Post,
-        data
-      },
-      token
-    )
+    return this.requestManager.requestResource({
+      url: apiEndpoints.SIGNUPS,
+      method: Method.Post,
+      data
+    })
   }
 
   async #registerTransaction(props: RegisterTransactionProps) {
     const data = convertObjectToSnakeCase(props)
-    const token = await this.tokenManager.getToken()
 
-    return requestResource(
-      {
-        url: apiEndpoints.TRANSACTIONS,
-        method: Method.Post,
-        data
-      },
-      token
-    )
+    return this.requestManager.requestResource({
+      url: apiEndpoints.TRANSACTIONS,
+      method: Method.Post,
+      data
+    })
   }
 
   async #registerFeedback(
@@ -196,16 +193,12 @@ export class IncogniaApi {
   ) {
     const params = queryParams && convertObjectToSnakeCase(queryParams)
     const data = convertObjectToSnakeCase(bodyParams)
-    const token = await this.tokenManager.getToken()
 
-    return requestResource(
-      {
-        url: apiEndpoints.FEEDBACKS,
-        method: Method.Post,
-        params,
-        data
-      },
-      token
-    )
+    return this.requestManager.requestResource({
+      url: apiEndpoints.FEEDBACKS,
+      method: Method.Post,
+      params,
+      data
+    })
   }
 }

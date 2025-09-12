@@ -1,10 +1,3 @@
-import qs from 'qs'
-import axios from 'axios'
-import { apiEndpoints } from './endpoints'
-import { Method } from './types'
-import { CustomRequestError, throwCustomRequestError } from './errors'
-import { buildUserAgent } from './utils'
-
 export type IncogniaToken = {
   createdAt: number
   expiresIn: number
@@ -12,20 +5,17 @@ export type IncogniaToken = {
   tokenType: string
 }
 
-type IncogniaApiConstructor = {
-  clientId: string
-  clientSecret: string
+type TokenStorageConstructor = {
+  onRequestToken: () => Promise<IncogniaToken | undefined>
 }
 
-export class TokenManager {
-  readonly clientId: string
-  readonly clientSecret: string
-  incogniaToken: IncogniaToken | null
+export class TokenStorage {
+  requestToken: () => Promise<IncogniaToken | undefined>
+  incogniaToken: IncogniaToken | undefined
 
-  constructor({ clientId, clientSecret }: IncogniaApiConstructor) {
-    this.clientId = clientId
-    this.clientSecret = clientSecret
-    this.incogniaToken = null
+  constructor({ onRequestToken }: TokenStorageConstructor) {
+    this.requestToken = onRequestToken
+    this.incogniaToken = undefined
   }
 
   async getToken() {
@@ -36,15 +26,8 @@ export class TokenManager {
   async updateAccessToken() {
     if (this.isAccessTokenValid()) return
 
-    const axiosResponse = await this.requestToken()
-    const data = axiosResponse?.data
-
-    this.incogniaToken = {
-      createdAt: Math.round(Date.now() / 1000),
-      expiresIn: parseInt(data.expires_in),
-      accessToken: data.access_token,
-      tokenType: data.token_type
-    }
+    const token = await this.requestToken()
+    this.incogniaToken = token
   }
 
   isAccessTokenValid() {
@@ -61,25 +44,5 @@ export class TokenManager {
     }
 
     return true
-  }
-
-  async requestToken() {
-    try {
-      return await axios({
-        method: Method.Post,
-        url: apiEndpoints.TOKEN,
-        data: qs.stringify({ grant_type: 'client_credentials' }),
-        auth: {
-          username: this.clientId,
-          password: this.clientSecret
-        },
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'User-Agent': buildUserAgent()
-        }
-      })
-    } catch (e: unknown) {
-      throwCustomRequestError(e as CustomRequestError)
-    }
   }
 }

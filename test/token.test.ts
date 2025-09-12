@@ -1,118 +1,82 @@
-import nock from 'nock'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { IncogniaApiError } from '../src/'
-import { TokenManager } from '../src/token'
-import { BASE_ENDPOINT } from '../src/endpoints'
+import { describe, expect, it, vi } from 'vitest'
 
-const credentials = {
-  clientId: 'clientId',
-  clientSecret: 'clientSecret'
+import { TokenStorage } from '../src/token'
+
+const validToken = {
+  createdAt: Math.round(Date.now().valueOf() / 1000),
+  expiresIn: 20 * 60,
+  accessToken: 'access_token',
+  tokenType: 'Bearer'
 }
 
-const accessTokenExample = {
-  access_token: 'access_token',
-  expires_in: 20 * 60,
-  token_type: 'Bearer'
+const expiredToken = {
+  createdAt: Math.round(Date.now().valueOf() / 1000) - 30 * 60,
+  expiresIn: 20 * 60,
+  accessToken: 'access_token',
+  tokenType: 'Bearer'
 }
 
-describe('Access token managament', () => {
-  let tokenManager: TokenManager
+describe('TokenStorage', () => {
+  let tokenStorage: TokenStorage
 
-  beforeEach(() => {
-    tokenManager = new TokenManager(credentials)
-  })
+  describe('when the token is valid', () => {
+    it('returns the valid token', async () => {
+      const onRequestToken = vi.fn().mockResolvedValue(validToken)
 
-  describe('when requesting a token ', () => {
-    it('calls access token endpoint with creds', async () => {
-      nock(BASE_ENDPOINT).post(`/v2/feedbacks`).reply(200, {})
-      const accessTokenEndpointCall = nock(BASE_ENDPOINT, {
-        reqheaders: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
+      tokenStorage = new TokenStorage({
+        onRequestToken
       })
-        .post('/v2/token', { grant_type: 'client_credentials' })
-        .basicAuth({
-          user: credentials.clientId,
-          pass: credentials.clientSecret
-        })
-        .reply(200, accessTokenExample)
 
-      await tokenManager.requestToken()
-      expect(accessTokenEndpointCall.isDone()).toBeTruthy()
-    })
+      let token = await tokenStorage.getToken()
+      expect(token).toEqual(validToken)
 
-    describe('and the request fails', () => {
-      it('throws Incognia errors', async () => {
-        nock(BASE_ENDPOINT).post('/v2/token').replyWithError({
-          message: 'something awful happened',
-          code: 'AWFUL_ERROR'
-        })
+      token = await tokenStorage.getToken()
+      expect(token).toEqual(validToken)
 
-        const dispatchRequest = async () => {
-          await tokenManager.requestToken()
-        }
+      token = await tokenStorage.getToken()
+      expect(token).toEqual(validToken)
 
-        await expect(dispatchRequest).rejects.toThrowError(IncogniaApiError)
-      })
+      expect(onRequestToken).toHaveBeenCalledTimes(1)
     })
   })
 
-  describe('when getting the token', () => {
-    it('retrieves the correct token', async () => {
-      nock(BASE_ENDPOINT).post('/v2/token').reply(200, accessTokenExample)
+  describe('when the token is empty', () => {
+    it('calls the onRequestToken function', async () => {
+      const onRequestToken = vi.fn().mockResolvedValueOnce(undefined)
 
-      const token = await tokenManager.getToken()
+      tokenStorage = new TokenStorage({
+        onRequestToken
+      })
 
-      expect(token).toEqual(
-        expect.objectContaining({
-          accessToken: accessTokenExample.access_token,
-          expiresIn: accessTokenExample.expires_in,
-          tokenType: accessTokenExample.token_type
-        })
-      )
-    })
+      await tokenStorage.getToken()
+      expect(tokenStorage.isAccessTokenValid()).toBeFalsy()
 
-    it('calls access token endpoint only at the first time', async () => {
-      const accessTokenEndpointFirstCall = nock(BASE_ENDPOINT)
-        .post('/v2/token')
-        .reply(200, accessTokenExample)
-      const accessTokenEndpointSecondCall = nock(BASE_ENDPOINT)
-        .post('/v2/token')
-        .reply(200, accessTokenExample)
+      onRequestToken.mockResolvedValueOnce(validToken)
+      const token = await tokenStorage.getToken()
+      expect(token).toEqual(validToken)
+      expect(tokenStorage.isAccessTokenValid()).toBeTruthy()
 
-      // call resource for the first time
-      await tokenManager.getToken()
-      expect(accessTokenEndpointFirstCall.isDone()).toBeTruthy()
-
-      // call resource for the second time
-      await tokenManager.getToken()
-      expect(accessTokenEndpointSecondCall.isDone()).toBeFalsy()
+      expect(onRequestToken).toHaveBeenCalledTimes(2)
     })
   })
 
-  describe('accessToken validation', () => {
-    it('returns true if the token is valid', async () => {
-      nock(BASE_ENDPOINT).post('/v2/token').reply(200, accessTokenExample)
-      await tokenManager.updateAccessToken()
-      expect(tokenManager.isAccessTokenValid()).toEqual(true)
-    })
+  describe('when the token is expired', () => {
+    it('calls the onRequestToken function', async () => {
+      const onRequestToken = vi.fn().mockResolvedValueOnce(expiredToken)
 
-    it('returns false if the token is expired', async () => {
-      nock(BASE_ENDPOINT).post('/v2/token').reply(200, accessTokenExample)
-
-      Date.now = vi.fn(() => new Date(Date.UTC(2021, 3, 14)).valueOf())
-      await tokenManager.updateAccessToken()
-      Date.now = vi.fn(() => {
-        const date = new Date(Date.UTC(2021, 3, 14))
-        date.setUTCSeconds(accessTokenExample.expires_in)
-
-        return date.valueOf()
+      tokenStorage = new TokenStorage({
+        onRequestToken
       })
-      expect(tokenManager.isAccessTokenValid()).toEqual(false)
-    })
 
-    it('returns false if there is no token', async () => {
-      expect(tokenManager.isAccessTokenValid()).toEqual(false)
+      await tokenStorage.getToken()
+      expect(tokenStorage.isAccessTokenValid()).toBeFalsy()
+
+      onRequestToken.mockResolvedValueOnce(validToken)
+      const token = await tokenStorage.getToken()
+      expect(token).toEqual(validToken)
+      expect(tokenStorage.isAccessTokenValid()).toBeTruthy()
+
+      expect(onRequestToken).toHaveBeenCalledTimes(2)
     })
   })
 })

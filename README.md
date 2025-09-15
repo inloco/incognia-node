@@ -43,6 +43,32 @@ IncogniaApi.init({
 })
 ```
 
+### Incognia API Options (`options`)
+
+You can optionally configure HTTP behavior when initializing the SDK via the `options` parameter. These options affect all requests made by the library after initialization.
+
+```js
+IncogniaApi.init({
+  clientId: 'clientId',
+  clientSecret: 'clientSecret',
+  options: {
+    // Reuse TCP connections for better performance in high-throughput environments (Default: false)
+    keepAlive: true,
+    // Number of times to retry a failed request before throwing (Default: 0)
+    maxRetries: 3,
+    // Delay in milliseconds between retries (Default: 200)
+    retryDelayMs: 500
+  }
+})
+```
+
+- **keepAlive**: boolean. Default: `false`.
+  - When `true`, the library sets Node's `https.Agent` with `keepAlive: true` on the internal Axios instance, enabling connection reuse.
+- **maxRetries**: number. Default: `0`.
+  - Maximum number of retry attempts for failed requests. Retries are only performed on transient errors such as network failures or server errors (5xx responses). Client errors (4xx, e.g., invalid credentials) are not retried.
+- **retryDelayMs**: number. Default: `200`.
+  - The delay in milliseconds between each retry attempt. Useful for preventing overwhelming the API when multiple retries are configured.
+
 ## API methods
 
 ### Registering a Mobile Signup

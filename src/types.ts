@@ -1,3 +1,9 @@
+export type IncogniaApiOptions = {
+  keepAlive?: boolean
+  maxRetries?: number
+  retryDelayMs?: number
+}
+
 export enum Method {
   Post = 'post',
   Get = 'get'

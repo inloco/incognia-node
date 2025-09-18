@@ -1,7 +1,7 @@
 import nock from 'nock'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CouponType, FeedbackEvent, IncogniaApi } from '../src/'
-import { TransactionLocation } from '../src/types'
+import { BankAccountInfo, TransactionLocation } from '../src/types'
 import { BASE_ENDPOINT } from '../src/endpoints'
 
 const credentials = {
@@ -330,6 +330,25 @@ describe('Incognia API', () => {
         .post(`/v2/authentication/transactions`)
         .reply(200, apiResponse)
 
+      const bankAccountInfo: BankAccountInfo = {
+        accountType: "checking",
+        accountPurpose: "personal",
+        holderType: "individual",
+        holderTaxId: {
+          type: "cpf",
+          value: "12345678901"
+        },
+        country: "BR",
+        ispbCode: "12345678",
+        branchCode: "0001",
+        accountNumber: "987654",
+        accountCheckDigit: "0",
+        pixKeys: [
+          { type: "email", value: "user@example.com" },
+          { type: "phone", value: "+5511999999999" }
+        ]
+      }
+
       const payment = await IncogniaApi.registerPayment({
         requestToken: 'request_token',
         accountId: 'account_id',
@@ -337,24 +356,8 @@ describe('Incognia API', () => {
         externalId: 'external_id',
         policyId: 'policy_id',
         coupon: { type: CouponType.FixedValue, value: 10 },
-        bankAccountInfo: {
-              accountType: "checking",
-              accountPurpose: "personal",
-              holderType: "individual",
-              holderTaxId: {
-                type: "cpf",
-                value: "12345678901"
-              },
-              country: "BR",
-              ispbCode: "12345678",
-              branchCode: "0001",
-              accountNumber: "987654",
-              accountCheckDigit: "0",
-              pixKeys: [
-                { type: "email", value: "user@example.com" },
-                { type: "phone", value: "+5511999999999" }
-              ]
-          }
+        debtorAccount: bankAccountInfo,
+        creditorAccount: bankAccountInfo
       })
       expect(payment).toEqual(expectedResponse)
     })

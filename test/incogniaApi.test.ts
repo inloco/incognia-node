@@ -315,6 +315,50 @@ describe('Incognia API', () => {
       expect(payment).toEqual(expectedResponse)
     })
 
+    it('registers payment with bank account info', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(BASE_ENDPOINT)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const payment = await IncogniaApi.registerPayment({
+        requestToken: 'request_token',
+        accountId: 'account_id',
+        appId: 'app_id',
+        externalId: 'external_id',
+        policyId: 'policy_id',
+        coupon: { type: CouponType.FixedValue, value: 10 },
+        bankAccountInfo: {
+              accountType: "checking",
+              accountPurpose: "personal",
+              holderType: "individual",
+              holderTaxId: {
+                type: "cpf",
+                value: "12345678901"
+              },
+              country: "BR",
+              ispbCode: "12345678",
+              branchCode: "0001",
+              accountNumber: "987654",
+              accountCheckDigit: "0",
+              pixKeys: [
+                { type: "email", value: "user@example.com" },
+                { type: "phone", value: "+5511999999999" }
+              ]
+          }
+      })
+      expect(payment).toEqual(expectedResponse)
+    })
+
     describe.each([
       ['without collectedAt', undefined],
       ['with collectedAt', new Date('2024-01-01T12:00:00Z')]

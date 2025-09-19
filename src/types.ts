@@ -75,6 +75,8 @@ export type RegisterPaymentBaseProps = {
   policyId: string
   accountId: string
   personId?: PersonId
+  debtorAccount?: BankAccountInfo
+  creditorAccount?: BankAccountInfo
   storeId?: string
   externalId?: string
   addresses?: Array<TransactionAddress>
@@ -466,6 +468,24 @@ type PaymentMethod = {
 type PersonId = {
   type: string
   value: string
+}
+
+type PixKey = {
+  type: string
+  value: string
+}
+
+export type BankAccountInfo = {
+  accountType?: string
+  accountPurpose?: string
+  holderType?: string
+  holderTaxId?: PersonId
+  country?: string
+  ispbCode?: string
+  branchCode?: string
+  accountNumber?: string
+  accountCheckDigit?: string
+  pixKeys?: Array<PixKey>
 }
 
 export enum FeedbackEvent {

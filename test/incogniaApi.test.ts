@@ -1,7 +1,7 @@
 import nock from 'nock'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { CouponType, FeedbackEvent, IncogniaApi } from '../src/'
-import { TransactionLocation } from '../src/types'
+import { BankAccountInfo, TransactionLocation } from '../src/types'
 import { BASE_ENDPOINT } from '../src/endpoints'
 
 const credentials = {
@@ -311,6 +311,53 @@ describe('Incognia API', () => {
         externalId: 'external_id',
         policyId: 'policy_id',
         coupon: { type: CouponType.FixedValue, value: 10 }
+      })
+      expect(payment).toEqual(expectedResponse)
+    })
+
+    it('registers payment with bank account info', async () => {
+      const apiResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        risk_assessment: 'low_risk'
+      }
+
+      const expectedResponse = {
+        id: '5e76a7ca-577c-4f47-a752-9e1e0cee9e49',
+        riskAssessment: 'low_risk'
+      }
+
+      nock(BASE_ENDPOINT)
+        .post(`/v2/authentication/transactions`)
+        .reply(200, apiResponse)
+
+      const bankAccountInfo: BankAccountInfo = {
+        accountType: "checking",
+        accountPurpose: "personal",
+        holderType: "individual",
+        holderTaxId: {
+          type: "cpf",
+          value: "12345678901"
+        },
+        country: "BR",
+        ispbCode: "12345678",
+        branchCode: "0001",
+        accountNumber: "987654",
+        accountCheckDigit: "0",
+        pixKeys: [
+          { type: "email", value: "user@example.com" },
+          { type: "phone", value: "+5511999999999" }
+        ]
+      }
+
+      const payment = await IncogniaApi.registerPayment({
+        requestToken: 'request_token',
+        accountId: 'account_id',
+        appId: 'app_id',
+        externalId: 'external_id',
+        policyId: 'policy_id',
+        coupon: { type: CouponType.FixedValue, value: 10 },
+        debtorAccount: bankAccountInfo,
+        creditorAccount: bankAccountInfo
       })
       expect(payment).toEqual(expectedResponse)
     })
